@@ -32,3 +32,9 @@
 | Orquestador | Componente de ACM que asigna trabajo a agentes internos (EPIC-07, POST-MVP). |
 | Skill | Paquete de instrucciones (`SKILL.md` con frontmatter YAML) que enseña a un agente a realizar una tarea; ACM sirve las suyas por MCP (ADR-008). |
 | Extensión MCP Skills | SEP-2640, `io.modelcontextprotocol/skills`: estándar para descubrir y distribuir skills por MCP (`skills/list`, `skills/get`, URIs `skill://`). |
+| WAL | Write-Ahead Logging de SQLite: los lectores no se bloquean con un escritor activo (ADR-013). |
+| BEGIN IMMEDIATE | Transacción SQLite que toma el lock de escritura al empezar; obligatoria para escrituras en ACM (ADR-013). |
+| Streamable HTTP | Transporte HTTP de MCP; ACM lo sirve en `/mcp` (ADR-014). |
+| 2026-07-28 | Revisión del protocolo MCP con peticiones autocontenidas (sin handshake ni sesión); impide el estado de "proyecto seleccionado" por sesión (ADR-014). |
+| DecisionEngine / GenerationEngine | Interfaces de inferencia del núcleo (ADR-015). |
+| Spike | Experimento acotado para responder una pregunta técnica; su código vive en `spikes/` y no es producto. |

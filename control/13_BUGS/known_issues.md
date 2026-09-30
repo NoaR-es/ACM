@@ -17,3 +17,9 @@
 | CONF-002 | 2026-09-30 | **Fuente de verdad del producto ACM.** A (EPIC-02) define `control/` como "memoria y fuente de verdad" de cada proyecto; B y ADR-001 establecen SQLite como núcleo de persistencia (A EPIC-18 también). | Operador (2026-09-30): `control/` es la fuente de verdad del **desarrollo** (el agente la mantiene siempre al día); en el **producto ACM** la fuente de verdad es SQLite y todo se aloja ahí (EPIC-02 = memoria de proyecto en SQLite). | RESOLVED (ADR-011) |
 | CONF-003 | 2026-09-30 | **Orquestador interno en el MVP.** A es un "Sistema Autónomo" con orquestador y agentes propios (EPIC-07/08/09/46); ADR-007/010 dejan eso POST-MVP y basan el MVP en agentes externos vía MCP. | Operador (2026-09-30): se deja para más adelante, pero teniendo siempre en cuenta Ollama y JEV locales, que hacen de ACM un segundo cerebro del agente. | DEFERRED (ADR-012) |
 | CONF-004 | 2026-09-30 | **MCP.** A (EPIC-14) describe ACM como *cliente* que registra servidores MCP externos; ADR-008 lo describe como *servidor* MCP propio. | No es excluyente: ACM es servidor MCP para agentes (MVP) y cliente MCP para sus agentes internos (POST-MVP). | RESOLVED por el agente (ADR-010) |
+
+## Hallazgos técnicos de spikes
+
+| ID | Fecha | Descripción | Impacto | Severidad | Estado |
+|----|-------|-------------|---------|-----------|--------|
+| GAP-007 | 2026-09-30 | SDK `mcp` 2.2.0: una excepción genérica en una herramienta llega al agente como "Error executing tool …", sin el motivo (visto en TEST-SPIKE-002c). | El agente no sabe por qué se rechazó la operación (p. ej. falta de permiso sobre un proyecto). | MEDIA | OPEN — mitigar en el esqueleto con errores de herramienta explícitos (tipo de error del SDK por verificar) |

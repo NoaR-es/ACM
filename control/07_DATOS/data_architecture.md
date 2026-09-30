@@ -21,5 +21,5 @@
 | Calidad | adrs | Decisiones arquitectónicas |
 | Calidad | walkthrough_logs | Evidencias de ejecución |
 
-Motor previsto: SQLite, una base por proyecto (US-01.01, EPIC-18). **SQLite es la fuente de verdad del producto y todo se aloja ahí** (ADR-011), incluida la memoria de proyecto de EPIC-02; cualquier exportación a archivos es una proyección no autoritativa. Modo WAL/locking: SPIKE-001. Migraciones: TECH-007.
+Motor previsto: SQLite, una base por proyecto (US-01.01, EPIC-18). **SQLite es la fuente de verdad del producto y todo se aloja ahí** (ADR-011), incluida la memoria de proyecto de EPIC-02; cualquier exportación a archivos es una proyección no autoritativa. Configuración y acceso (ADR-013, medido en SPIKE-001): WAL, `synchronous=FULL`, `foreign_keys=ON` y `busy_timeout=5000` al abrir cada conexión, `BEGIN IMMEDIATE` en toda escritura, reclamación optimista con `version`. Una base por proyecto más una base global de plataforma. Migraciones: TECH-007.
 Faltan en el modelo conceptual (a diseñar, GAP-005): auditoría, tokens/RBAC, snapshots, agentes/sesiones, locks, memoria de proyecto (EPIC-02), instancias/hilos/ejecuciones, lecciones, decisiones delegadas y registro de tokens ahorrados (US-35.09).

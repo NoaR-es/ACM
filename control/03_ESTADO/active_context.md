@@ -1,18 +1,14 @@
-TASK: none (SPRINT-000 sin tareas activas)
+TASK: none (SPRINT-000: spikes y diseño completados)
 STORY: —
 SPRINT: SPRINT-000
 
 NEXT CANDIDATES:
-SPIKE-001 — concurrencia SQLite/WAL en Python
-SPIKE-002 — servidor MCP propio multi-proyecto + extensión Skills (06_API/mcp_server.md)
+TASK-000-10 — depurar solapamientos A↔B (GAP-006)
+Refinamiento a READY de EPIC-01, 18, 24 (GAP-001) → SPRINT-001
 
 RELEVANT DOCUMENTS:
-14_DECISIONES/decisions.md (ADR-001, 005, 008, 010)
-01_PRODUCTO/backlog.md, id_mapping.md
-14_DECISIONES/decisions.md (ADR-011, ADR-012)
-06_API/mcp_server.md
-01_PRODUCTO/technical_stories.md
-04_ARQUITECTURA/architecture.md
+14_DECISIONES/decisions.md (ADR-013, 014, 015)
+04_ARQUITECTURA/architecture.md, inference_ports.md, dependencies.md
 
 FILES AFFECTED: —
 

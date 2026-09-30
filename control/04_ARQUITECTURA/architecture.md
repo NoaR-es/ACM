@@ -45,7 +45,23 @@ Humanos ──(Web React / CLI / MCP)──► ACM Core (Governance + State)
 
 ## Decisiones abiertas
 - ~~Runtime/lenguaje backend (IMP-001)~~ → **Python ≥ 3.11 (ADR-005)**.
-- Proceso único vs. servicios separados (MCP / API / WS) — pendiente de SPIKE-002.
-- Framework HTTP/WebSocket y acceso SQLite sync/async — pendiente de SPIKE-001/002.
+- ~~Proceso único vs. servicios separados~~ → **un proceso ASGI (uvicorn) con MCP `/mcp`, API `/api` y WebSocket `/ws`, más stdio para agentes locales (ADR-014)**.
+- ~~Framework HTTP/WebSocket y acceso SQLite~~ → **FastAPI/Starlette (ADR-014); SQLite en WAL con `BEGIN IMMEDIATE`, FULL y claves foráneas por conexión (ADR-013)**.
+- ~~Interfaces de inferencia~~ → **DecisionEngine y GenerationEngine con router (ADR-015, `inference_ports.md`)**.
 - Tooling del frontend React — GAP-002.
 - Vector store concreto (SPIKE-003 propone evaluar ChromaDB).
+
+## Topología de ejecución (ADR-014)
+
+```text
+                         ┌──────────────── proceso ACM (uvicorn, Python ≥ 3.11) ────────────────┐
+ Agente IA ── HTTP ────► │ /mcp  Servidor MCP propio (SDK mcp 2.2.x) + extensión Skills (SEP-2640) │
+ Agente IA ── stdio ───► │        (mismo servidor lanzado por stdio)                              │
+ Frontend React ─ HTTP ► │ /api  FastAPI                                                          │
+ Frontend React ─ WS ──► │ /ws   WebSocket ◄── bus de eventos en memoria ◄── servicios de dominio │
+                         │        servicios ──► DecisionEngine / GenerationEngine (ADR-015)       │
+                         │        repositorios ──► SQLite WAL (1 base por proyecto + 1 global)    │
+                         └────────────────────────────────────────────────────────────────────────┘
+                                        │ HTTP                           │ HTTP
+                                    Ollama (local)               Ollaya / TypeSafe (JEV, EPIC-50)
+```

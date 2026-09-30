@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.7] — 2026-09-30 — SPRINT-000
+- **Cambio:**
+  - SPIKE-001: banco de concurrencia SQLite y resultados.
+  - SPIKE-002: prototipo del servidor MCP propio con extensión Skills y 3 suites de pruebas.
+  - ADR-013 (SQLite), ADR-014 (topología y MCP) y ADR-015 (interfaces de inferencia) con `inference_ports.md`.
+  - `item_status.json`: estados reales de SPIKE/TECH/historias en los inventarios.
+  - GAP-007.
+- **Motivo:** Fase 0 del roadmap.
+- **Archivos:** `spikes/**`, `control/tools/`, `control/14_DECISIONES/`, `04_ARQUITECTURA/`, `06_API/`, `07_DATOS/`, `08_INFRAESTRUCTURA/`, `10_IA/`, `12_TESTING/`, `13_BUGS/`, `20_PERFORMANCE/`, `02_AGILE/`, `03_ESTADO/`, `05_CODIGO/`, `00_GOBIERNO/`, `RELATIONSHIPS.md`, `INDEX.md`, `/.gitignore`.
+- **Impacto:** Decisiones técnicas con evidencia; sin código de producto.
+- **Tests:** TEST-SPIKE-001, TEST-SPIKE-002a (11/11), 002b (4/4), 002c (3/3) y TEST-CTRL-001: PASS.
+- **Breaking change:** no.
+
 ## [0.0.6] — 2026-09-30 — SPRINT-000
 - **Cambio:**
   - Definición v1.2 (`product_definition_v3.md`; v1.1 archivada): JEV a integrar con la arquitectura preparada desde el inicio; ACM como segundo cerebro del agente (4 historias nuevas con CA: US-35.08..US-35.11).

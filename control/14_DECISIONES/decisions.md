@@ -208,3 +208,78 @@ Consecuencias:
 - SPIKE-005 (Ollama con varios agentes) y SPIKE-006 (Ollaya) ganan prioridad dentro de Fase 0–2.
 - Hacen falta estimaciones de tokens fiables: el método se documenta en la implementación de US-35.09.
 Trade-offs: El MVP crece en 5 historias. A cambio, ACM aporta valor propio desde la primera versión.
+
+## ADR-013 — Estrategia de acceso a SQLite (resultado de SPIKE-001)
+Fecha: 2026-09-30
+Estado: ACCEPTED
+Contexto: SQLite es la fuente de verdad del producto (ADR-011). SPIKE-001 midió el comportamiento concurrente desde Python (`20_PERFORMANCE/benchmarks.md`).
+Problema: Configurar SQLite para varios agentes concurrentes sin bloqueos, corrupción ni pérdida de integridad.
+Alternativas consideradas:
+- journal DELETE frente a WAL;
+- `synchronous` FULL frente a NORMAL;
+- transacciones DEFERRED frente a IMMEDIATE;
+- `sqlite3` síncrono en hilos frente a una librería asíncrona (aiosqlite, que internamente también usa hilos).
+Decisión:
+1. `PRAGMA journal_mode=WAL` en todas las bases.
+2. `PRAGMA synchronous=FULL` por defecto (configurable a NORMAL por despliegue): durabilidad de la evidencia y de la auditoría antes que rendimiento.
+3. `PRAGMA foreign_keys=ON` y `PRAGMA busy_timeout=5000` **al abrir cada conexión, fuera de transacción**. El health check (US-13.03) verifica que las claves foráneas están activas.
+4. `sqlite3.connect(..., isolation_level=None)` y transacciones explícitas. **Toda escritura usa `BEGIN IMMEDIATE`** mediante un único gestor de transacciones del repositorio de datos.
+5. Concurrencia optimista con columna `version` y `UPDATE` condicional para reclamar tareas y evitar ejecuciones duplicadas (US-19.01, US-19.03; TECH-005).
+6. Reintento acotado ante un BUSY residual (US-39.01).
+7. Una base SQLite por proyecto (aislamiento, regla 8, exportación por proyecto) más una base global de plataforma (registro de proyectos, usuarios, tokens y motores de inferencia).
+8. Las llamadas a `sqlite3` se ejecutan en hilos de trabajo desde el proceso ASGI (`anyio.to_thread`), con una conexión por hilo.
+Motivo: Evidencia medida en E1–E5.
+Consecuencias:
+- El punto 8 (acceso desde asyncio) **no se ha medido**: se valida con tests de carga del esqueleto.
+- La elección FULL/NORMAL queda en la configuración (US-33.01).
+Trade-offs: FULL rinde unas 5 veces menos que NORMAL; con los volúmenes previstos de ACM se considera irrelevante.
+
+## ADR-014 — Topología de proceso y servidor MCP (resultado de SPIKE-002)
+Fecha: 2026-09-30
+Estado: ACCEPTED
+Contexto: SPIKE-002 validó con el SDK oficial `mcp` 2.2.0 el servidor MCP propio (ADR-008). Pruebas en `spikes/spike_002_mcp/` y resultados en `06_API/mcp_server.md`.
+Problema: Cómo desplegar el servidor MCP, la API y los WebSockets, y cómo aislar proyectos.
+Alternativas consideradas:
+- procesos separados (MCP, API y WS) frente a un único proceso ASGI;
+- extensión Skills nativa del SDK (no existe en 2.2.0) frente a una propia;
+- proyecto seleccionado por sesión frente a proyecto explícito en cada llamada.
+Decisión:
+1. **Un único proceso ASGI** (uvicorn) sirve:
+   - el MCP por Streamable HTTP en `/mcp`;
+   - la API HTTP en `/api`;
+   - el WebSocket en `/ws`, con un bus de eventos en memoria (TECH-001/002).
+   Además, el mismo servidor MCP se puede lanzar por **stdio** para agentes locales.
+2. **Framework HTTP: FastAPI** sobre Starlette, porque genera OpenAPI (US-30.02). En el spike se verificó el montaje con Starlette; con FastAPI se verificará al crear el esqueleto.
+3. **SDK `mcp` fijado en 2.2.x.** El cliente negocia la versión de protocolo `2026-07-28`; el SDK también admite las versiones con handshake 2024-11-05..2025-11-25.
+4. **Extensión Skills (SEP-2640) implementada por ACM** sobre la API `Extension` del SDK:
+   - métodos `skills/list` y `skills/get`;
+   - archivos servidos como recursos `skill://acm/...` con digest sha256;
+   - `directoryRead=false`;
+   - `instructions` en la conexión;
+   - herramientas de respaldo `acm_skills_list` y `acm_skill_get`.
+5. **Aislamiento multi-proyecto: `project_id` explícito en cada herramienta**, validado contra la identidad autenticada, cuyo alcance por proyecto se define en EPIC-20.
+   - No se usa estado de sesión: con `2026-07-28` cada petición HTTP es autocontenida y el servidor no conservó la selección entre llamadas (evidencia de D1).
+   - La identidad debe salir del mecanismo de autenticación del SDK (`TokenVerifier`/`AuthSettings`), nunca de cabeceras o argumentos que envía el cliente. Esto **no se ha probado**: EPIC-20.
+6. **Los errores de herramientas deben llegar al agente con un motivo explícito.** Una excepción genérica aparece como "Error executing tool …" y oculta la causa (GAP-007).
+Motivo: 11/11 + 4/4 + 3/3 pruebas en PASS; menos piezas operativas; un solo proceso permite difundir eventos en memoria.
+Consecuencias:
+- Escalar a varias réplicas requeriría un bus externo (el SDK acepta un `SubscriptionBus` propio) y sacar el estado del proceso. No es MVP.
+- La extensión Skills propia debe seguir la evolución de SEP-2640 y de futuras versiones del SDK (riesgo de reemplazo por soporte nativo).
+Trade-offs: Un único proceso concentra fallos; se acepta en el MVP y lo mitigan el health check y las reglas de reinicio (EPIC-13, EPIC-39).
+
+## ADR-015 — Interfaces de inferencia del núcleo: DecisionEngine y GenerationEngine
+Fecha: 2026-09-30
+Estado: ACCEPTED
+Contexto: ADR-012 exige un núcleo preparado para JEV y el segundo cerebro. Diseño completo en `04_ARQUITECTURA/inference_ports.md` (TASK-000-13).
+Problema: Cómo desacoplar a Watchdog, gates, contexto y decisiones delegadas de los motores concretos (reglas, Ollama, Ollaya/TypeSafe).
+Alternativas consideradas:
+(a) llamar a Ollama directamente y añadir JEV después;
+(b) un puerto único genérico "LLM";
+(c) dos puertos (decisión tipada y generación) con router y registro.
+Decisión: (c).
+- El contrato de decisión reproduce el modelo de TypeSafe System One / Ollaya (`choice`/`score`/`noul`, probabilidades, `usage`), añadiendo `calibrated`, `engine`, `purpose`, `project_id` y `fallback_from`.
+- Implementaciones MVP: reglas y Ollama. `JevDecisionEngine` llega con EPIC-50.
+- Orden por defecto del router: reglas → JEV → Ollama. Configurable.
+Motivo: El adaptador JEV queda como una traducción 1:1 del contrato. Distinguir motores calibrados de no calibrados evita que el Watchdog bloquee por la "confianza" de un LLM generativo.
+Consecuencias: Hay que verificar en SPIKE-005 si Ollama ofrece log-probabilidades y salida estructurada fiable. La estimación de tokens ahorrados usa un método explícito y versionado (por defecto `chars/4`).
+Trade-offs: Más abstracción desde el principio; es el coste explícito que pide ADR-012.

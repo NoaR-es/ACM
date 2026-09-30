@@ -22,6 +22,7 @@ Exit codes: 0 OK · 1 inventarios desincronizados · 2 violación de integridad.
 """
 from __future__ import annotations
 
+import json
 import re
 import sys
 import unicodedata
@@ -34,6 +35,11 @@ SRC_A_REL = "01_PRODUCTO/backlog_completo_v1.md"
 SRC_B_REL = "01_PRODUCTO/product_definition_v3.md"
 SRC_A = ROOT / SRC_A_REL
 SRC_B = ROOT / SRC_B_REL
+# Estados distintos de PLANNED (historias, TECH, SPIKE). Sin entrada = PLANNED. Solo estados permitidos (CLAUDE.md §4).
+STATUS_FILE = Path(__file__).resolve().parent / "item_status.json"
+ALLOWED_STATUS = {"PLANNED", "READY", "IN_PROGRESS", "BLOCKED", "IMPLEMENTED", "TESTING", "VERIFIED", "FAILED",
+                  "DEPRECATED", "CANCELLED", "DONE"}
+STATUS: dict[str, str] = {}
 
 # ---------------------------------------------------------------------------
 # Épicas nuevas creadas por la unificación (ADR-010): contenido de B sin equivalente en A.
@@ -441,7 +447,7 @@ def render_stories(epics: list[Epic]) -> str:
                 else:
                     out.append(f"- Enunciado: {s.text}\n")
                 out.append(f"- Origen: {s.origin} · Épica: {e.id} · Feature: {f.id} · Alcance: {s.scope} · "
-                           f"Prioridad: {'P1' if s.scope == 'MVP' else 'P3'} · Estado: PLANNED\n")
+                           f"Prioridad: {'P1' if s.scope == 'MVP' else 'P3'} · Estado: {STATUS.get(s.id, 'PLANNED')}\n")
                 if s.dup:
                     out.append(f"- ⚠ Posible solapamiento con {s.dup}: revisar si es duplicado, detalle o historia distinta (GAP-006)\n")
                 for name, lines in s.sections.items():
@@ -492,9 +498,9 @@ def render_tech(techs: list[Item], spikes: list[Item]) -> str:
     out = [HEADER, "# Historias técnicas transversales y Spikes (fuente B)\n\n",
            "> Los IDs `TECH-XXX` designan **historias técnicas**, no deuda técnica (la deuda usa `TD-NNN`, ADR-002).\n\n",
            "## Historias técnicas\n\n| ID | Título | Descripción | Estado |\n|----|--------|-------------|--------|\n"]
-    out.extend(f"| {t.id} | {t.title} | {t.description} | PLANNED |\n" for t in techs)
+    out.extend(f"| {t.id} | {t.title} | {t.description} | {STATUS.get(t.id, 'PLANNED')} |\n" for t in techs)
     out.append("\n## Spikes\n\n| ID | Título | Pregunta | Estado |\n|----|--------|----------|--------|\n")
-    out.extend(f"| {s.id} | {s.title} | {s.description} | PLANNED |\n" for s in spikes)
+    out.extend(f"| {s.id} | {s.title} | {s.description} | {STATUS.get(s.id, 'PLANNED')} |\n" for s in spikes)
     return "".join(out)
 
 
@@ -519,6 +525,13 @@ def main() -> int:
     a_epics = parse_a(SRC_A.read_text(encoding="utf-8"))
     b_epics, techs, spikes = parse_b(SRC_B.read_text(encoding="utf-8"))
     epics, mapping, errors = unify(a_epics, b_epics)
+    STATUS.update(json.loads(STATUS_FILE.read_text(encoding="utf-8")))
+    known = {s.id for e in epics for s in stories_of(e)} | {t.id for t in techs} | {s.id for s in spikes}
+    for ident, st in STATUS.items():
+        if ident not in known:
+            errors.append(f"item_status.json: {ident} no existe en el backlog")
+        if st not in ALLOWED_STATUS:
+            errors.append(f"item_status.json: estado no permitido {st!r} para {ident}")
     if len(a_epics) != 48:
         errors.append(f"fuente A: se esperaban 48 épicas, hay {len(a_epics)}")
     if errors:

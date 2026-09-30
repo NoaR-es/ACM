@@ -1,5 +1,7 @@
 # Motores de inferencia
 
+> Los consumidores del núcleo acceden a estos motores solo a través de las interfaces de `04_ARQUITECTURA/inference_ports.md` (ADR-015).
+
 Estado: **PLANNED** — ninguno integrado ni probado en este entorno. Información de fuentes públicas consultadas el 2026-09-30.
 
 ## Ollama (generativo) — EPIC-22, TECH-018

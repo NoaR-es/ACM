@@ -2,11 +2,11 @@
 
 **Responde a:** Cómo funcionan las APIs
 
-**Salud:** OK — diseño del servidor MCP planificado (`mcp_server.md`); nada implementado
+**Salud:** OK — servidor MCP diseñado y prototipado (SPIKE-002, ADR-014); nada implementado en producto
 
 | Documento | Estado |
 |-----------|--------|
-| `mcp_server.md` | ACTIVE (PLANNED) |
+| `mcp_server.md` | ACTIVE (PLANNED; prototipo validado) |
 | `api_overview.md` | ACTIVE |
 | `rest_api.md` | N/A (plantilla) |
 | `endpoints.md` | N/A (plantilla) |

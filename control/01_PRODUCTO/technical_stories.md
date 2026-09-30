@@ -43,8 +43,8 @@
 
 | ID | Título | Pregunta | Estado |
 |----|--------|----------|--------|
-| SPIKE-001 | Modelo de concurrencia SQLite | Determinar límites reales de concurrencia y estrategia WAL/locking. | PLANNED |
-| SPIKE-002 | Arquitectura MCP multi-proyecto | Determinar aislamiento óptimo entre proyectos y sesiones. | PLANNED |
+| SPIKE-001 | Modelo de concurrencia SQLite | Determinar límites reales de concurrencia y estrategia WAL/locking. | VERIFIED |
+| SPIKE-002 | Arquitectura MCP multi-proyecto | Determinar aislamiento óptimo entre proyectos y sesiones. | VERIFIED |
 | SPIKE-003 | ChromaDB | Evaluar persistencia, aislamiento y rendimiento. | PLANNED |
 | SPIKE-004 | RAG híbrido | Evaluar combinación SQL + vector + reranking. | PLANNED |
 | SPIKE-005 | Ollama multiagente | Evaluar gestión de múltiples inferencias concurrentes. | PLANNED |

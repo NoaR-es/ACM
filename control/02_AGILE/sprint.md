@@ -28,6 +28,9 @@
 | TASK-000-10 | DOCUMENTATION | Revisar los 37 solapamientos A↔B y fusionar o descartar duplicados (GAP-006) | PLANNED |
 | TASK-000-11 | DECISION | Resolver CONF-001 (JEV en EPIC-47) y CONF-002 (fuente de verdad) con el operador | VERIFIED (ADR-011, ADR-012) |
 | TASK-000-12 | DOCUMENTATION | Incorporar definición v1.2: JEV preparado desde el inicio y ACM como segundo cerebro (ADR-012) | VERIFIED |
+| SPIKE-001 | SPIKE | Concurrencia SQLite en Python: WAL, locking, reintentos, límites reales | VERIFIED (ADR-013, `20_PERFORMANCE/benchmarks.md`) |
+| SPIKE-002 | SPIKE | Servidor MCP propio con SDK Python: extensión Skills, instructions, transporte, multi-proyecto | VERIFIED (ADR-014; 18/18 pruebas; pregunta 4 UNKNOWN) |
+| TASK-000-13 | DESIGN | Diseño de las interfaces de inferencia del núcleo (decisión y generación), preparadas para JEV (US-35.11, US-47.01) | VERIFIED (ADR-015, `04_ARQUITECTURA/inference_ports.md`) |
 | TASK-000-05 | RESEARCH | Aclarar qué es JEV (GAP-003) | VERIFIED (ADR-006) |
 | TASK-000-06 | DECISION | Cerrar alcance MVP (delegado por el operador) | VERIFIED (ADR-007) |
 

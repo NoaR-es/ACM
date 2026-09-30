@@ -2,11 +2,11 @@
 
 **Responde a:** Cómo rinde
 
-**Salud:** N/A
+**Salud:** OK — SPIKE-001 medido; sin producto que medir aún
 
 | Documento | Estado |
 |-----------|--------|
-| `benchmarks.md` | N/A (plantilla) |
+| `benchmarks.md` | ACTIVE (SPIKE-001) |
 | `bottlenecks.md` | N/A (plantilla) |
 | `optimization_log.md` | N/A (plantilla) |
 

@@ -12,3 +12,6 @@
 | 2026-09-30 | TASK-000-09 | Fuente A registrada íntegra; backlog unificado A+B con correspondencia de IDs; MVP v3 | ADR-010, `id_mapping.md`, `derive_backlog.py --check` OK | VERIFIED |
 | 2026-09-30 | TASK-000-11 | CONF-001 y CONF-002 resueltos; CONF-003 aplazado | ADR-011, ADR-012 | VERIFIED |
 | 2026-09-30 | TASK-000-12 | Definición v1.2 (JEV preparado desde el inicio, segundo cerebro, 4 historias nuevas con CA) | `product_definition_v3.md`, `derive_backlog.py --check` OK | VERIFIED |
+| 2026-09-30 | SPIKE-001 | Concurrencia SQLite medida (E1–E5) | `20_PERFORMANCE/benchmarks.md`, ADR-013 | VERIFIED |
+| 2026-09-30 | SPIKE-002 | Servidor MCP propio prototipado: extensión Skills, topología de un proceso, aislamiento por `project_id` | `06_API/mcp_server.md`, ADR-014, 18/18 pruebas PASS | VERIFIED |
+| 2026-09-30 | TASK-000-13 | Interfaces de inferencia DecisionEngine/GenerationEngine, preparadas para JEV | `04_ARQUITECTURA/inference_ports.md`, ADR-015 | VERIFIED |

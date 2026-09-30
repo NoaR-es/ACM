@@ -2,7 +2,7 @@
 
 **Responde a:** Cómo se prueba
 
-**Salud:** OK — solo test de integridad del backlog
+**Salud:** OK — test de integridad del backlog y tests de spikes; sin tests de producto
 
 | Documento | Estado |
 |-----------|--------|

@@ -103,3 +103,15 @@ ADR-012 (JEV preparado + segundo cerebro)
 ├── REQ-F-41, REQ-F-42
 └── CONF-003 aplazado → EPIC-07/08/09/46
 ```
+
+```
+SPIKE-001 → spikes/spike_001_sqlite/bench.py, results.json → 20_PERFORMANCE/benchmarks.md → ADR-013
+        ADR-013 → EPIC-18 (US-18.01..03), EPIC-19 (US-19.01, US-19.03), US-39.01, TECH-003..008, 07_DATOS/data_architecture.md
+
+SPIKE-002 → spikes/spike_002_mcp/{acm_mcp_proto.py, test_proto.py, test_asgi_topology.py, test_session_isolation.py}
+        → 06_API/mcp_server.md (resultados) → ADR-014
+        ADR-014 → EPIC-14 (FEAT-14.02..04), EPIC-15 (FEAT-15.02/03), EPIC-21, EPIC-24, EPIC-30, TECH-001/002/010/011, GAP-007
+
+TASK-000-13 → 04_ARQUITECTURA/inference_ports.md → ADR-015
+        ADR-015 → US-35.08..US-35.11, US-47.01, EPIC-22, EPIC-50, TECH-018..020, 10_IA/inference_engines.md
+```
