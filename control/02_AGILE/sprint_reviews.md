@@ -17,3 +17,9 @@
 - **Entregado:** 20 historias VERIFIED y 1 IMPLEMENTED (US-24.03, CA-02 depende de EPIC-21). TASK-002-01..05. 7 fusiones de duplicados más (TASK-000-10).
 - **Evidencia:** 122 tests en PASS (72 nuevos); matriz CA↔test generada en `12_TESTING/sprint_002_evidence.md`; 6/6 mutaciones detectadas.
 - **No entregado:** skills acm-error-analysis y acm-documentation (US-15.11/15.12, dependen de EPIC-29/25); interfaz web.
+
+## SPRINT-003 — Segundo cerebro (2026-09-30)
+- **Goal:** cumplido en el núcleo. `acm_decide` responde decisiones tipadas con el motor que decidió, calibración y fallback. `acm_context_compact` entrega el contexto de una historia por secciones con fuentes (medido: 3382 tokens frente a 7780 del equivalente completo en el caso de prueba; 275 con resumen). El gate READY decide a través de la interfaz común.
+- **Entregado:** US-35.08, 35.09, 35.10, 47.01 VERIFIED; US-35.11, 22.01, 22.03 IMPLEMENTED. TASK-003-01..06. ADR-016.
+- **Evidencia:** 172 tests en PASS (49 nuevos); `12_TESTING/sprint_003_evidence.md`; 8/8 mutaciones detectadas.
+- **No entregado:** verificación con un Ollama real (IMP-004); `OllamaDecisionEngine` (depende de SPIKE-005); Watchdog.

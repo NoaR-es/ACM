@@ -1,6 +1,6 @@
 # Interfaces de inferencia del núcleo (preparadas para JEV)
 
-Estado: **DESIGN (ACCEPTED en ADR-015)** — no implementado. Tarea: TASK-000-13.
+Estado: **IMPLEMENTED parcialmente (SPRINT-003)** — `src/acm/inference/`: puertos, `RulesDecisionEngine`, `EngineRegistry`, `EngineRouter`, `OllamaGenerationEngine`; `ContextService` en `src/acm/domain/context.py`. Pendientes: `OllamaDecisionEngine` (SPIKE-005), `JevDecisionEngine` (EPIC-50), RAG en el contexto (EPIC-16). **Firmas síncronas** (ADR-016): donde este documento dice `async def`, el código usa `def`. Tarea de diseño: TASK-000-13.
 Historias: US-35.11 (interfaz de decisión común), US-47.01 (recursos abstractos), US-35.08..US-35.10 (segundo cerebro), US-22.01..US-22.03 (Ollama), EPIC-50 (adaptador JEV).
 Decisiones previas: ADR-006 (contrato JEV/Ollaya), ADR-012 (JEV preparado desde el inicio, segundo cerebro).
 

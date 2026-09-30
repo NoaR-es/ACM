@@ -23,4 +23,7 @@
 | 2026-09-30 | TEST-PROD-S02 | PASS 122/122 (123 con BUG-001) | `pytest -q` en 9,5 s; `ruff check` limpio; 72 tests nuevos (backlog, aislamiento, auditoría, skills, frontera MCP) |
 | 2026-09-30 | Mutación manual SPRINT-002 (6 invariantes) | 6/6 detectadas | auditoría solo admin, truncado del resultado, aislamiento de backlog por proyecto, READY solo desde PLANNED, rechazo en cascada por dependencias, recarga solo admin. Un primer mutante inválido (bucle infinito) se descartó |
 | 2026-09-30 | TEST-CTRL-001 (SPRINT-002) | PASS | `stories=479 merged=13 test_refs=106`; `OK (check)` |
+| 2026-09-30 | TEST-PROD-S03 | PASS 172/172 | 49 tests nuevos (`test_inference.py`, `test_context.py`); Ollama simulado como servidor HTTP real |
+| 2026-09-30 | Mutación manual SPRINT-003 (8 invariantes) | 8/8 detectadas | gate acepta motor no calibrado; router ignora `supports()`; fallback sin indicar; Ollama sano sin el modelo; Ollama acepta respuesta vacía; historia resumible; gate sin re-comprobar; ahorro sin admin |
+| 2026-09-30 | Ollama real | NO EJECUTADO | Sin acceso a Ollama ni a modelos (IMP-004) |
 | 2026-09-30 | `tools/evidence.py` | PASS | SPRINT-002: 21 historias, solo US-24.03 CA-02 PENDIENTE; SPRINT-001 reproducida (solo US-01.02 CA-03 sin test) |

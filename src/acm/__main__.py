@@ -32,14 +32,16 @@ def main(argv: list[str] | None = None) -> int:
         uvicorn.run(create_app(settings), host=settings.host, port=settings.port)
         return 0
 
-    from acm.app import build_service
+    from acm.app import build_engines, build_service
     from acm.mcp_server import build_mcp_server
 
     settings = Settings.from_env(data_dir=args.data_dir)
     service = build_service(settings)
+    engines = build_engines(service, settings)
     try:
-        build_mcp_server(service, principal=lambda: settings.principal).run()  # transporte stdio
+        build_mcp_server(service, principal=lambda: settings.principal, engines=engines).run()  # stdio
     finally:
+        engines.registry.close()
         service.close()
     return 0
 

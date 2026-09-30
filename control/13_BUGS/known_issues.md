@@ -7,7 +7,7 @@
 | GAP-003 | 2026-09-30 | "JEV" no está definido (naturaleza, contrato, proveedor). | Resuelto 2026-09-30: aclaración del operador + investigación (ADR-006). | MEDIA | RESOLVED |
 | GAP-004 | 2026-09-30 | 47 de 53 épicas unificadas no declaran objetivo explícito (sí EPIC-01 y EPIC-49..53); lista en `01_PRODUCTO/epics.md`. | Priorización por valor limitada. | BAJA | OPEN |
 | GAP-005 | 2026-09-30 | El modelo de datos conceptual (§6) no cubre auditoría, tokens, snapshots, sesiones ni locks exigidos por el MVP. | Diseño de datos incompleto. | MEDIA | OPEN |
-| GAP-006 | 2026-09-30 | Solapamientos entre historias de A y B tras la unificación: 37 marcados por heurística (Jaccard ≥ 0,20), con falsos positivos y omisiones conocidas. | Backlog con historias redundantes; riesgo de implementar dos veces. | MEDIA | IN_PROGRESS — 2026-09-30: 13 fusionadas en EPIC-01/04/14/24 (`tools/dedupe.json`); quedan señales en otras épicas |
+| GAP-006 | 2026-09-30 | Solapamientos entre historias de A y B tras la unificación: 37 marcados por heurística (Jaccard ≥ 0,20), con falsos positivos y omisiones conocidas. | Backlog con historias redundantes; riesgo de implementar dos veces. | MEDIA | IN_PROGRESS — 2026-09-30: 14 fusionadas en EPIC-01/04/14/22/24 (`tools/dedupe.json`); quedan señales en otras épicas |
 
 ## Deuda técnica
 

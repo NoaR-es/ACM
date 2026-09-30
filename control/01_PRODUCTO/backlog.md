@@ -6,12 +6,12 @@
 |------|-------|-----|----------|----------|----------|
 | EPIC | 53 | 30 | 23 | 48 | 5 nuevas |
 | FEATURE | 201 | 86 | 115 | 48 | 153 |
-| USER_STORY (activas) | 479 | 222 | 257 | 132 | 347 |
+| USER_STORY (activas) | 478 | 221 | 257 | 132 | 346 |
 | Criterios de aceptación | 579 | — | — | 519 | 60 |
 | TECH (historia técnica, B) | 30 | — | — | — | 30 |
 | SPIKE (B) | 12 | — | — | — | 12 |
 
-Posibles solapamientos B↔A pendientes (heurística Jaccard ≥ 0.2, GAP-006): **35** · Historias fusionadas por duplicado (`tools/dedupe.json`): **13** · READY: **0**.
+Posibles solapamientos B↔A pendientes (heurística Jaccard ≥ 0.2, GAP-006): **34** · Historias fusionadas por duplicado (`tools/dedupe.json`): **14** · READY: **0**.
 Correspondencia de IDs de la definición v1.1: `id_mapping.md`. Alcance MVP: ADR-010.
 
 ## Historias MVP por épica
@@ -34,7 +34,7 @@ Correspondencia de IDs de la definición v1.1: `id_mapping.md`. Alcance MVP: ADR
 - **EPIC-19** (3): US-19.01, US-19.02, US-19.03
 - **EPIC-20** (14): US-20.01, US-20.02, US-20.03, US-20.04, US-20.05, US-20.06, US-20.07, US-20.08, US-20.09, US-20.10, US-20.11, US-20.12, US-20.13, US-20.14
 - **EPIC-21** (11): US-21.01, US-21.02, US-21.03, US-21.04, US-21.05, US-21.06, US-21.07, US-21.08, US-21.09, US-21.10, US-21.11
-- **EPIC-22** (7): US-22.01, US-22.02, US-22.03, US-22.04, US-22.05, US-22.06, US-22.07
+- **EPIC-22** (6): US-22.01, US-22.02, US-22.03, US-22.04, US-22.06, US-22.07
 - **EPIC-24** (2): US-24.01, US-24.03
 - **EPIC-25** (8): US-25.02, US-25.04, US-25.05, US-25.06, US-25.07, US-25.08, US-25.09, US-25.10
 - **EPIC-26** (10): US-26.01, US-26.02, US-26.03, US-26.04, US-26.05, US-26.06, US-26.07, US-26.08, US-26.09, US-26.10

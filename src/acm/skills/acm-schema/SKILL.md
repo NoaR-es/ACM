@@ -1,8 +1,8 @@
 ---
 name: acm-schema
 description: Explica qué es ACM, su modelo de datos (proyecto, requisito, épica, feature, historia, criterio de aceptación) y qué herramienta MCP usar en cada paso. Léela antes de operar sobre cualquier proyecto ACM.
-version: 1.0.0
-capabilities: [acm-model, acm-tools, acm-workflow]
+version: 1.1.0
+capabilities: [acm-model, acm-tools, acm-workflow, acm-second-brain]
 dependencies: []
 ---
 
@@ -14,7 +14,7 @@ en SQLite: es la fuente de verdad. Úsalo para no tener que recordar el proyecto
 ## Reglas de uso
 1. **No existe "proyecto activo".** Pasa `project_id` en cada herramienta de proyecto; compruébalo en la respuesta.
 2. **Los errores empiezan por un código** (`INVALID_ARGUMENT`, `NOT_FOUND`, `ALREADY_EXISTS`, `FORBIDDEN`,
-   `FAILED_PRECONDITION`, `STORAGE_ERROR`) seguido del campo y el motivo. Corrige la llamada según el motivo.
+   `FAILED_PRECONDITION`, `STORAGE_ERROR`, `ENGINE_UNAVAILABLE`, `ENGINE_ERROR`) seguido del campo y el motivo. Corrige la llamada según el motivo.
 3. **Todo queda auditado** (quién, qué, argumentos, resultado, duración).
 4. **Nada se inventa:** una historia solo pasa a READY con actor, acción, valor, requisito de origen y criterios.
 
@@ -39,6 +39,23 @@ Proyecto (project_id)
 6. `acm_story_mark_ready` cuando la historia esté completa.
 7. `acm_epic_confirm_coverage` cuando las features cubran el objetivo de la épica.
 8. `acm_backlog_audit` y `acm_requirement_trace` para detectar huecos de trazabilidad.
+
+## Segundo cerebro: ahorra tus tokens
+- **Contexto de una historia:** en lugar de leer historia, épica, requisitos e historias hermanas por separado, pide
+  `acm_context_compact(project_id, story_id, budget_tokens?)`. Recibes secciones (`story`, `acceptance_criteria`,
+  `requirements`, `feature`, `epic`, `related_stories`), cada una con sus `sources`. La historia y sus criterios van
+  siempre literales; el resto puede venir resumido por un modelo local (`summarized: true`). Si no hay modelo,
+  `not_summarized_reason` lo dice. La respuesta indica `delivered_tokens`, `full_equivalent_tokens` y el
+  `estimation_method` (`chars/4@v1`: estimación, no el tokenizador de tu modelo).
+- **Decisiones delegadas:** `acm_decide(project_id, purpose, questions, state)`. Tipos de pregunta:
+  `noul` (sí/no → `value` = P(sí)), `choice` (`criteria` = {opción: descripción} → `value` = opción) y `score`
+  (`criteria` = [nivel, …] de 2 a 10 → `value` = 1..n). La respuesta dice qué motor decidió (`engine`), si sus
+  probabilidades son reales (`calibrated`) y si hubo `fallback_from`. Con `calibrated: false` trata la confianza
+  como orientativa, no como probabilidad.
+- **Qué cubren las reglas (sin modelo):** `acm_engines_list` devuelve el catálogo `rules`. Hoy: purpose
+  `story.quality` con `state` = la historia de `acm_story_get` y preguntas `has_statement`, `has_requirements`,
+  `has_acceptance_criteria`, `technical_reason_ok` (noul), `readiness` (choice `ready`/`not_ready`) y `completeness`
+  (score de 5 niveles). Otras preguntas necesitan un motor con modelo; si no hay, `ENGINE_UNAVAILABLE`.
 
 ## Herramientas
 | Herramienta | Para qué |
@@ -68,3 +85,8 @@ Proyecto (project_id)
 | `acm_story_get` | Historia con requisitos y criterios |
 | `acm_story_mark_ready` | PLANNED → READY si la historia está completa |
 | `acm_backlog_audit` | Huecos: requisitos huérfanos, épicas/features vacías, historias sin criterios |
+| `acm_context_compact` | Contexto compacto de una historia, con fuentes y tokens ahorrados |
+| `acm_decide` | Decisión tipada (noul, choice, score) delegada en el motor de decisión |
+| `acm_engines_list` | Motores de inferencia, su estado, modelos detectados y reglas disponibles |
+| `acm_engines_refresh` | (admin) Comprueba los motores y detecta modelos |
+| `acm_savings_report` | (admin) Tokens ahorrados por agente y proyecto |

@@ -10,7 +10,10 @@ from fastapi import FastAPI
 
 from acm import __version__
 from acm.config import Settings
+from acm.domain.errors import InvalidArgument
 from acm.domain.projects import ProjectService
+from acm.inference.ollama import OllamaClient, OllamaGenerationEngine
+from acm.inference.router import EngineRouter
 from acm.mcp_server import build_mcp_server
 
 
@@ -21,9 +24,20 @@ def build_service(settings: Settings) -> ProjectService:
     return service
 
 
+def build_engines(service: ProjectService, settings: Settings) -> EngineRouter:
+    """Router de inferencia: reglas siempre; Ollama si `ACM_OLLAMA_URL` y `ACM_OLLAMA_MODEL` están configurados."""
+    engines = EngineRouter(service)
+    if settings.ollama_url or settings.ollama_model:
+        if not (settings.ollama_url and settings.ollama_model):
+            raise InvalidArgument("ACM_OLLAMA_URL y ACM_OLLAMA_MODEL deben configurarse juntos", field="ollama")
+        engines.registry.register(OllamaGenerationEngine(OllamaClient(settings.ollama_url), settings.ollama_model))
+    return engines
+
+
 def create_app(settings: Settings) -> FastAPI:
     service = build_service(settings)
-    mcp = build_mcp_server(service, principal=lambda: settings.principal)
+    engines = build_engines(service, settings)
+    mcp = build_mcp_server(service, principal=lambda: settings.principal, engines=engines)
     mcp_app = mcp.streamable_http_app(streamable_http_path="/")
 
     @contextlib.asynccontextmanager
@@ -31,6 +45,7 @@ def create_app(settings: Settings) -> FastAPI:
         # El sub-app MCP montado no ejecuta su propio lifespan: el gestor de sesiones se arranca aquí (SPIKE-002).
         async with mcp.session_manager.run():
             yield
+        engines.registry.close()
         service.close()
 
     app = FastAPI(title="ACM", version=__version__, lifespan=lifespan)

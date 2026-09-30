@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.3.0.dev0] — 2026-09-30 — SPRINT-003 — segundo cerebro
+- **Cambio:**
+  - `acm.inference`:
+    - puertos de decisión y generación (ADR-015, síncronos por ADR-016);
+    - `RulesDecisionEngine` (`story.quality`);
+    - `EngineRegistry` y `EngineRouter` con fallback y registro de llamadas;
+    - adaptador Ollama (`/api/tags`, `/api/chat`).
+  - `ContextService`: contexto compacto con fuentes, estimación `chars/4@v1` y ahorro por agente y proyecto.
+  - El gate READY decide a través de la interfaz común.
+  - 5 herramientas MCP (30 en total) y skill acm-schema 1.1.0.
+  - Esquema global v3: `inference_engines`, `inference_calls`, `context_deliveries`.
+  - Configuración `ACM_OLLAMA_URL`/`ACM_OLLAMA_MODEL`; `httpx` pasa a dependencia explícita.
+  - `control/`:
+    - 7 refinamientos;
+    - fusión US-22.05 → US-22.01;
+    - ADR-016;
+    - IMP-004;
+    - PROMPT-001;
+    - SPRINT-002 archivado;
+    - eliminada una definición duplicada de TD-NNN en el glosario.
+- **Stories:**
+  - VERIFIED: US-35.08, 35.09, 35.10, 47.01;
+  - IMPLEMENTED: US-35.11 (falta el Watchdog), US-22.01 y US-22.03 (falta un Ollama real).
+- **Archivos:** `src/acm/{inference/**, domain/context.py, domain/backlog.py, db/schema.py, mcp_server.py, app.py, config.py, __main__.py, __init__.py, skills/acm-schema/SKILL.md}`, `pyproject.toml`, `README.md`, `tests/{fake_ollama.py, test_inference.py, test_context.py, test_mcp.py}`, `control/**`.
+- **Tests:** 172/172 PASS; 8/8 mutaciones detectadas; Ollama real no probado.
+- **Migración:** la base global sube a v3 al abrirse (aditiva).
+- **Breaking change:** no. El mensaje del gate READY cambia de "falta as_a/i_want/so_that" a "falta rol, objetivo o beneficio"; el código de error es el mismo.
+
 ## [0.2.0.dev0] — 2026-09-30 — SPRINT-002 — skills y backlog por MCP
 - **Cambio:**
   - Esquema v2:

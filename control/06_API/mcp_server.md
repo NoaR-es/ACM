@@ -1,6 +1,6 @@
 # Servidor MCP de ACM
 
-Estado: **IMPLEMENTED (SPRINT-001/002)**. `src/acm/mcp_server.py`: herramientas de proyecto (SPRINT-001), backlog, auditoría y extensión Skills con 3 skills oficiales (SPRINT-002). Pendientes: skills US-15.11/15.12 y autenticación (EPIC-20). Topología: ADR-014. Decisiones: ADR-005 (Python) y ADR-008 (servidor propio + skills). Historias (numeración unificada, ADR-010): servidor propio FEAT-14.02..14.04 (US-14.04..US-14.11); registro y versionado de skills FEAT-15.01 (US-15.01, US-15.03); distribución FEAT-15.02 (US-15.04..US-15.07); catálogo FEAT-15.03 (US-15.08..US-15.12). ACM como *cliente* MCP (US-14.01..14.03) es POST-MVP.
+Estado: **IMPLEMENTED (SPRINT-001/002/003)**. `src/acm/mcp_server.py`: herramientas de proyecto (SPRINT-001), backlog, auditoría y extensión Skills con 3 skills oficiales (SPRINT-002). Pendientes: skills US-15.11/15.12 y autenticación (EPIC-20). Topología: ADR-014. Decisiones: ADR-005 (Python) y ADR-008 (servidor propio + skills). Historias (numeración unificada, ADR-010): servidor propio FEAT-14.02..14.04 (US-14.04..US-14.11); registro y versionado de skills FEAT-15.01 (US-15.01, US-15.03); distribución FEAT-15.02 (US-15.04..US-15.07); catálogo FEAT-15.03 (US-15.08..US-15.12). ACM como *cliente* MCP (US-14.01..14.03) es POST-MVP.
 
 ## Principio
 El servidor MCP **es ACM**: los agentes IA se conectan a él para operar sobre los proyectos. Al conectarse, reciben las instrucciones y las skills necesarias para usar ACM correctamente.
@@ -79,5 +79,15 @@ Todas las de proyecto exigen `project_id` y lo devuelven. Cualquier rol del proy
 | `acm_feature_create` / `_split` | `epic_id`, `title` / `feature_id`, `parts` (≥2, cada historia en una sola parte) | INVALID_ARGUMENT, NOT_FOUND, FAILED_PRECONDITION | US-04.02 |
 | `acm_story_create` / `_add_criteria` / `_get` / `_mark_ready` | `feature_id`, `as_a`, `i_want`, `so_that`, `requirement_ids` (≥1), `acceptance_criteria?`, `kind`, `technical_reason` | INVALID_ARGUMENT, NOT_FOUND, FAILED_PRECONDITION (lista de huecos) | US-04.03 |
 | `acm_backlog_audit` | — | NOT_FOUND | US-03.03, US-04.03 |
+
+## Herramientas añadidas en SPRINT-003 (2026-09-30) — segundo cerebro
+
+| Herramienta | Argumentos | Devuelve | Errores | Historia |
+|-------------|------------|----------|---------|----------|
+| `acm_decide` | `project_id`, `purpose`, `questions` ({clave: {type, instructions, criteria}}), `state` | `answers` tipadas (`value`, `probabilities`, `confidence`, `calibrated`), `engine`, `usage`, `fallback_from`, `call_id` | INVALID_ARGUMENT, NOT_FOUND, ENGINE_UNAVAILABLE | US-35.10 |
+| `acm_context_compact` | `project_id`, `story_id`, `budget_tokens?` (64..200000; por defecto `context.max_tokens`) | `sections` con `sources`, `delivered_tokens`, `full_equivalent_tokens`, `saved_tokens`, `estimation_method`, `summarized`, `not_summarized_reason`, `delivery_id` | INVALID_ARGUMENT, NOT_FOUND | US-35.08 |
+| `acm_engines_list` | — | motores (estado, modelos detectados, `registered`) y catálogo de reglas | — | US-47.01, US-22.01 |
+| `acm_engines_refresh` | — | motores tras comprobar su salud | FORBIDDEN (no admin) | US-22.01 |
+| `acm_savings_report` | `principal_id?`, `project_id?` | grupos por agente/proyecto/método y totales | FORBIDDEN (no admin), INVALID_ARGUMENT | US-35.09 |
 
 Extensión Skills: `skills/list` y `skills/get` (`-32602` si la skill no existe); archivos en `skill://acm/{skill}/{filename}` (una skill retirada deja de ser legible). Capacidad declarada: `extensions["io.modelcontextprotocol/skills"] = {"directoryRead": false}`.

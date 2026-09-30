@@ -8,6 +8,7 @@
 | SQLite | 3.45.1 |
 | Gestor de entornos | `uv` (`/root/.local/bin/uv`) |
 | Entorno de spikes | `spikes/.venv` (ignorado por Git; ver `spikes/README.md`) |
+| Ollama / modelos | **No disponibles**: `registry.ollama.ai`, `ollama.com` y `huggingface.co` devuelven 403 en el proxy (IMP-004) |
 
 Producción / despliegue: MISSING (sin definir; EPIC-18/CI-CD).
 
@@ -18,5 +19,6 @@ Producción / despliegue: MISSING (sin definir; EPIC-18/CI-CD).
 | `ACM_PRINCIPAL` | `local-admin` | Identidad del llamante hasta EPIC-20 (se da de alta como admin) |
 | `ACM_HOST` / `ACM_PORT` | `127.0.0.1` / `8765` | Escucha de `acm serve` |
 | `ACM_SQLITE_SYNCHRONOUS` | `FULL` | Durabilidad de la base global (ADR-013) |
+| `ACM_OLLAMA_URL` / `ACM_OLLAMA_MODEL` | sin valor | Motor de generación Ollama (EPIC-22). Deben ir juntos; sin ellos, solo reglas |
 
 Comandos: `acm serve`, `acm mcp-stdio` (ver `/README.md`).

@@ -1,8 +1,8 @@
-# Bases de datos (SPRINT-001; v2 en SPRINT-002, 2026-09-30)
+# Bases de datos (SPRINT-001; v2 en SPRINT-002; global v3 en SPRINT-003, 2026-09-30)
 
 | Base | Ruta | Motor | Propósito | Esquema | Migraciones |
 |------|------|-------|-----------|---------|-------------|
-| Global | `<ACM_DATA_DIR>/acm.db` | SQLite 3 (WAL) | Principales, registro de proyectos, pertenencias, auditoría MCP | `acm.db.schema.GLOBAL` v2 | `schema_migrations` |
+| Global | `<ACM_DATA_DIR>/acm.db` | SQLite 3 (WAL) | Principales, registro de proyectos, pertenencias, auditoría MCP, motores y llamadas de inferencia, entregas de contexto | `acm.db.schema.GLOBAL` v3 | `schema_migrations` |
 | Proyecto | `<ACM_DATA_DIR>/projects/<project_id>/project.db` | SQLite 3 (WAL) | Metadatos y configuración del proyecto y backlog (y, en el futuro, todo su estado: ADR-011) | `acm.db.schema.PROJECT` v2 | `schema_migrations` |
 
 ## Esquema global v1
@@ -22,6 +22,15 @@
 | Tabla | Columnas | Restricciones / índices |
 |-------|----------|-------------------------|
 | `mcp_audit` | `id`, `ts`, `principal`, `operation`, `project_id`, `arguments_json`, `status`, `error`, `result_json`, `result_truncated`, `duration_ms` | `status IN ('ok','error')`; índices por `(principal, id)` y `(project_id, id)`. Retención: sin política (MISSING, EPIC-44). Secretos en argumentos: sin redacción (EPIC-44) |
+
+## Esquema global v3 (SPRINT-003)
+| Tabla | Uso | Restricciones |
+|-------|-----|---------------|
+| `inference_engines` | Motores registrados: nombre, tipo, proveedor, endpoint, último estado, detalle, modelos detectados, fecha | PK `name`; `kind IN ('decision','generation')`; `status IN ('unknown','ok','error')` |
+| `inference_calls` | Cada llamada de inferencia: principal, proyecto, tipo, propósito, motor, `fallback_from`, estado, error, duración, tokens | `status IN ('ok','error')`; índice `(project_id, id)` |
+| `context_deliveries` | Cada entrega de contexto compacto: principal, proyecto, historia, tokens entregados y equivalente completo, método, si se resumió, motor | tokens ≥ 0; índice `(principal, project_id)` |
+
+Retención de `inference_calls` y `context_deliveries`: sin política (MISSING, EPIC-44).
 
 ## Esquema de proyecto v2 (SPRINT-002)
 | Tabla | Uso | Restricciones |

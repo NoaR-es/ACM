@@ -46,3 +46,19 @@
 - Al redactar un refinamiento, contrastar cada garantía con el diseño real antes de escribirla.
 - Automatizar las mutaciones (sigue pendiente de SPRINT-001) y limitarlas con un timeout que las marque como inválidas, no como detectadas.
 - Comprobar la CI después de cada push, incluidos los commits solo de documentación.
+
+## SPRINT-003 (2026-09-30)
+**Bien**
+- Se comprobó el entorno (acceso a Ollama y a modelos) antes de fijar el alcance, y las historias de Ollama quedaron IMPLEMENTED, no VERIFIED, al no poder probarse contra una instancia real.
+- El Ollama simulado es un servidor HTTP real: cubre errores de conexión, HTTP 404/500 y respuestas incompletas.
+- Las mutaciones marcan ahora un timeout como INVALID, no como detección (acción de SPRINT-002).
+- Se vio en la matriz que citar un test como "CA-01 parcial" habría marcado CA-01 como PASS; se cambió la cita para que quede PENDIENTE.
+
+**Mal**
+- Un primer borrador del router extraía el nombre del motor separando por `:`, lo que rompía `ollama:<modelo>`. Se detectó al revisar el código, antes de los tests.
+- El cliente HTTP de Ollama no se cerraba al apagar ACM; se corrigió en el mismo sprint.
+- Los tests async del nuevo archivo mixto fallaron por no llevar la marca `anyio`.
+
+**Acciones**
+- Ejecutar SPIKE-005 en una máquina con Ollama (operador) antes de construir `OllamaDecisionEngine`.
+- Automatizar las mutaciones (sigue pendiente).

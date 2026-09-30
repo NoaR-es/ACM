@@ -59,6 +59,54 @@ GLOBAL: tuple[Migration, ...] = (
             "CREATE INDEX idx_mcp_audit_project ON mcp_audit(project_id, id)",
         ),
     ),
+    Migration(
+        3,
+        "inference",
+        (
+            # US-47.01 / US-22.01: motores registrados y su último estado de salud (modelos detectados, no supuestos)
+            """CREATE TABLE inference_engines (
+            name TEXT PRIMARY KEY,
+            kind TEXT NOT NULL CHECK (kind IN ('decision', 'generation')),
+            provider TEXT NOT NULL,
+            endpoint TEXT NOT NULL DEFAULT '',
+            status TEXT NOT NULL CHECK (status IN ('unknown', 'ok', 'error')),
+            detail TEXT NOT NULL DEFAULT '',
+            models_json TEXT NOT NULL DEFAULT '[]',
+            checked_at TEXT
+        )""",
+            # US-35.10 CA-02 / US-22.03 CA-02: cada llamada de inferencia con su motor y su resultado
+            """CREATE TABLE inference_calls (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ts TEXT NOT NULL,
+            principal TEXT NOT NULL,
+            project_id TEXT NOT NULL,
+            kind TEXT NOT NULL CHECK (kind IN ('decision', 'generation')),
+            purpose TEXT NOT NULL,
+            engine TEXT NOT NULL DEFAULT '',
+            fallback_from TEXT,
+            status TEXT NOT NULL CHECK (status IN ('ok', 'error')),
+            error TEXT NOT NULL DEFAULT '',
+            duration_ms REAL NOT NULL,
+            input_tokens INTEGER,
+            output_tokens INTEGER
+        )""",
+            "CREATE INDEX idx_inference_calls_project ON inference_calls(project_id, id)",
+            # US-35.09: cada entrega de contexto con el tamaño entregado y el equivalente completo
+            """CREATE TABLE context_deliveries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ts TEXT NOT NULL,
+            principal TEXT NOT NULL,
+            project_id TEXT NOT NULL,
+            story_id TEXT NOT NULL,
+            delivered_tokens INTEGER NOT NULL CHECK (delivered_tokens >= 0),
+            full_tokens INTEGER NOT NULL CHECK (full_tokens >= 0),
+            method TEXT NOT NULL,
+            summarized INTEGER NOT NULL CHECK (summarized IN (0, 1)),
+            engine TEXT NOT NULL DEFAULT ''
+        )""",
+            "CREATE INDEX idx_context_deliveries_principal ON context_deliveries(principal, project_id)",
+        ),
+    ),
 )
 
 PROJECT: tuple[Migration, ...] = (

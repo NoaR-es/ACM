@@ -1,3 +1,7 @@
 # Bloqueos
 
-Ver `02_AGILE/impediments.md`: ninguno abierto (IMP-001..003 cerrados). IMP-001 cerrado (ADR-005), IMP-002 cerrado (ADR-006).
+| ID | Bloquea | Detalle | Estado |
+|----|---------|---------|--------|
+| IMP-004 | SPIKE-005; verificación real de US-22.01 y US-22.03 | Sin acceso a Ollama ni a modelos desde el entorno cloud (403). Ver `02_AGILE/impediments.md` | OPEN |
+
+IMP-001..003 cerrados (ADR-005, ADR-006, ADR-011/012).

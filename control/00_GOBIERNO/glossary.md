@@ -22,7 +22,6 @@
 | Snapshot | Estado coordinado SQLite + Git restaurable (EPIC-12). |
 | DocuTwin | Documentación viva sincronizada con el sistema real (EPIC-25). |
 | Historia técnica (TECH-NNN) | Trabajo técnico transversal necesario para el producto (no es deuda). |
-| TD-NNN | Deuda técnica registrada. |
 | GAP-NNN | Hueco/inconsistencia detectado en el sistema de control o backlog. |
 | MVP / POST-MVP | Clasificación de alcance (ADR-010). |
 | Fuente A / Fuente B | A = `backlog_completo_v1.md` (columna vertebral del backlog); B = `product_definition_v3.md` (definición v1.2). ADR-010. |
@@ -46,4 +45,10 @@
 | Extensión Skills | Extensión MCP `io.modelcontextprotocol/skills` (SEP-2640): métodos `skills/list` y `skills/get`, archivos como recursos `skill://`. |
 | Digest | `sha256:<hex>` del contenido de un archivo de skill; cambia solo si cambia el contenido (US-15.06). |
 | Auditoría MCP | Registro en `mcp_audit` de cada invocación: principal, operación, argumentos, estado, error, resultado (truncado) y duración. |
+| Motor de decisión | Implementación del puerto `DecisionEngine` (reglas, Ollama, JEV). Responde preguntas `noul`, `choice` o `score`. |
+| Router de inferencia | `EngineRouter`: elige motor según `decision.engine_order`, aplica fallback y registra cada llamada. Los consumidores solo hablan con él. |
+| Calibrado | Respuesta cuyas probabilidades son reales (reglas exactas, JEV). La de un LLM generativo no lo es: un gate no la acepta. |
+| purpose | Para qué se pide una decisión o generación (p. ej. `story.quality`, `context.compact`); sirve para enrutar y auditar. |
+| Contexto compacto | Contexto de una historia por secciones con fuentes, resumido si supera el presupuesto (US-35.08). |
+| chars/4@v1 | Método versionado de estimación de tokens: ⌈caracteres / 4⌉ del JSON entregado (US-35.09). |
 | TD-NNN | Deuda técnica detectada durante el desarrollo (`13_BUGS/known_issues.md`); distinta de las historias TECH-NNN del backlog. |

@@ -2,7 +2,7 @@
 
 # User Stories (backlog unificado)
 
-Total activas: **479** · Con criterios de aceptación: **151** · Sin criterios: **328** · Posibles solapamientos señalados: **35**
+Total activas: **478** · Con criterios de aceptación: **151** · Sin criterios: **327** · Posibles solapamientos señalados: **34**
 
 > READY exige la cadena completa de la *Regla de aceptación del backlog* (fuente A): precondiciones, flujo,
 > alternativas, errores, reglas, validaciones, casos límite, CA, tareas y pruebas. Se documenta en
@@ -2020,7 +2020,9 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-22.01 — Detectar modelos disponibles
 
 - **Como** sistema **quiero** consultar los modelos disponibles **para** seleccionar un modelo compatible con una tarea.
-- Origen: A:US-22.01 · Épica: EPIC-22 · Feature: FEAT-22.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-22.01 · Épica: EPIC-22 · Feature: FEAT-22.01 · Alcance: MVP · Prioridad: P1 · Estado: IMPLEMENTED · Sprint: SPRINT-003
+- Absorbe a: US-22.05
+- Refinamiento: `refinements/US-22.01.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Se consulta el runtime configurado.
   - [ ] CA-02: Los modelos detectados se identifican.
@@ -2039,7 +2041,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-22.03 — Ejecutar inferencia local
 
 - **Como** agente IA **quiero** utilizar un modelo local **para** ejecutar tareas sin depender necesariamente de un proveedor cloud.
-- Origen: A:US-22.03 · Épica: EPIC-22 · Feature: FEAT-22.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-22.03 · Épica: EPIC-22 · Feature: FEAT-22.01 · Alcance: MVP · Prioridad: P1 · Estado: IMPLEMENTED · Sprint: SPRINT-003
+- Refinamiento: `refinements/US-22.03.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: La petición llega al modelo configurado.
   - [ ] CA-02: La respuesta queda vinculada a la ejecución.
@@ -2057,8 +2060,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-22.05
 
 - Enunciado: Como sistema quiero detectar modelos disponibles en Ollama.
-- Origen: B:US-23.02 · Épica: EPIC-22 · Feature: FEAT-22.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- ⚠ Posible solapamiento con US-22.01: revisar si es duplicado, detalle o historia distinta (GAP-006)
+- Origen: B:US-23.02 · Épica: EPIC-22 · Feature: FEAT-22.02 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-22.01 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 ### FEAT-22.03 — Selección · origen B:FEAT-23.02
@@ -3093,7 +3096,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-35.08
 
 - Enunciado: Como agente IA quiero pedir a ACM un contexto compacto de una tarea, resumido con un modelo local, para gastar menos tokens propios.
-- Origen: B:US-43.06 · Épica: EPIC-35 · Feature: FEAT-35.05 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-43.06 · Épica: EPIC-35 · Feature: FEAT-35.05 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-003
+- Refinamiento: `refinements/US-35.08.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: La respuesta indica el tamaño estimado en tokens del contexto entregado y del contexto completo equivalente.
   - [ ] CA-02: Cada fragmento resumido identifica sus fuentes.
@@ -3102,7 +3106,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-35.09
 
 - Enunciado: Como operador quiero conocer cuántos tokens ha ahorrado ACM a cada agente para medir el valor del segundo cerebro.
-- Origen: B:US-43.07 · Épica: EPIC-35 · Feature: FEAT-35.05 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-43.07 · Épica: EPIC-35 · Feature: FEAT-35.05 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-003
+- Refinamiento: `refinements/US-35.09.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Cada entrega de contexto registra el tamaño entregado y la estimación del contexto completo equivalente.
   - [ ] CA-02: El ahorro puede consultarse agregado por agente y por proyecto.
@@ -3113,7 +3118,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-35.10
 
 - Enunciado: Como agente IA quiero delegar en ACM decisiones tipadas (clasificar, puntuar, sí/no) para no consumir mis tokens en ellas.
-- Origen: B:US-43.08 · Épica: EPIC-35 · Feature: FEAT-35.06 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-43.08 · Épica: EPIC-35 · Feature: FEAT-35.06 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-003
+- Refinamiento: `refinements/US-35.10.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: La respuesta es tipada e incluye la probabilidad o confianza de cada opción.
   - [ ] CA-02: Queda registrado qué motor produjo la decisión.
@@ -3122,7 +3128,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-35.11
 
 - Enunciado: Como arquitecto quiero que todos los componentes de ACM que toman decisiones lo hagan a través de una interfaz de decisión común para poder conectar JEV sin rediseñar el sistema.
-- Origen: B:US-43.09 · Épica: EPIC-35 · Feature: FEAT-35.06 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-43.09 · Épica: EPIC-35 · Feature: FEAT-35.06 · Alcance: MVP · Prioridad: P1 · Estado: IMPLEMENTED · Sprint: SPRINT-003
+- Refinamiento: `refinements/US-35.11.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Watchdog, gates y router consumen la misma interfaz de decisión.
   - [ ] CA-02: Existe una implementación sin modelo (reglas deterministas) que funciona sin JEV.
@@ -3743,7 +3750,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-47.01 — Modelar recursos de ejecución abstractos
 
 - **Como** arquitectura **quiero** abstraer recursos de ejecución **para** poder evolucionar hacia un entorno JEV sin rediseñar todo el sistema.
-- Origen: A:US-47.01 · Épica: EPIC-47 · Feature: FEAT-47.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-47.01 · Épica: EPIC-47 · Feature: FEAT-47.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-003
+- Refinamiento: `refinements/US-47.01.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Las tareas no dependen innecesariamente de una implementación concreta.
   - [ ] CA-02: Los recursos de ejecución tienen interfaz abstracta.

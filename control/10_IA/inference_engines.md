@@ -1,6 +1,8 @@
 # Motores de inferencia
 
-> Los consumidores del núcleo acceden a estos motores solo a través de las interfaces de `04_ARQUITECTURA/inference_ports.md` (ADR-015).
+> Los consumidores del núcleo acceden a estos motores solo a través de las interfaces de `04_ARQUITECTURA/inference_ports.md` (ADR-015, ADR-016).
+>
+> Implementado en SPRINT-003: `RulesDecisionEngine` y `OllamaGenerationEngine` (`src/acm/inference/`). Registro de modelos: `model_registry.md`.
 
 Estado: **PLANNED** — ninguno integrado ni probado en este entorno. Información de fuentes públicas consultadas el 2026-09-30.
 

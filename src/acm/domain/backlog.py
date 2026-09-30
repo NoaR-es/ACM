@@ -18,6 +18,22 @@ from typing import Any
 
 from acm.domain.errors import AlreadyExists, FailedPrecondition, Forbidden, InvalidArgument, NotFound
 from acm.domain.projects import ProjectService
+from acm.inference.ports import DecisionRequest, Question
+from acm.inference.router import EngineRouter, require_calibrated
+
+# Gate READY (US-04.03 CA-04) expresado como preguntas `noul` de la interfaz de decisión (US-35.11).
+READY_GATE_QUESTIONS: dict[str, Question] = {
+    "has_statement": Question("noul", "¿Tiene rol, objetivo y beneficio?"),
+    "has_requirements": Question("noul", "¿Enlaza algún requisito de origen?"),
+    "has_acceptance_criteria": Question("noul", "¿Tiene criterios de aceptación?"),
+    "technical_reason_ok": Question("noul", "Si es técnica, ¿declara su razón?"),
+}
+READY_GATE_GAPS = {
+    "has_statement": "falta rol, objetivo o beneficio (as_a, i_want, so_that)",
+    "has_requirements": "sin requisito de origen",
+    "has_acceptance_criteria": "sin criterios de aceptación",
+    "technical_reason_ok": "tarea técnica sin razón explícita",
+}
 
 REQ_RE = re.compile(r"^REQ-(\d{3,})$")
 EPIC_RE = re.compile(r"^EPIC-(\d{2,})$")
@@ -59,8 +75,10 @@ def _num(n: int) -> str:
 
 
 class BacklogService:
-    def __init__(self, projects: ProjectService):
+    def __init__(self, projects: ProjectService, decisions: EngineRouter | None = None):
         self.projects = projects
+        # El gate READY decide a través de la interfaz de decisión común (US-35.11 CA-01), nunca de un motor concreto.
+        self.decisions = decisions if decisions is not None else EngineRouter(projects)
 
     # ---------------------------------------------------------------- acceso
     def _db(self, principal: str, project_id: str, *, write: bool = False):
@@ -423,27 +441,29 @@ class BacklogService:
         with self._db(principal, project_id).read() as conn:
             return {"project_id": project_id, **self._story(conn, story_id)}
 
-    @staticmethod
-    def readiness_gaps(story: dict[str, Any]) -> list[str]:
-        gaps = [f"falta {f}" for f in ("as_a", "i_want", "so_that") if not story[f].strip()]
-        if not story["requirement_ids"]:
-            gaps.append("sin requisito de origen")
-        if not story["acceptance_criteria"]:
-            gaps.append("sin criterios de aceptación")
-        if story["kind"] == "technical" and not story["technical_reason"].strip():
-            gaps.append("tarea técnica sin razón explícita")
-        return gaps
-
     def mark_ready(self, principal: str, project_id: str, story_id: str) -> dict[str, Any]:
-        """US-04.03 CA-04: una historia incompleta no puede pasar a READY."""
+        """US-04.03 CA-04: una historia incompleta no puede pasar a READY.
+
+        La comprobación se pide al router de decisión (`story.quality`); con el orden por defecto la responde el motor
+        de reglas. El gate solo acepta respuestas calibradas y no retiene el bloqueo de escritura mientras se decide:
+        si la historia cambia entre la decisión y la escritura, se rechaza y hay que reintentar.
+        """
         db = self._db(principal, project_id, write=True)
-        with db.write() as conn:
+        with db.read() as conn:
             story = self._story(conn, story_id)
-            if story["status"] != "PLANNED":
-                raise FailedPrecondition(f"{story_id} está en {story['status']}; solo PLANNED puede pasar a READY")
-            gaps = self.readiness_gaps(story)
-            if gaps:
-                raise FailedPrecondition(f"{story_id} no puede pasar a READY: {'; '.join(gaps)}")
+        if story["status"] != "PLANNED":
+            raise FailedPrecondition(f"{story_id} está en {story['status']}; solo PLANNED puede pasar a READY")
+        request = DecisionRequest(
+            state=story, questions=READY_GATE_QUESTIONS, purpose="story.quality", project_id=project_id
+        )
+        result = self.decisions.decide(principal, request).result
+        require_calibrated(result, "gate READY")
+        gaps = [READY_GATE_GAPS[k] for k in READY_GATE_QUESTIONS if float(result.answers[k].value) < 0.5]
+        if gaps:
+            raise FailedPrecondition(f"{story_id} no puede pasar a READY: {'; '.join(gaps)}")
+        with db.write() as conn:
+            if self._story(conn, story_id) != story:
+                raise FailedPrecondition(f"{story_id} cambió mientras se validaba; vuelve a intentarlo")
             conn.execute("UPDATE stories SET status = 'READY', updated_at = ? WHERE id = ?", (_now(), story_id))
         return self.get_story(principal, project_id, story_id)
 

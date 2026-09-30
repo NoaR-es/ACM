@@ -17,3 +17,4 @@
 | 2026-09-30 | TASK-000-13 | Interfaces de inferencia DecisionEngine/GenerationEngine, preparadas para JEV | `04_ARQUITECTURA/inference_ports.md`, ADR-015 | VERIFIED |
 | 2026-09-30 | SPRINT-001 | Esqueleto Python de ACM y núcleo de proyectos: US-01.01, 01.03, 01.06, 18.01, 18.02, 18.03 (VERIFIED), US-01.02 (IMPLEMENTED) | 50 tests PASS, `12_TESTING/sprint_001_evidence.md` | VERIFIED |
 | 2026-09-30 | SPRINT-002 | Skills y backlog por MCP: 20 historias VERIFIED (US-03.03, 04.01..03, 14.04..07, 14.09..11, 15.01, 15.04..10, 24.01), US-24.03 IMPLEMENTED | 122 tests PASS, `12_TESTING/sprint_002_evidence.md` | VERIFIED |
+| 2026-09-30 | SPRINT-003 | Segundo cerebro: US-35.08, 35.09, 35.10, 47.01 VERIFIED; US-35.11, 22.01, 22.03 IMPLEMENTED | 172 tests PASS, `12_TESTING/sprint_003_evidence.md` | VERIFIED |

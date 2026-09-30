@@ -283,3 +283,18 @@ Decisión: (c).
 Motivo: El adaptador JEV queda como una traducción 1:1 del contrato. Distinguir motores calibrados de no calibrados evita que el Watchdog bloquee por la "confianza" de un LLM generativo.
 Consecuencias: Hay que verificar en SPIKE-005 si Ollama ofrece log-probabilidades y salida estructurada fiable. La estimación de tokens ahorrados usa un método explícito y versionado (por defecto `chars/4`).
 Trade-offs: Más abstracción desde el principio; es el coste explícito que pide ADR-012.
+Nota (2026-09-30): las firmas `async` de §2 y §4 de `inference_ports.md` se sustituyen por síncronas en ADR-016; el resto de ADR-015 sigue vigente.
+
+## ADR-016 — Puertos de inferencia síncronos
+Fecha: 2026-09-30
+Estado: ACCEPTED
+Contexto: ADR-015 dibujó `DecisionEngine.decide` y `GenerationEngine.generate` como `async`. El dominio de ACM es síncrono (sqlite3) y la frontera MCP lo ejecuta en hilos de trabajo (ADR-013, ADR-014). El primer consumidor de la interfaz, el gate READY, es un método síncrono del dominio.
+Problema: Cómo llamar a los motores desde el dominio sin mezclar dos modelos de concurrencia.
+Alternativas consideradas:
+(a) puertos `async` y puentes `anyio.from_thread` en el dominio;
+(b) dominio `async` completo;
+(c) puertos síncronos, ejecutados como el resto del dominio en hilos de trabajo.
+Decisión: (c). Los adaptadores HTTP (Ollama; JEV en EPIC-50) usan un cliente síncrono (`httpx.Client`).
+Motivo: Un único modelo de concurrencia. El coste de un hilo por llamada es irrelevante frente a la latencia de un modelo, y (b) sería reescribir la capa de datos.
+Consecuencias: Una inferencia larga ocupa un hilo del pool de anyio (40 por defecto). El gate READY no retiene el bloqueo de escritura mientras decide: relee la historia y rechaza si cambió.
+Trade-offs: Si en el futuro hay muchas inferencias concurrentes, habrá que dimensionar el pool o pasar a (a); lo medirá SPIKE-005.

@@ -31,6 +31,8 @@ BACKLOG_TOOLS = {
     "acm_story_get",
     "acm_story_mark_ready",
     "acm_backlog_audit",
+    "acm_decide",
+    "acm_context_compact",
 }
 GLOBAL_TOOLS = {
     "acm_project_create",
@@ -40,6 +42,9 @@ GLOBAL_TOOLS = {
     "acm_skills_list",
     "acm_skill_get",
     "acm_skills_reload",
+    "acm_engines_list",
+    "acm_engines_refresh",
+    "acm_savings_report",
 }
 
 

@@ -22,4 +22,7 @@ python3 control/tools/derive_backlog.py --check   # integridad del backlog
 .venv/bin/acm mcp-stdio --data-dir ./.acm-data    # MCP por stdio para agentes locales
 ```
 
+Modelo local opcional (Ollama) para resumir el contexto: `ACM_OLLAMA_URL=http://127.0.0.1:11434 ACM_OLLAMA_MODEL=<modelo instalado>`.
+Sin él, ACM funciona con su motor de reglas y entrega el contexto sin resumir.
+
 Sin autenticación hasta EPIC-20: por defecto solo escucha en 127.0.0.1 y el principal es `ACM_PRINCIPAL` (por defecto `local-admin`).

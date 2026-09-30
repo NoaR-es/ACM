@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "acm"
-version = "0.2.0.dev0"
+version = "0.3.0.dev0"
 description = "Agile Context Manager: memoria de estado, gobernanza y trazabilidad Agile para agentes IA, servida por MCP."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -14,12 +14,12 @@ dependencies = [
     "fastapi==0.142.2",    # ADR-014
     "uvicorn==0.54.0",     # ADR-014
     "anyio>=4.15,<5",      # ADR-013: sqlite3 en hilos de trabajo
+    "httpx==0.28.1",       # EPIC-22: cliente HTTP de Ollama (ya lo traía mcp; ahora dependencia explícita)
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest==9.1.1",
-    "httpx==0.28.1",
     "ruff==0.16.9",
 ]
 

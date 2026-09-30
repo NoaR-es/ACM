@@ -47,7 +47,7 @@
 | SPIKE-002 | Arquitectura MCP multi-proyecto | Determinar aislamiento óptimo entre proyectos y sesiones. | VERIFIED |
 | SPIKE-003 | ChromaDB | Evaluar persistencia, aislamiento y rendimiento. | PLANNED |
 | SPIKE-004 | RAG híbrido | Evaluar combinación SQL + vector + reranking. | PLANNED |
-| SPIKE-005 | Ollama multiagente | Evaluar gestión de múltiples inferencias concurrentes. | PLANNED |
+| SPIKE-005 | Ollama multiagente | Evaluar gestión de múltiples inferencias concurrentes. | BLOCKED |
 | SPIKE-006 | JEV | Definir contrato real de integración. | PLANNED |
 | SPIKE-007 | Sandbox | Determinar tecnología de aislamiento. | PLANNED |
 | SPIKE-008 | Snapshots | Determinar estrategia incremental y restauración consistente. | PLANNED |

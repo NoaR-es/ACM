@@ -1,15 +1,15 @@
-TASK: none (SPRINT-002 entregado)
+TASK: none (SPRINT-003 entregado)
 STORY: —
-SPRINT: SPRINT-002
+SPRINT: SPRINT-003
 
 NEXT CANDIDATES:
-Planificar SPRINT-003 (ver 03_ESTADO/pending_work.md)
+Planificar SPRINT-004 (ver 03_ESTADO/pending_work.md)
 
 RELEVANT DOCUMENTS:
 02_AGILE/sprint.md
-12_TESTING/sprint_002_evidence.md
-05_CODIGO/modules.md
-06_API/mcp_server.md
+12_TESTING/sprint_003_evidence.md
+04_ARQUITECTURA/inference_ports.md
+10_IA/model_registry.md
 
 FILES AFFECTED: —
 

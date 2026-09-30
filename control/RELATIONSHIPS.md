@@ -149,5 +149,20 @@ SPRINT-002
 ├── TASK-002-05 → tools/evidence.py → 12_TESTING/sprint_002_evidence.md
 └── BUG-001 → src/acm/db/connection.py (_enable_wal) → tests/test_db.py::test_bug001_apertura_concurrente_de_base_nueva; afecta a US-18.01, US-18.03
 
+SPRINT-003
+├── US-35.08 → domain/context.py (compact, _summarize), mcp_server.py (acm_context_compact) → tests/test_context.py::test_us3508_*
+├── US-35.09 → domain/context.py (savings_report), db/schema.py (context_deliveries), acm_savings_report → tests/test_context.py::test_us3509_*
+├── US-35.10 → inference/ports.py, inference/router.py (decide, _log), acm_decide → tests/test_inference.py::test_us3510_*
+├── US-35.11 → domain/backlog.py (mark_ready, READY_GATE_*), inference/rules.py, router.require_calibrated → tests/test_inference.py::test_us3511_*   [CA-01: Watchdog, EPIC-13]
+├── US-47.01 → inference/router.py (EngineRegistry), inference/ports.py → tests/test_inference.py::test_us4701_*
+├── US-22.01 → inference/ollama.py (list_models, health), app.build_engines, acm_engines_* → tests/test_inference.py::test_us2201_*   [IMP-004]
+├── US-22.03 → inference/ollama.py (generate), router.generate → tests/test_inference.py::test_us2203_*   [IMP-004]
+├── ADR-016 → inference/ports.py (firmas síncronas)
+├── PROMPT-001 → domain/context.py (_summarize) → 10_IA/prompts.md
+└── IMP-004 → SPIKE-005, US-22.01, US-22.03
+
+Código → historias: inference/** ← US-35.10, 35.11, 47.01, 22.01, 22.03, ADR-015/016 · context.py ← US-35.08/09, PROMPT-001 · backlog.py (gate) ← US-35.11
+Modelo IA → uso: rules → gate READY, acm_decide · ollama:<modelo> → PROMPT-001 (context.compact) · jev → EPIC-50 (pendiente)
+
 Código → historias: backlog.py ← US-03.03, 04.01..03, 24.01, 24.03 · audit.py ← US-14.10/11, TD-001 · skills_catalog.py ← US-15.01, 15.06, 15.07 · skills/** ← US-15.08..10 · mcp_server.py ← US-14.04..11, US-15.04..07
 ```

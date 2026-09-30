@@ -5,6 +5,7 @@
 - El servicio es síncrono (sqlite3): cada llamada se ejecuta en un hilo de trabajo (ADR-013).
 - Cada invocación (herramientas, `skills/*` y lectura de archivos de skills) se audita (US-14.10, US-14.11).
 - Extensión MCP Skills (SEP-2640) con el catálogo oficial de ACM (US-15.04..07).
+- Segundo cerebro: decisiones delegadas y contexto compacto a través del router de inferencia (EPIC-35, ADR-015).
 """
 
 from __future__ import annotations
@@ -27,8 +28,11 @@ from mcp_types.jsonrpc import INVALID_PARAMS
 from acm import __version__
 from acm.domain.audit import AuditService
 from acm.domain.backlog import BacklogService
+from acm.domain.context import ContextService
 from acm.domain.errors import AcmError, Forbidden
 from acm.domain.projects import ProjectService
+from acm.inference.ports import DecisionRequest
+from acm.inference.router import EngineRouter
 from acm.skills_catalog import SKILL_PREFIX, SkillCatalog
 
 T = TypeVar("T")
@@ -42,8 +46,11 @@ INSTRUCTIONS = (
     "- ACM no recuerda un 'proyecto activo': pasa SIEMPRE el parámetro project_id en cada herramienta de proyecto.\n"
     "- Obtén los project_id disponibles con acm_project_list; crea uno nuevo con acm_project_create.\n"
     "- Cada respuesta repite el project_id sobre el que actuó: compruébalo.\n"
+    "- Ahorra tokens: pide el contexto de una historia con acm_context_compact y delega decisiones tipadas "
+    "(sí/no, clasificar, puntuar) con acm_decide.\n"
     "- Los errores empiezan por un código (INVALID_ARGUMENT, NOT_FOUND, ALREADY_EXISTS, FORBIDDEN, "
-    "FAILED_PRECONDITION, STORAGE_ERROR) seguido del motivo; corrige la llamada según el motivo."
+    "FAILED_PRECONDITION, STORAGE_ERROR, ENGINE_UNAVAILABLE, ENGINE_ERROR) seguido del motivo; "
+    "corrige la llamada según el motivo."
 )
 
 
@@ -56,14 +63,20 @@ class SkillsGetParams(RequestParams):
 
 
 def build_mcp_server(
-    service: ProjectService, principal: Callable[[], str], catalog: SkillCatalog | None = None
+    service: ProjectService,
+    principal: Callable[[], str],
+    catalog: SkillCatalog | None = None,
+    engines: EngineRouter | None = None,
 ) -> MCPServer:
     """Crea el servidor MCP.
 
     `principal` resuelve la identidad del llamante (SPRINT-001/002: configuración; EPIC-20: token verificado).
+    `engines` es el router de inferencia; por defecto, solo el motor de reglas (sin modelos).
     """
     catalog = catalog if catalog is not None else SkillCatalog()
-    backlog = BacklogService(service)
+    engines = engines if engines is not None else EngineRouter(service)
+    backlog = BacklogService(service, engines)
+    context = ContextService(service, backlog, engines)
     audit = AuditService(service)
     bus = InMemorySubscriptionBus()
 
@@ -436,5 +449,64 @@ def build_mcp_server(
         """Huecos de trazabilidad: requisitos huérfanos, épicas/features vacías, historias sin CA."""
         return await call("acm_backlog_audit", {"project_id": project_id}, backlog.audit, principal(), project_id)
 
+    # ------------------------------------------------------------------ segundo cerebro (EPIC-35)
+    @server.tool()
+    async def acm_decide(
+        project_id: str, purpose: str, questions: dict[str, Any], state: dict[str, Any] | str
+    ) -> dict[str, Any]:
+        """Delega una decisión tipada (noul = sí/no, choice = clasificar, score = puntuar) en el motor de decisión.
+
+        questions: {clave: {"type": "noul"|"choice"|"score", "instructions": str, "criteria": ...}}. Respuesta con
+        probabilidades, el motor que decidió (`engine`), `calibrated` y `fallback_from`. Ver skill acm-schema.
+        """
+        args = {"project_id": project_id, "purpose": purpose, "questions": questions, "state": state}
+
+        def decide() -> dict[str, Any]:
+            routed = engines.decide(principal(), DecisionRequest.from_json(project_id, purpose, state, questions))
+            return {"project_id": project_id, "call_id": routed.call_id, **routed.result.to_json()}
+
+        return await call("acm_decide", args, decide)
+
+    @server.tool()
+    async def acm_context_compact(project_id: str, story_id: str, budget_tokens: int | None = None) -> dict[str, Any]:
+        """Contexto compacto de una historia (historia, CA, requisitos, feature, épica, historias hermanas).
+
+        Cada sección lleva sus fuentes. Si supera `budget_tokens` (por defecto, context.max_tokens del proyecto) y hay
+        un modelo local, resume las secciones de apoyo. Indica tokens entregados, equivalente completo y método.
+        """
+        args = {"project_id": project_id, "story_id": story_id, "budget_tokens": budget_tokens}
+        fn = partial(context.compact, principal(), project_id, story_id, budget_tokens)
+        return await call("acm_context_compact", args, fn)
+
+    @server.tool()
+    async def acm_engines_list() -> dict[str, Any]:
+        """Motores de inferencia registrados, su último estado, modelos detectados y preguntas que cubren las reglas."""
+
+        def listing() -> dict[str, Any]:
+            rules = next(e for e in engines.registry.decision if e.provider == "rules")
+            return {"engines": engines.registry.list(), "rules": rules.catalog()}  # type: ignore[attr-defined]
+
+        return await call("acm_engines_list", {}, listing)
+
+    @server.tool()
+    async def acm_engines_refresh() -> dict[str, Any]:
+        """(admin) Comprueba la salud de cada motor y detecta los modelos disponibles en su runtime."""
+
+        def refresh() -> dict[str, Any]:
+            with service.global_db.read() as conn:
+                if service._principal_role(conn, principal()) != "admin":
+                    raise Forbidden("solo un admin puede refrescar los motores de inferencia")
+            return {"engines": engines.registry.refresh()}
+
+        return await call("acm_engines_refresh", {}, refresh)
+
+    @server.tool()
+    async def acm_savings_report(principal_id: str | None = None, project_id: str | None = None) -> dict[str, Any]:
+        """(admin) Tokens ahorrados por el contexto compacto, agregados por agente y proyecto, con el método usado."""
+        args = {"principal_id": principal_id, "project_id": project_id}
+        fn = partial(context.savings_report, principal(), filter_principal=principal_id, project_id=project_id)
+        return await call("acm_savings_report", args, fn)
+
     server.acm_catalog = catalog  # type: ignore[attr-defined]
+    server.acm_engines = engines  # type: ignore[attr-defined]
     return server

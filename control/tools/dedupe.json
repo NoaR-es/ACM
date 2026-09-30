@@ -51,5 +51,9 @@
     "into": "US-01.06",
     "cross_epic": true,
     "reason": "B:US-15.05 'seleccionar explícitamente el proyecto' = US-01.06 (project_id explícito en cada herramienta, ADR-014)"
+  },
+  "US-22.05": {
+    "into": "US-22.01",
+    "reason": "B:US-23.02 'detectar modelos disponibles en Ollama' = A:US-22.01 'Detectar modelos disponibles' (el runtime configurado es Ollama)"
   }
 }
