@@ -176,5 +176,19 @@ SPRINT-004
 
 Código → historias: auth.py ← US-20.05, ADR-017 · identity.py ← US-20.01..04, 20.08 · audit.py (redact, token_id) ← US-20.03
 
+SPRINT-005
+├── US-13.03 → domain/watchdog.py (health), acm_health → tests/test_watchdog.py::test_us1303_*
+├── US-13.05 → watchdog.py (_integrity, _set_integrity), schema v5 projects.integrity_* → tests/test_watchdog.py::test_us1305_*
+├── US-13.06 → app.py (scheduled_watchdog), watchdog.py (run_all), config.py (ACM_WATCHDOG_INTERVAL_S) → tests/test_watchdog.py::test_us1306_*
+├── US-13.07 → watchdog.py (_story_quality) → EngineRouter (story.quality) → tests/test_watchdog.py::test_us1307_*
+├── US-13.10 → watchdog.py (semaphore, status), acm_governance_status → tests/test_watchdog.py::test_us1310_*
+├── US-13.11 → projects.py (ensure_writable) ← backlog.py (_db write), projects.py (set_config) → tests/test_watchdog.py::test_us1311_*, test_us1305_ca02_*
+├── US-13.12 → watchdog.py (run), acm_watchdog_run → tests/test_watchdog.py::test_us1312_*
+├── US-13.13 → watchdog.py (history), schema v5 watchdog_runs, acm_watchdog_history → tests/test_watchdog.py::test_us1313_*
+└── US-35.11 CA-01 → watchdog.py consume EngineRouter → tests/test_watchdog.py::test_us3511_ca01_watchdog_consume_la_interfaz
+
+Código → historias: watchdog.py ← US-13.03, 13.05..13.07, 13.10..13.13, US-35.11 · projects.ensure_writable ← US-13.11
+Modelo IA → uso: rules → gate READY, acm_decide, Watchdog (story.quality)
+
 Código → historias: backlog.py ← US-03.03, 04.01..03, 24.01, 24.03 · audit.py ← US-14.10/11, TD-001 · skills_catalog.py ← US-15.01, 15.06, 15.07 · skills/** ← US-15.08..10 · mcp_server.py ← US-14.04..11, US-15.04..07
 ```

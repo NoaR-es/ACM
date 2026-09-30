@@ -71,5 +71,9 @@
   "US-20.11": {
     "into": "US-20.03",
     "reason": "B:US-16.08 'registrar el uso de cada token' = A:US-20.03 CA-04"
+  },
+  "US-13.04": {
+    "into": "US-13.03",
+    "reason": "B:US-01.07 'comprobación de salud de la infraestructura ACM' = A:US-13.03 'Supervisar salud global'"
   }
 }

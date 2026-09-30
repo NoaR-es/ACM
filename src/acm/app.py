@@ -6,9 +6,11 @@
 from __future__ import annotations
 
 import contextlib
+import logging
 from collections.abc import AsyncIterator
 from typing import Any
 
+import anyio
 from fastapi import FastAPI
 from mcp.server.transport_security import TransportSecuritySettings
 
@@ -16,9 +18,11 @@ from acm import __version__
 from acm.auth import BearerAuth, request_principal, request_token
 from acm.config import Settings
 from acm.domain.audit import AuditService
+from acm.domain.backlog import BacklogService
 from acm.domain.errors import InvalidArgument
 from acm.domain.identity import IdentityService
 from acm.domain.projects import ProjectService
+from acm.domain.watchdog import WatchdogService
 from acm.inference.ollama import OllamaClient, OllamaGenerationEngine
 from acm.inference.router import EngineRouter
 from acm.mcp_server import build_mcp_server
@@ -42,6 +46,7 @@ def build_engines(service: ProjectService, settings: Settings) -> EngineRouter:
 
 
 LOCAL_HOSTS = ("127.0.0.1", "localhost", "[::1]")
+logger = logging.getLogger("acm")
 
 
 def transport_security(settings: Settings) -> TransportSecuritySettings:
@@ -56,6 +61,16 @@ def transport_security(settings: Settings) -> TransportSecuritySettings:
     return TransportSecuritySettings(enable_dns_rebinding_protection=True, allowed_hosts=hosts, allowed_origins=origins)
 
 
+async def scheduled_watchdog(watchdog: WatchdogService, settings: Settings) -> None:
+    """US-13.06: audita todos los proyectos cada `ACM_WATCHDOG_INTERVAL_S` segundos como el admin local."""
+    while True:
+        await anyio.sleep(settings.watchdog_interval_s)
+        try:
+            await anyio.to_thread.run_sync(watchdog.run_all, settings.principal)
+        except Exception:  # una ronda fallida no detiene el Watchdog; queda en el log del proceso
+            logger.exception("ronda periódica del Watchdog fallida")
+
+
 def create_app(settings: Settings) -> FastAPI:
     service = build_service(settings)
     engines = build_engines(service, settings)
@@ -67,11 +82,16 @@ def create_app(settings: Settings) -> FastAPI:
         AuditService(service),
     )
 
+    watchdog = WatchdogService(service, BacklogService(service, engines), engines)
+
     @contextlib.asynccontextmanager
     async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
         # El sub-app MCP montado no ejecuta su propio lifespan: el gestor de sesiones se arranca aquí (SPIKE-002).
-        async with mcp.session_manager.run():
+        async with mcp.session_manager.run(), anyio.create_task_group() as tg:
+            if settings.watchdog_interval_s > 0:
+                tg.start_soon(scheduled_watchdog, watchdog, settings)
             yield
+            tg.cancel_scope.cancel()
         engines.registry.close()
         service.close()
 

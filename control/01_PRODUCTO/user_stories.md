@@ -2,7 +2,7 @@
 
 # User Stories (backlog unificado)
 
-Total activas: **474** · Con criterios de aceptación: **154** · Sin criterios: **320** · Posibles solapamientos señalados: **32**
+Total activas: **473** · Con criterios de aceptación: **161** · Sin criterios: **312** · Posibles solapamientos señalados: **31**
 
 > READY exige la cadena completa de la *Regla de aceptación del backlog* (fuente A): precondiciones, flujo,
 > alternativas, errores, reglas, validaciones, casos límite, CA, tareas y pruebas. Se documenta en
@@ -1011,7 +1011,9 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-13.03 — Supervisar salud global
 
 - **Como** administrador **quiero** conocer el estado de los servicios y agentes **para** detectar problemas sistémicos.
-- Origen: A:US-13.03 · Épica: EPIC-13 · Feature: FEAT-13.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-13.03 · Épica: EPIC-13 · Feature: FEAT-13.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-005
+- Absorbe a: US-13.04
+- Refinamiento: `refinements/US-13.03.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Se muestran componentes relevantes.
   - [ ] CA-02: Cada componente tiene estado.
@@ -1023,29 +1025,41 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-13.04
 
 - Enunciado: Como operador quiero ejecutar una comprobación de salud para detectar problemas en la infraestructura ACM.
-- Origen: B:US-01.07 · Épica: EPIC-13 · Feature: FEAT-13.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- ⚠ Posible solapamiento con US-13.03: revisar si es duplicado, detalle o historia distinta (GAP-006)
+- Origen: B:US-01.07 · Épica: EPIC-13 · Feature: FEAT-13.02 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-13.03 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 #### US-13.05
 
 - Enunciado: Como Watchdog quiero detectar inconsistencias de SQLite, relaciones y triggers para impedir operar sobre un estado corrupto.
-- Origen: B:US-01.08 · Épica: EPIC-13 · Feature: FEAT-13.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-01.08 · Épica: EPIC-13 · Feature: FEAT-13.02 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-005
+- Refinamiento: `refinements/US-13.05.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Se detectan la corrupción física de la base y las relaciones rotas (claves foráneas). (definido en refinamiento)
+  - [ ] CA-02: Mientras exista la inconsistencia, ACM no opera sobre ese estado: rechaza las escrituras del proyecto. (definido en refinamiento)
+  - [ ] CA-03: Una vez reparada, una nueva auditoría lo detecta y vuelve a permitir las escrituras. (definido en refinamiento)
 
 ### FEAT-13.03 — Inspector · origen B:FEAT-10.01
 
 #### US-13.06
 
 - Enunciado: Como Watchdog quiero auditar continuamente la integridad del proyecto.
-- Origen: B:US-10.01 · Épica: EPIC-13 · Feature: FEAT-13.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-10.01 · Épica: EPIC-13 · Feature: FEAT-13.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-005
+- Refinamiento: `refinements/US-13.06.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: ACM audita todos los proyectos periódicamente, sin intervención. (definido en refinamiento)
+  - [ ] CA-02: Un proyecto con problemas no impide auditar los demás. (definido en refinamiento)
+  - [ ] CA-03: El intervalo es configurable y puede desactivarse. (definido en refinamiento)
 
 #### US-13.07
 
 - Enunciado: Como Watchdog quiero detectar historias sin criterios.
-- Origen: B:US-10.02 · Épica: EPIC-13 · Feature: FEAT-13.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-10.02 · Épica: EPIC-13 · Feature: FEAT-13.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-005
+- Refinamiento: `refinements/US-13.07.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Cada historia activa sin criterios de aceptación aparece como hallazgo con su identificador. (definido en refinamiento)
+  - [ ] CA-02: La evaluación se hace a través de la interfaz de decisión común y queda registrado qué motor la hizo. (definido en refinamiento)
+  - [ ] CA-03: Una historia completa no genera hallazgos. (definido en refinamiento)
 
 #### US-13.08
 
@@ -1064,28 +1078,45 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-13.10
 
 - Enunciado: Como operador quiero visualizar el estado de salud del proyecto mediante indicadores de gobernanza.
-- Origen: B:US-10.05 · Épica: EPIC-13 · Feature: FEAT-13.04 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-10.05 · Épica: EPIC-13 · Feature: FEAT-13.04 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-005
+- Refinamiento: `refinements/US-13.10.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: El semáforo es GREEN, AMBER o RED según reglas explícitas sobre la severidad de los hallazgos. (definido en refinamiento)
+  - [ ] CA-02: Se puede consultar el semáforo del proyecto con los recuentos por severidad de la última auditoría. (definido en refinamiento)
+  - [ ] CA-03: Un proyecto sin auditar lo indica (`UNKNOWN`) en lugar de aparentar estar bien. (definido en refinamiento)
 
 #### US-13.11
 
 - Enunciado: Como sistema quiero bloquear automáticamente operaciones que incumplan reglas críticas.
-- Origen: B:US-10.06 · Épica: EPIC-13 · Feature: FEAT-13.04 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-10.06 · Épica: EPIC-13 · Feature: FEAT-13.04 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-005
+- Refinamiento: `refinements/US-13.11.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Una escritura en un proyecto que incumple una regla crítica (integridad) se bloquea automáticamente. (definido en refinamiento)
+  - [ ] CA-02: El rechazo explica la causa y cómo levantar el bloqueo. (definido en refinamiento)
+  - [ ] CA-03: La operación bloqueada no deja efectos. (definido en refinamiento)
 
 ### FEAT-13.05 — Auditoría · origen B:FEAT-10.03
 
 #### US-13.12
 
 - Enunciado: Como operador quiero ejecutar una auditoría completa de gobernanza.
-- Origen: B:US-10.07 · Épica: EPIC-13 · Feature: FEAT-13.05 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-10.07 · Épica: EPIC-13 · Feature: FEAT-13.05 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-005
+- Refinamiento: `refinements/US-13.12.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: El operador puede lanzar una auditoría completa del proyecto por MCP. (definido en refinamiento)
+  - [ ] CA-02: La auditoría cubre integridad, calidad de las historias y estructura del backlog. (definido en refinamiento)
+  - [ ] CA-03: El resultado lista cada hallazgo con código, severidad, objetivo y mensaje. (definido en refinamiento)
 
 #### US-13.13
 
 - Enunciado: Como sistema quiero conservar el resultado histórico de las auditorías.
-- Origen: B:US-10.08 · Épica: EPIC-13 · Feature: FEAT-13.05 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-10.08 · Épica: EPIC-13 · Feature: FEAT-13.05 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-005
+- Refinamiento: `refinements/US-13.13.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Cada auditoría queda conservada. (definido en refinamiento)
+  - [ ] CA-02: El histórico se consulta por proyecto, de la más reciente a la más antigua. (definido en refinamiento)
+  - [ ] CA-03: Cada entrada incluye su semáforo y sus hallazgos. (definido en refinamiento)
+  - [ ] CA-04: Solo quien tiene acceso al proyecto consulta su histórico. (definido en refinamiento)
 
 ## EPIC-14 — MCP Y HERRAMIENTAS
 
@@ -3147,7 +3178,7 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-35.11
 
 - Enunciado: Como arquitecto quiero que todos los componentes de ACM que toman decisiones lo hagan a través de una interfaz de decisión común para poder conectar JEV sin rediseñar el sistema.
-- Origen: B:US-43.09 · Épica: EPIC-35 · Feature: FEAT-35.06 · Alcance: MVP · Prioridad: P1 · Estado: IMPLEMENTED · Sprint: SPRINT-003
+- Origen: B:US-43.09 · Épica: EPIC-35 · Feature: FEAT-35.06 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-003
 - Refinamiento: `refinements/US-35.11.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Watchdog, gates y router consumen la misma interfaz de decisión.

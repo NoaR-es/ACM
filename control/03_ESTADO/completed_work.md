@@ -19,3 +19,4 @@
 | 2026-09-30 | SPRINT-002 | Skills y backlog por MCP: 20 historias VERIFIED (US-03.03, 04.01..03, 14.04..07, 14.09..11, 15.01, 15.04..10, 24.01), US-24.03 IMPLEMENTED | 122 tests PASS, `12_TESTING/sprint_002_evidence.md` | VERIFIED |
 | 2026-09-30 | SPRINT-003 | Segundo cerebro: US-35.08, 35.09, 35.10, 47.01 VERIFIED; US-35.11, 22.01, 22.03 IMPLEMENTED | 172 tests PASS, `12_TESTING/sprint_003_evidence.md` | VERIFIED |
 | 2026-09-30 | SPRINT-004 | Autenticación y RBAC: US-20.01, 20.02, 20.03, 20.04, 20.05, 20.08 VERIFIED; VULN-001 y TD-002 resueltas | 198 tests PASS, `12_TESTING/sprint_004_evidence.md` | VERIFIED |
+| 2026-09-30 | SPRINT-005 | Watchdog de gobernanza: US-13.03, 13.05, 13.06, 13.07, 13.10..13.13 VERIFIED; US-35.11 VERIFIED | 220 tests PASS, `12_TESTING/sprint_005_evidence.md` | VERIFIED |

@@ -46,6 +46,9 @@
 | Extensión Skills | Extensión MCP `io.modelcontextprotocol/skills` (SEP-2640): métodos `skills/list` y `skills/get`, archivos como recursos `skill://`. |
 | Digest | `sha256:<hex>` del contenido de un archivo de skill; cambia solo si cambia el contenido (US-15.06). |
 | Auditoría MCP | Registro en `mcp_audit` de cada invocación: principal, operación, argumentos, estado, error, resultado (truncado) y duración. |
+| Watchdog | Servicio de ACM que audita cada proyecto: integridad SQLite, calidad de historias (vía el motor de decisión) y estructura; produce semáforo e histórico (EPIC-13). |
+| Semáforo | Resumen de una auditoría: RED (algún CRITICAL), AMBER (WARNING o REVIEW), GREEN; UNKNOWN si nunca se auditó. |
+| Cuarentena | Estado de un proyecto con la base dañada: se rechazan sus escrituras (`DATA_INTEGRITY`) hasta que una auditoría lo encuentre sano. |
 | Motor de decisión | Implementación del puerto `DecisionEngine` (reglas, Ollama, JEV). Responde preguntas `noul`, `choice` o `score`. |
 | Router de inferencia | `EngineRouter`: elige motor según `decision.engine_order`, aplica fallback y registra cada llamada. Los consumidores solo hablan con él. |
 | Calibrado | Respuesta cuyas probabilidades son reales (reglas exactas, JEV). La de un LLM generativo no lo es: un gate no la acepta. |

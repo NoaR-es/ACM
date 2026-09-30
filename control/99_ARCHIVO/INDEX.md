@@ -13,3 +13,4 @@
 | `historical/sprint_001.md` | HISTORICAL | SPRINT-002 | 2026-09-30 |
 | `historical/sprint_002.md` | HISTORICAL | SPRINT-003 | 2026-09-30 |
 | `historical/sprint_003.md` | HISTORICAL | SPRINT-004 | 2026-09-30 |
+| `historical/sprint_004.md` | HISTORICAL | SPRINT-005 | 2026-09-30 |

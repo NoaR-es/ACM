@@ -27,7 +27,8 @@
 │       ├── backlog.py             # BacklogService (EPIC-03/04, US-24.01/03)
 │       ├── audit.py               # AuditService (US-14.10/11)
 │       ├── identity.py            # IdentityService: principales, roles, tokens (EPIC-20)
-│       └── context.py             # ContextService: contexto compacto y ahorro (US-35.08/09)
+│       ├── context.py             # ContextService: contexto compacto y ahorro (US-35.08/09)
+│       └── watchdog.py            # WatchdogService: gobernanza e integridad (EPIC-13)
 ├── tests/                         # pytest: un test por CA (nombres test_usNNNN_caNN_*)
 ├── control/                       # Sistema de control (fuente de verdad del desarrollo)
 └── spikes/                        # Experimentos, no es producto

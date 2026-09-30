@@ -32,6 +32,7 @@ from acm.domain.context import ContextService
 from acm.domain.errors import AcmError, Forbidden
 from acm.domain.identity import IdentityService
 from acm.domain.projects import ProjectService
+from acm.domain.watchdog import WatchdogService
 from acm.inference.ports import DecisionRequest
 from acm.inference.router import EngineRouter
 from acm.skills_catalog import SKILL_PREFIX, SkillCatalog
@@ -80,6 +81,7 @@ def build_mcp_server(
     engines = engines if engines is not None else EngineRouter(service)
     backlog = BacklogService(service, engines)
     context = ContextService(service, backlog, engines)
+    watchdog = WatchdogService(service, backlog, engines)
     audit = AuditService(service)
     identity = IdentityService(service)
     bus = InMemorySubscriptionBus()
@@ -571,6 +573,31 @@ def build_mcp_server(
     async def acm_token_revoke(token_id: str) -> dict[str, Any]:
         """Revoca un token al instante (los tuyos; los ajenos, solo un admin)."""
         return await call("acm_token_revoke", {"token_id": token_id}, identity.revoke_token, principal(), token_id)
+
+    # ------------------------------------------------------------------ Watchdog (EPIC-13)
+    @server.tool()
+    async def acm_watchdog_run(project_id: str) -> dict[str, Any]:
+        """Auditoría de gobernanza del proyecto: integridad SQLite, calidad de historias (vía el motor de decisión) y
+        estructura. Devuelve semáforo (GREEN/AMBER/RED) y hallazgos. Si la integridad falla, el proyecto queda en
+        cuarentena (sin escrituras) hasta que otra ejecución lo encuentre sano."""
+        return await call("acm_watchdog_run", {"project_id": project_id}, watchdog.run, principal(), project_id)
+
+    @server.tool()
+    async def acm_watchdog_history(project_id: str, limit: int = 20) -> dict[str, Any]:
+        """Histórico de auditorías del proyecto (más recientes primero), con sus hallazgos."""
+        args = {"project_id": project_id, "limit": limit}
+        return await call("acm_watchdog_history", args, watchdog.history, principal(), project_id, limit)
+
+    @server.tool()
+    async def acm_governance_status(project_id: str) -> dict[str, Any]:
+        """Indicadores de gobernanza: semáforo y recuentos de la última auditoría, integridad y si admite escrituras."""
+        args = {"project_id": project_id}
+        return await call("acm_governance_status", args, watchdog.status, principal(), project_id)
+
+    @server.tool()
+    async def acm_health() -> dict[str, Any]:
+        """(admin) Salud de cada componente: bases SQLite, catálogo de skills y motores de inferencia."""
+        return await call("acm_health", {}, lambda: watchdog.health(principal(), catalog))
 
     server.acm_catalog = catalog  # type: ignore[attr-defined]
     server.acm_engines = engines  # type: ignore[attr-defined]

@@ -1,8 +1,8 @@
 ---
 name: acm-schema
 description: Explica qué es ACM, su modelo de datos (proyecto, requisito, épica, feature, historia, criterio de aceptación) y qué herramienta MCP usar en cada paso. Léela antes de operar sobre cualquier proyecto ACM.
-version: 1.2.0
-capabilities: [acm-model, acm-tools, acm-workflow, acm-second-brain, acm-identity]
+version: 1.3.0
+capabilities: [acm-model, acm-tools, acm-workflow, acm-second-brain, acm-identity, acm-governance]
 dependencies: []
 ---
 
@@ -59,6 +59,14 @@ Proyecto (project_id)
   `has_acceptance_criteria`, `technical_reason_ok` (noul), `readiness` (choice `ready`/`not_ready`) y `completeness`
   (score de 5 niveles). Otras preguntas necesitan un motor con modelo; si no hay, `ENGINE_UNAVAILABLE`.
 
+## Gobernanza (Watchdog)
+- `acm_governance_status(project_id)` antes de trabajar: si el semáforo está en RED o `writable` es false, el proyecto
+  está en cuarentena por integridad y **no admite escrituras** (`DATA_INTEGRITY`). Avisa al operador; no intentes
+  sortearlo.
+- `acm_watchdog_run(project_id)` audita el proyecto: integridad SQLite (CRITICAL), calidad de cada historia
+  evaluada por el motor de decisión (WARNING si el motor es calibrado; REVIEW si no), y huecos de estructura (INFO).
+  Corrige los WARNING antes de marcar historias como READY. `acm_watchdog_history` guarda cada auditoría.
+
 ## Herramientas
 | Herramienta | Para qué |
 |-------------|----------|
@@ -102,3 +110,7 @@ Proyecto (project_id)
 | `acm_token_create` | (admin) Crea un token; el secreto solo se muestra una vez |
 | `acm_token_list` | Tokens sin secreto: prefijo, estado y uso |
 | `acm_token_revoke` | Revoca un token al instante |
+| `acm_watchdog_run` | Audita integridad, calidad de historias y estructura; semáforo y hallazgos |
+| `acm_watchdog_history` | Histórico de auditorías del proyecto |
+| `acm_governance_status` | Semáforo de la última auditoría, integridad y si admite escrituras |
+| `acm_health` | (admin) Salud de bases, catálogo de skills y motores |

@@ -1,6 +1,6 @@
 # Servidor MCP de ACM
 
-Estado: **IMPLEMENTED (SPRINT-001..004)**. Por HTTP exige token Bearer de ACM (ADR-017). `src/acm/mcp_server.py`: herramientas de proyecto (SPRINT-001), backlog, auditoría y extensión Skills con 3 skills oficiales (SPRINT-002). Pendientes: skills US-15.11/15.12 y autenticación (EPIC-20). Topología: ADR-014. Decisiones: ADR-005 (Python) y ADR-008 (servidor propio + skills). Historias (numeración unificada, ADR-010): servidor propio FEAT-14.02..14.04 (US-14.04..US-14.11); registro y versionado de skills FEAT-15.01 (US-15.01, US-15.03); distribución FEAT-15.02 (US-15.04..US-15.07); catálogo FEAT-15.03 (US-15.08..US-15.12). ACM como *cliente* MCP (US-14.01..14.03) es POST-MVP.
+Estado: **IMPLEMENTED (SPRINT-001..005)**. Por HTTP exige token Bearer de ACM (ADR-017). `src/acm/mcp_server.py`: herramientas de proyecto (SPRINT-001), backlog, auditoría y extensión Skills con 3 skills oficiales (SPRINT-002). Pendientes: skills US-15.11/15.12 y autenticación (EPIC-20). Topología: ADR-014. Decisiones: ADR-005 (Python) y ADR-008 (servidor propio + skills). Historias (numeración unificada, ADR-010): servidor propio FEAT-14.02..14.04 (US-14.04..US-14.11); registro y versionado de skills FEAT-15.01 (US-15.01, US-15.03); distribución FEAT-15.02 (US-15.04..US-15.07); catálogo FEAT-15.03 (US-15.08..US-15.12). ACM como *cliente* MCP (US-14.01..14.03) es POST-MVP.
 
 ## Principio
 El servidor MCP **es ACM**: los agentes IA se conectan a él para operar sobre los proyectos. Al conectarse, reciben las instrucciones y las skills necesarias para usar ACM correctamente.
@@ -102,6 +102,17 @@ Todas las de proyecto exigen `project_id` y lo devuelven. Cualquier rol del proy
 | `acm_token_create` | `principal_id`, `name` | admin | US-20.03 (el secreto solo en esta respuesta) |
 | `acm_token_list` / `acm_token_revoke` | `principal_id?` / `token_id` | propios; ajenos, admin | US-20.03 |
 
-Errores nuevos: `UNAUTHENTICATED` (HTTP 401, antes de llegar a MCP). Total: 40 herramientas.
+Errores nuevos: `UNAUTHENTICATED` (HTTP 401, antes de llegar a MCP).
+
+## Herramientas añadidas en SPRINT-005 (2026-09-30) — Watchdog
+
+| Herramienta | Argumentos | Devuelve | Quién | Historia |
+|-------------|------------|----------|-------|----------|
+| `acm_watchdog_run` | `project_id` | `run_id`, `semaphore`, `integrity`, `counts`, `engines`, `findings` [{code, severity, target, message, source}] | miembros del proyecto | US-13.12 |
+| `acm_watchdog_history` | `project_id`, `limit?` (1..200) | `runs` de la más reciente a la más antigua, con hallazgos | miembros | US-13.13 |
+| `acm_governance_status` | `project_id` | `semaphore` (o `UNKNOWN`), `last_run`, `integrity`, `writable` | miembros | US-13.10 |
+| `acm_health` | — | `status`, `checked_at`, `components` [{name, kind, status, detail}] | admin | US-13.03 |
+
+Error nuevo: `DATA_INTEGRITY` en escrituras sobre un proyecto en cuarentena (US-13.11). Total: 44 herramientas.
 
 Extensión Skills: `skills/list` y `skills/get` (`-32602` si la skill no existe); archivos en `skill://acm/{skill}/{filename}` (una skill retirada deja de ser legible). Capacidad declarada: `extensions["io.modelcontextprotocol/skills"] = {"directoryRead": false}`.

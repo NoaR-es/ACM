@@ -22,7 +22,7 @@ from acm.db import schema
 from acm.db.connection import Database
 from acm.db.migrations import current_version, migrate
 from acm.domain.config_schema import PARAMETERS, check_stored, validate_changes
-from acm.domain.errors import AlreadyExists, Forbidden, InvalidArgument, NotFound, StorageError
+from acm.domain.errors import AlreadyExists, DataIntegrityError, Forbidden, InvalidArgument, NotFound, StorageError
 
 KEY_RE = re.compile(r"^[a-z][a-z0-9-]{1,39}$")
 NAME_MAX = 120
@@ -244,6 +244,7 @@ class ProjectService:
         if role not in ("admin", "owner"):
             raise Forbidden("solo el owner del proyecto o un admin puede modificar su configuración")
         changes = validate_changes(changes)
+        self.ensure_writable(project_id)
         db = self.project_db(project_id)
         before = self._stored_config(db)
         if changes:
@@ -264,6 +265,19 @@ class ProjectService:
             "changed": changed,
             "requires_reload": [k for k in changed if PARAMETERS[k].requires_reload],
         }
+
+    def ensure_writable(self, project_id: str) -> None:
+        """US-13.11: un proyecto con la integridad comprometida no admite escrituras hasta que el Watchdog la
+        verifique de nuevo (se impide operar sobre un estado corrupto, US-13.05)."""
+        with self.global_db.read() as conn:
+            row = conn.execute(
+                "SELECT integrity_status, integrity_detail FROM projects WHERE id = ?", (project_id,)
+            ).fetchone()
+        if row is not None and row["integrity_status"] == "corrupt":
+            raise DataIntegrityError(
+                f"{project_id!r} está en cuarentena por integridad ({row['integrity_detail']}); "
+                "repara la base y ejecuta acm_watchdog_run para levantarla"
+            )
 
     # ----------------------------------------------------------------- sistema
     def system_info(self) -> dict[str, Any]:

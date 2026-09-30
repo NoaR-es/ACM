@@ -77,3 +77,16 @@
 **Acciones**
 - Buscar en el SDK las suposiciones que dependen del despliegue (host, TLS, proxy) cuando se toque la red.
 - Automatizar las mutaciones (sigue pendiente).
+
+## SPRINT-005 (2026-09-30)
+**Bien**
+- Antes de escribir el test de corrupción se probó qué detecta de verdad `integrity_check`. Sobrescribir contenido de celdas no se detecta; dañar la cabecera de una página sí, 5 de 5 veces. El test usa lo que funciona y el refinamiento documenta el límite.
+- El Watchdog es el tercer consumidor de la interfaz de decisión, y con él se cerró US-35.11 CA-01 con un test real en lugar de declararlo.
+- El histórico y el estado de integridad viven en la base global: siguen disponibles aunque la base del proyecto esté dañada.
+
+**Mal**
+- Una edición multiarchivo del código abortó a medias (el primer archivo se escribió, los siguientes no) porque un ancla no coincidía. Se detectó y se completó, pero la práctica "validar todo antes de escribir" solo se aplicaba a `control/`.
+
+**Acciones**
+- Aplicar también a las ediciones de código en varios archivos la validación previa de todas las anclas.
+- Medir la duración de la auditoría con proyectos grandes antes de bajar el intervalo por defecto.

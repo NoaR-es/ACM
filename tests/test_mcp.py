@@ -36,6 +36,9 @@ BACKLOG_TOOLS = {
     "acm_member_set",
     "acm_member_remove",
     "acm_member_list",
+    "acm_watchdog_run",
+    "acm_watchdog_history",
+    "acm_governance_status",
 }
 GLOBAL_TOOLS = {
     "acm_project_create",
@@ -55,6 +58,7 @@ GLOBAL_TOOLS = {
     "acm_token_create",
     "acm_token_list",
     "acm_token_revoke",
+    "acm_health",
 }
 
 

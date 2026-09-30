@@ -1,7 +1,7 @@
 """Catálogos de migraciones de ACM (ADR-011: SQLite es la fuente de verdad del producto; ADR-013).
 
 - GLOBAL: base de plataforma `<data_dir>/acm.db` — principales, proyectos, pertenencias, auditoría MCP, inferencia (v3)
-  y tokens de acceso (v4).
+  tokens de acceso (v4) y Watchdog (v5).
 - PROJECT: base de cada proyecto `<data_dir>/projects/<id>/project.db` — metadatos, configuración y backlog (v2).
 
 Una migración publicada no se modifica: los cambios van en migraciones nuevas (US-18.03).
@@ -131,6 +131,35 @@ GLOBAL: tuple[Migration, ...] = (
             "CREATE INDEX idx_api_tokens_principal ON api_tokens(principal_id)",
             # US-20.03 CA-04: cada invocación auditada identifica el token con el que se hizo
             "ALTER TABLE mcp_audit ADD COLUMN token_id TEXT",
+        ),
+    ),
+    Migration(
+        5,
+        "watchdog",
+        (
+            # US-13.05 / US-13.11: estado de integridad por proyecto; 'corrupt' bloquea las escrituras
+            "ALTER TABLE projects ADD COLUMN integrity_status TEXT NOT NULL DEFAULT 'unknown' "
+            "CHECK (integrity_status IN ('unknown', 'ok', 'corrupt'))",
+            "ALTER TABLE projects ADD COLUMN integrity_detail TEXT NOT NULL DEFAULT ''",
+            "ALTER TABLE projects ADD COLUMN integrity_checked_at TEXT",
+            # US-13.12 / US-13.13: histórico de auditorías de gobernanza (en la base global: sobrevive a una
+            # base de proyecto corrupta)
+            """CREATE TABLE watchdog_runs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+            ts TEXT NOT NULL,
+            trigger TEXT NOT NULL CHECK (trigger IN ('manual', 'scheduled')),
+            principal TEXT NOT NULL,
+            semaphore TEXT NOT NULL CHECK (semaphore IN ('GREEN', 'AMBER', 'RED')),
+            findings_json TEXT NOT NULL,
+            critical INTEGER NOT NULL,
+            warning INTEGER NOT NULL,
+            review INTEGER NOT NULL,
+            info INTEGER NOT NULL,
+            engines_json TEXT NOT NULL DEFAULT '[]',
+            duration_ms REAL NOT NULL
+        )""",
+            "CREATE INDEX idx_watchdog_runs_project ON watchdog_runs(project_id, id)",
         ),
     ),
 )

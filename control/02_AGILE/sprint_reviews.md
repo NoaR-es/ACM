@@ -30,3 +30,9 @@
 - **Evidencia:** 198 tests en PASS (27 nuevos, contra ACM real por HTTP); `12_TESTING/sprint_004_evidence.md`; 8/8 mutaciones de seguridad detectadas.
 - **Cambio incompatible:** los clientes HTTP necesitan token (ver `README.md`).
 - **No entregado:** TLS propio (VULN-002: se delega en un proxy); US-20.07 y US-20.12..14.
+
+## SPRINT-005 — Watchdog de gobernanza (2026-09-30)
+- **Goal:** cumplido. `acm_watchdog_run` y la auditoría periódica comprueban integridad, calidad de historias (vía la interfaz de decisión) y estructura; semáforo e histórico; cuarentena sin escrituras de un proyecto dañado; `acm_health` por componente.
+- **Entregado:** US-13.03, 13.05, 13.06, 13.07, 13.10, 13.11, 13.12, 13.13 VERIFIED; US-35.11 pasa a VERIFIED (CA-01). TASK-005-01..04.
+- **Evidencia:** 220 tests en PASS (22 nuevos, uno con corrupción real de la base); `12_TESTING/sprint_005_evidence.md`; 8/8 mutaciones detectadas.
+- **No entregado:** US-13.01, 13.02, 13.08 y 13.09 (sin entidades que vigilar); vista del semáforo (EPIC-30).

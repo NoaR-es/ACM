@@ -86,6 +86,8 @@ class BacklogService:
         role = self.projects._project_role(principal, project_id)  # NOT_FOUND si no es accesible
         if write and role not in ("admin", "owner", "member"):
             raise Forbidden("sin permiso para modificar el backlog")
+        if write:
+            self.projects.ensure_writable(project_id)
         return self.projects.project_db(project_id)
 
     @staticmethod

@@ -38,5 +38,11 @@ Sin él, ACM funciona con su motor de reglas y entrega el contexto sin resumir.
 Después, un admin gestiona principales, miembros y tokens desde MCP (`acm_principal_*`, `acm_member_*`,
 `acm_token_*`). En stdio no hay red: el principal es `ACM_PRINCIPAL` (por defecto `local-admin`).
 
+### Watchdog de gobernanza
+
+`acm serve` audita todos los proyectos cada `ACM_WATCHDOG_INTERVAL_S` segundos (600 por defecto; 0 lo desactiva):
+integridad SQLite, calidad de historias y estructura. Un proyecto con la base dañada queda en cuarentena, sin escrituras,
+hasta que una auditoría lo encuentre sano. Consulta: `acm_governance_status`, `acm_watchdog_history`, `acm_health`.
+
 Por defecto `acm serve` escucha en 127.0.0.1. Para exponerlo, ponlo detrás de un proxy con TLS (el tráfico lleva el
 token; VULN-002) y declara su nombre con `ACM_ALLOWED_HOSTS=acm.midominio.com`; sin él, el SDK MCP responde 421.

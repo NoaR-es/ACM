@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.5.0.dev0] — 2026-09-30 — SPRINT-005 — Watchdog de gobernanza
+- **Cambio:**
+  - `WatchdogService`: integridad SQLite (`integrity_check`, `foreign_key_check`), calidad de historias a través de la interfaz de decisión, estructura del backlog, semáforo, histórico y cuarentena de proyectos dañados.
+  - Auditoría periódica en `acm serve` (`ACM_WATCHDOG_INTERVAL_S`, 600 s).
+  - 4 herramientas MCP (44 en total); skill acm-schema 1.3.0.
+  - Esquema global v5.
+  - `control/`:
+    - 8 refinamientos;
+    - fusión US-13.04 → US-13.03;
+    - SPRINT-004 archivado.
+- **Stories:**
+  - VERIFIED: US-13.03, 13.05, 13.06, 13.07, 13.10, 13.11, 13.12, 13.13;
+  - US-35.11 pasa de IMPLEMENTED a VERIFIED (CA-01).
+- **Archivos:** `src/acm/{domain/watchdog.py, domain/projects.py, domain/backlog.py, db/schema.py, mcp_server.py, app.py, config.py, __init__.py, skills/acm-schema/SKILL.md}`, `pyproject.toml`, `README.md`, `tests/{test_watchdog.py, test_mcp.py}`, `control/**`.
+- **Tests:** 220/220 PASS; 8/8 mutaciones detectadas.
+- **Migración:** la base global sube a v5 al abrirse (aditiva; los proyectos existentes quedan con integridad `unknown` hasta su primera auditoría).
+- **Breaking change:** no. Cambios de comportamiento:
+  - `acm serve` audita periódicamente por defecto;
+  - un proyecto con la base dañada deja de admitir escrituras (`DATA_INTEGRITY`).
+
 ## [0.4.0.dev0] — 2026-09-30 — SPRINT-004 — autenticación y RBAC
 - **Cambio:**
   - `/mcp` exige token Bearer de ACM (`acm.auth.BearerAuth`, ADR-017).

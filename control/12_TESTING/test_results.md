@@ -31,5 +31,8 @@
 | 2026-09-30 | TEST-PROD-S04 | PASS 198/198 | 27 tests nuevos (`test_auth.py`) contra ACM real por HTTP |
 | 2026-09-30 | Mutación manual SPRINT-004 (8 invariantes) | 8/8 detectadas | token revocado válido; middleware sin token; identidad fija; sin redacción; último admin; member gestiona miembros; secreto completo guardado; `ACM_ALLOWED_HOSTS` ignorado |
 | 2026-09-30 | CI GitHub Actions run #8 | PASS | commit `8f02672` (SPRINT-004) |
+| 2026-09-30 | Qué detecta `integrity_check` | PASS | Sobrescribir contenido de celdas: no detectado (0/5); cabecera de página B-tree dañada: detectado (5/5) → base del test de US-13.05 |
+| 2026-09-30 | TEST-PROD-S05 | PASS 220/220 | 22 tests nuevos (`test_watchdog.py`) |
+| 2026-09-30 | Mutación manual SPRINT-005 (8 invariantes) | 8/8 detectadas | cuarentena sin bloqueo; sin `foreign_key_check`; no calibrado como WARNING; CRITICAL sin RED; evaluar sobre base corrupta; histórico invertido; periódico sin auditar; calidad sin interfaz de decisión |
 | 2026-09-30 | Ollama real | NO EJECUTADO | Sin acceso a Ollama ni a modelos (IMP-004) |
 | 2026-09-30 | `tools/evidence.py` | PASS | SPRINT-002: 21 historias, solo US-24.03 CA-02 PENDIENTE; SPRINT-001 reproducida (solo US-01.02 CA-03 sin test) |
