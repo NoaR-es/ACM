@@ -1,3 +1,3 @@
 # Environments
 
-**Estado del área:** N/A — no existe implementación todavía (2026-09-30). No inventar contenido: rellenar cuando exista código/infraestructura verificable.
+**Estado del área:** ACTIVE (SPRINT-007). Desarrollo (contenedor del agente, `../08_INFRAESTRUCTURA/environment.md`) y CI (GitHub Actions, `pipelines.md`). No hay staging ni producción.

@@ -39,3 +39,10 @@
 | 2026-09-30 | Mutación manual SPRINT-006 (8 invariantes) | 8/8 detectadas | transición sin validar; cambio de estado sin evento; eventos visibles para todos; reconexión ignora `after`; desconexión no libera; Kanban ignora el filtro; errores de validación en otro formato; actividad visible para todos |
 | 2026-09-30 | Ollama real | NO EJECUTADO | Sin acceso a Ollama ni a modelos (IMP-004) |
 | 2026-09-30 | `tools/evidence.py` | PASS | SPRINT-002: 21 historias, solo US-24.03 CA-02 PENDIENTE; SPRINT-001 reproducida (solo US-01.02 CA-03 sin test) |
+| 2026-09-30 | CI GitHub Actions run #12 | PASS | commit `4bc3e3a` (SPRINT-006) |
+| 2026-09-30 | TEST-PROD-S07 | PASS 275/275 | `ACM_E2E_REQUIRED=1 pytest -q` en 81 s: 24 casos e2e nuevos en Chromium (`test_webui.py`) contra ACM real; `ruff check`/`format --check` limpios |
+| 2026-09-30 | vitest (web) | PASS 25/25 | `theme`, `kanban`, `liveCore`, `markdown` |
+| 2026-09-30 | Build reproducible | PASS | `npm run build` produce los mismos `index-DAttCTy0.js`/`index-B396BjA-.css` tras las mutaciones y desde un `npm ci` limpio en otra ruta (comparado con `cmp`: idénticos) |
+| 2026-09-30 | Mutación manual SPRINT-007 (8 invariantes) | 8/8 detectadas | Kanban permite cualquier destino; eventos duplicados aplicados; Markdown sin sanear; texto atenuado sin contraste; CSP sin `script-src`; filtro de principal ignorado; eventos no recargan datos; filtro «Solo errores» ignorado |
+| 2026-09-30 | `code_inventory.py --check` | PASS | 75 archivos con fila en `file_inventory.md` y cabecera; `code_reference.md` al día. Negativa: quitar la cabecera de `web/src/App.tsx` → exit 1 con «sin cabecera» (antes de la regla había 10 archivos sin cabecera, todos corregidos) |
+

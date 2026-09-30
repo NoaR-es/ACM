@@ -1,3 +1,3 @@
 # Api documentation
 
-**Estado del área:** N/A — no existe implementación todavía (2026-09-30). No inventar contenido: rellenar cuando exista código/infraestructura verificable.
+**Estado del área:** ACTIVE (SPRINT-007). REST: OpenAPI en `/api/v1/openapi.json` y visible en la interfaz (Documentación → API). MCP: skill `acm-schema`. Control: `../06_API/`.

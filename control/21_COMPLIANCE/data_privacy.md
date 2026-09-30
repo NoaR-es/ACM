@@ -1,3 +1,3 @@
 # Data privacy
 
-**Estado del área:** N/A — no existe implementación todavía (2026-09-30). No inventar contenido: rellenar cuando exista código/infraestructura verificable.
+**Estado del área:** ACTIVE (SPRINT-007). Datos personales: solo identificadores y nombres de principales. Tokens: solo se guarda su sha256 y un prefijo (ADR-017); nunca aparecen en auditoría ni eventos. En el navegador el token está en sessionStorage. Datos locales en `ACM_DATA_DIR`; nada sale a terceros salvo el Ollama que se configure.

@@ -2,13 +2,13 @@
 
 **Responde a:** Cumple normativa
 
-**Salud:** N/A
+**Salud:** OK — auditoría y privacidad documentadas; sin análisis normativo (no aplica aún)
 
 | Documento | Estado |
 |-----------|--------|
-| `regulations.md` | N/A (plantilla) |
-| `data_privacy.md` | N/A (plantilla) |
-| `audit_trail.md` | N/A (plantilla) |
+| `regulations.md` | N/A (no existe aún; revisado en SPRINT-007) |
+| `data_privacy.md` | ACTIVE |
+| `audit_trail.md` | ACTIVE |
 
 Documentos históricos: ninguno (ver `99_ARCHIVO/`).
 Relaciones: `../RELATIONSHIPS.md`.

@@ -8,6 +8,8 @@
 | SQLite | 3.45.1 |
 | Gestor de entornos | `uv` (`/root/.local/bin/uv`) |
 | Entorno de spikes | `spikes/.venv` (ignorado por Git; ver `spikes/README.md`) |
+| Node / npm | 22.22.2 / 10.9.7 (solo para cambiar la interfaz, `web/`; CI: Node 22) |
+| Navegador e2e | Chromium en `/opt/pw-browsers` (Playwright 1.63.0) |
 | Ollama / modelos | **No disponibles**: `registry.ollama.ai`, `ollama.com` y `huggingface.co` devuelven 403 en el proxy (IMP-004) |
 
 Producción / despliegue: MISSING (sin definir; EPIC-18/CI-CD).
@@ -24,4 +26,6 @@ Producción / despliegue: MISSING (sin definir; EPIC-18/CI-CD).
 | `ACM_WATCHDOG_INTERVAL_S` | `600` | Intervalo de la auditoría periódica de todos los proyectos en `acm serve` (US-13.06); `0` la desactiva |
 | `ACM_ALLOWED_HOSTS` | sin valor | Nombres extra aceptados en la cabecera Host (p. ej. `acm.midominio.com` tras un proxy TLS). Sin él, otro Host → 421 (TD-002) |
 
-Comandos: `acm serve`, `acm mcp-stdio` (ver `/README.md`).
+Comandos: `acm serve`, `acm mcp-stdio` (ver `/README.md`). Interfaz web en `/` del mismo puerto (ADR-019).
+
+Tests: `ACM_E2E_REQUIRED=1` convierte en fallo la ausencia de navegador para los e2e (CI).

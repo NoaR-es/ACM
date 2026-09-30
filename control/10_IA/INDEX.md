@@ -12,13 +12,13 @@
 | `models.md` | ACTIVE |
 | `model_registry.md` | ACTIVE |
 | `prompts.md` | ACTIVE |
-| `agents.md` | N/A (plantilla) |
-| `tools.md` | N/A (plantilla) |
-| `workflows.md` | N/A (plantilla) |
-| `rag.md` | N/A (plantilla) |
-| `embeddings.md` | N/A (plantilla) |
-| `vector_stores.md` | N/A (plantilla) |
-| `model_evaluations.md` | N/A (plantilla) |
+| `agents.md` | ACTIVE |
+| `tools.md` | ACTIVE |
+| `workflows.md` | N/A (no existe aún; revisado en SPRINT-007) |
+| `rag.md` | N/A (no existe aún; revisado en SPRINT-007) |
+| `embeddings.md` | N/A (no existe aún; revisado en SPRINT-007) |
+| `vector_stores.md` | N/A (no existe aún; revisado en SPRINT-007) |
+| `model_evaluations.md` | N/A (no existe aún; revisado en SPRINT-007) |
 | `cost_tracking.md` | ACTIVE |
 | `prompt_versioning.md` | ACTIVE |
 

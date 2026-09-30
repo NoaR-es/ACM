@@ -16,5 +16,6 @@ Estado: versiones fijadas en `/pyproject.toml` (SPRINT-001, 2026-09-30).
 | FastAPI | 0.142.2 | API HTTP con OpenAPI; monta el MCP en `/mcp` | ADR-014 | SPRINT-001 (`test_app.py`) |
 | pytest | 9.1.1 | Tests | — | SPRINT-001 |
 | ruff | 0.16.9 | Lint y formato | — | SPRINT-001 |
+| playwright (dev) | 1.63.0 | e2e de la interfaz con Chromium | ADR-019 | SPRINT-007 (`test_webui.py`) |
 
-Frontend: pendiente (TASK-000-07, GAP-002).
+Frontend (SPRINT-007, ADR-019): React 19.3, TypeScript 7.0.2, Vite 8.3.1, react-query 5.104, react-router-dom 7.18.4, marked 18, DOMPurify 3.4.16, vitest 5.0.3. Lista completa y propósito: `05_CODIGO/dependencies.md`; lockfile `web/package-lock.json`.

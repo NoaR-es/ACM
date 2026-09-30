@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "acm"
-version = "0.6.0.dev0"
+version = "0.7.0.dev0"
 description = "Agile Context Manager: memoria de estado, gobernanza y trazabilidad Agile para agentes IA, servida por MCP."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -22,6 +22,7 @@ dependencies = [
 dev = [
     "pytest==9.1.1",
     "ruff==0.16.9",
+    "playwright==1.63.0",  # e2e de la interfaz web (SPRINT-007)
 ]
 
 [project.scripts]

@@ -2,7 +2,7 @@
 
 **Responde a:** Cómo se protege
 
-**Salud:** WARNING — autenticación por token y RBAC implementados (ADR-017, VULN-001 resuelta); sin TLS propio (VULN-002)
+**Salud:** WARNING — autenticación por token y RBAC implementados (ADR-017, VULN-001 resuelta); interfaz con CSP (ADR-019, VULN-004 mitigada); sin TLS propio (VULN-002)
 
 | Documento | Estado |
 |-----------|--------|

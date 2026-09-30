@@ -1,3 +1,3 @@
 # Refactors
 
-**Estado del área:** N/A — no existe implementación todavía (2026-09-30). No inventar contenido: rellenar cuando exista código/infraestructura verificable.
+**Estado del área:** ninguna refactorización mayor registrada (revisado 2026-09-30, SPRINT-007). Los cambios de contrato están en `changelog.md` y `breaking_changes.md`.

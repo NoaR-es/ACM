@@ -2,17 +2,17 @@
 
 **Responde a:** Cómo se prueba
 
-**Salud:** OK — 251 tests de producto (SPRINT-001/002) + integridad del backlog + spikes
+**Salud:** OK — 275 tests Python (24 e2e con Chromium) + 25 vitest + integridad del backlog y del control del código (SPRINT-007)
 
 | Documento | Estado |
 |-----------|--------|
 | `testing_strategy.md` | ACTIVE |
-| `test_plan.md` | N/A (plantilla) |
+| `test_plan.md` | ACTIVE |
 | `test_cases.md` | ACTIVE |
-| `integration_tests.md` | N/A (plantilla) |
-| `e2e_tests.md` | N/A (plantilla) |
-| `regression_tests.md` | N/A (plantilla) |
-| `performance_tests.md` | N/A (plantilla) |
+| `integration_tests.md` | ACTIVE |
+| `e2e_tests.md` | ACTIVE |
+| `regression_tests.md` | ACTIVE |
+| `performance_tests.md` | N/A (no existe aún; revisado en SPRINT-007) |
 | `test_results.md` | ACTIVE |
 | `coverage.md` | ACTIVE |
 | `sprint_001_evidence.md` | ACTIVE (evidencia CA ↔ test) |

@@ -79,5 +79,19 @@
   "US-06.05": {
     "into": "US-06.03",
     "reason": "B:US-19.02 'ver los cambios provocados por agentes en tiempo real' = A:US-06.03 'Actualizar Kanban en tiempo real'"
+  },
+  "US-31.05": {
+    "into": "US-31.01",
+    "reason": "B:US-19.05 'historial de actividad de un agente' = A:US-31.01 consola de actividad filtrable por principal (US-31.02)"
+  },
+  "US-21.04": {
+    "into": "US-31.08",
+    "cross_epic": true,
+    "reason": "B:US-18.01 'frontend recibe cambios de estado en tiempo real' = US-31.08 (tiempo real en la interfaz)"
+  },
+  "US-21.06": {
+    "into": "US-31.08",
+    "cross_epic": true,
+    "reason": "B:US-18.03 'frontend recibe movimientos del Kanban en tiempo real' = US-31.08 CA-01"
   }
 }

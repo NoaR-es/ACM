@@ -81,7 +81,7 @@ PARAMETERS: dict[str, Parameter] = {
             "256..200000",
             False,
             "Presupuesto de tokens del contexto compacto que ACM entrega al agente (segundo cerebro).",
-            "pendiente: servicio de contexto (US-35.08)",
+            "ContextService (acm_context_compact, US-35.08): presupuesto por defecto",
             _int_range(256, 200_000),
         ),
         Parameter(
@@ -91,7 +91,7 @@ PARAMETERS: dict[str, Parameter] = {
             "subconjunto sin repetidos de rules, jev, ollama; no vacío",
             False,
             "Orden de preferencia de motores de decisión del router (ADR-015).",
-            "pendiente: router de inferencia (ADR-015)",
+            "EngineRouter: gate READY, acm_decide y Watchdog (ADR-015)",
             _engine_order,
         ),
     )

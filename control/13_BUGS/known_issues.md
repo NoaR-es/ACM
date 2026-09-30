@@ -3,7 +3,7 @@
 | ID | Fecha | Descripción | Impacto | Severidad | Estado |
 |----|-------|-------------|---------|-----------|--------|
 | GAP-001 | 2026-09-30 | Backlog unificado (2026-09-30): 137 de 488 historias tienen criterios (132 de A + 5 de B); 351 (todas de origen B) no. Además, ninguna cumple la *Regla de aceptación del backlog* de A para READY (precondiciones, flujo, alternativas, errores, reglas, validaciones, casos límite, tareas, pruebas). | Ninguna historia puede pasar a READY hasta refinarse. | ALTA | OPEN |
-| GAP-002 | 2026-09-30 | La definición no fija runtime/lenguaje del backend ni del servidor MCP, ni tooling del frontend React. | Backend resuelto 2026-09-30 (Python, ADR-005). Queda abierto el tooling del frontend (TASK-000-07); no bloquea el backend. | BAJA | PARTIALLY_RESOLVED |
+| GAP-002 | 2026-09-30 | La definición no fija runtime/lenguaje del backend ni del servidor MCP, ni tooling del frontend React. | Backend resuelto 2026-09-30 (Python, ADR-005); frontend resuelto 2026-09-30 (React + TypeScript + Vite, ADR-019, TASK-000-07). | BAJA | RESOLVED |
 | GAP-003 | 2026-09-30 | "JEV" no está definido (naturaleza, contrato, proveedor). | Resuelto 2026-09-30: aclaración del operador + investigación (ADR-006). | MEDIA | RESOLVED |
 | GAP-004 | 2026-09-30 | 47 de 53 épicas unificadas no declaran objetivo explícito (sí EPIC-01 y EPIC-49..53); lista en `01_PRODUCTO/epics.md`. | Priorización por valor limitada. | BAJA | OPEN |
 | GAP-005 | 2026-09-30 | El modelo de datos conceptual (§6) no cubre auditoría, tokens, snapshots, sesiones ni locks exigidos por el MVP. | Diseño de datos incompleto. | MEDIA | OPEN |

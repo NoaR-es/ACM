@@ -1,3 +1,5 @@
+"""Fixtures compartidas: directorio de datos temporal, `ProjectService` y altas de miembros directas en SQLite."""
+
 from __future__ import annotations
 
 import sqlite3

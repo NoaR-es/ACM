@@ -1,3 +1,3 @@
 # Logging
 
-**Estado del área:** N/A — no existe implementación todavía (2026-09-30). No inventar contenido: rellenar cuando exista código/infraestructura verificable.
+**Estado del área:** ACTIVE (SPRINT-007). Logs con `logging` estándar (`acm`, `acm.events`) y los de uvicorn, a la salida del proceso. Registro auditable estructurado: `mcp_audit` (`../21_COMPLIANCE/audit_trail.md`).

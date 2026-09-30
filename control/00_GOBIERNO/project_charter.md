@@ -6,7 +6,7 @@
 - **Fecha de inicio:** 2026-09-30
 - **Constitución del agente:** `/CLAUDE.md`
 - **Backlog (fuente A):** `01_PRODUCTO/backlog_completo_v1.md` — "Sistema Autónomo de Desarrollo de Software mediante Agentes IA"
-- **Definición de producto (fuente B):** `01_PRODUCTO/product_definition_v3.md` (v1.2)
+- **Definición de producto (fuente B):** `01_PRODUCTO/product_definition_v4.md` (v1.3)
 - **Backlog unificado:** ADR-010
 
 ## Propósito

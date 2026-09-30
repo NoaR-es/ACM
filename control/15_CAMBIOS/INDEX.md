@@ -8,9 +8,9 @@
 |-----------|--------|
 | `changelog.md` | ACTIVE |
 | `change_log.md` | ACTIVE |
-| `migrations.md` | N/A (plantilla) |
-| `breaking_changes.md` | N/A (plantilla) |
-| `refactors.md` | N/A (plantilla) |
+| `migrations.md` | ACTIVE |
+| `breaking_changes.md` | ACTIVE |
+| `refactors.md` | ACTIVE |
 
 Documentos históricos: ninguno (ver `99_ARCHIVO/`).
 Relaciones: `../RELATIONSHIPS.md`.

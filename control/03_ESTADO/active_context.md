@@ -1,15 +1,17 @@
-TASK: none (SPRINT-006 entregado; SPRINT-007 a continuación)
+TASK: none (SPRINT-007 entregado; pendiente de CI)
 STORY: —
-SPRINT: SPRINT-006
+SPRINT: SPRINT-007
 
-NEXT CANDIDATES:
-SPRINT-007: interfaz web completa (React + TypeScript + Vite; TASK-000-07)
+NEXT CANDIDATES (decisión del operador):
+- Edición del backlog desde la interfaz (crear/editar requisitos, épicas, historias y CA; hoy solo estado y gate READY)
+- Sprints, tareas y su Kanban en el producto (EPIC-05, EPIC-10, US-06.04)
 
 RELEVANT DOCUMENTS:
 02_AGILE/sprint.md
-06_API/rest_api.md
-09_MENSAJERIA/events.md
-14_DECISIONES/decisions.md (ADR-018)
+05_CODIGO/INDEX.md
+05_CODIGO/frontend.md
+12_TESTING/sprint_007_evidence.md
+14_DECISIONES/decisions.md (ADR-019)
 
 FILES AFFECTED: —
 

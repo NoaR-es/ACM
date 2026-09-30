@@ -42,3 +42,18 @@
 - **Entregado:** US-06.01, 06.02, 06.03, 21.01, 21.02, 21.03, 30.01, 30.02, 30.03 VERIFIED. TASK-006-01..04. ADR-018.
 - **Evidencia:** 251 tests en PASS (31 nuevos); `12_TESTING/sprint_006_evidence.md`; 8/8 mutaciones detectadas.
 - **Siguiente:** SPRINT-007, la interfaz web sobre esta plataforma.
+- **CI:** success (run #12, commit 4bc3e3a).
+
+## SPRINT-007 — Interfaz web completa (2026-09-30)
+- **Goal:** cumplido. La interfaz React (servida por ACM en `/`) muestra:
+  - resumen, backlog, trazabilidad, historias con historial, gobernanza, miembros y configuración de cada proyecto;
+  - documentación: skills, flujo de estados y OpenAPI;
+  - actividad y sistema.
+  El Kanban muestra uno o varios proyectos con color por proyecto y carriles, se maneja con arrastre o teclado y explica los movimientos rechazados. Todo se actualiza en tiempo real y la paleta tiene contraste AA verificado en ambos temas.
+- **Entregado:**
+  - VERIFIED: US-06.06, 06.07, 31.01, 31.02, 31.04, 31.06, 31.07, 31.08, 21.09, 45.02, 45.03. US-01.02 pasa a VERIFIED.
+  - TASK-000-07 (ADR-019), TASK-007-01..10.
+  - Control completo del código en `05_CODIGO/`, con `code_inventory.py --check` en la CI.
+- **Evidencia:** 275 tests Python en PASS (24 e2e en Chromium); 25 vitest; `12_TESTING/sprint_007_evidence.md`; build reproducible.
+- **No entregado:** edición del backlog desde la interfaz (la API solo expone lectura, estado y gate READY); presencia de agentes (US-21.10/11).
+

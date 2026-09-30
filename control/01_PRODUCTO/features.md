@@ -1,8 +1,8 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v3.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v4.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
 
 # Features (backlog unificado)
 
-Total: **201**
+Total: **203**
 
 | ID | Épica | Título | Origen | Alcance | Historias |
 |----|-------|--------|--------|---------|-----------|
@@ -25,6 +25,7 @@ Total: **201**
 | FEAT-05.04 | EPIC-05 | Predicción | B:FEAT-06.03 | POST-MVP | US-05.10, US-05.11, US-05.12 |
 | FEAT-06.01 | EPIC-06 | Tablero | A:FEAT-06.01 | MVP | US-06.01, US-06.02, US-06.03 |
 | FEAT-06.02 | EPIC-06 | Kanban | B:FEAT-19.01 | MVP | US-06.04, US-06.05, US-06.06 |
+| FEAT-06.03 | EPIC-06 | Kanban multiproyecto **[v1.3]** | B:FEAT-19.06 | MVP | US-06.07 |
 | FEAT-07.01 | EPIC-07 | Ciclo autónomo | A:FEAT-07.01 | POST-MVP | US-07.01, US-07.02, US-07.03 |
 | FEAT-07.02 | EPIC-07 | Autonomous Loop | B:FEAT-44.01 | POST-MVP | US-07.04, US-07.05, US-07.06 |
 | FEAT-07.03 | EPIC-07 | Ciclo completo | B:FEAT-44.02 | POST-MVP | US-07.07, US-07.08 |
@@ -134,6 +135,7 @@ Total: **201**
 | FEAT-30.01 | EPIC-30 | API interna | A:FEAT-30.01 | MVP | US-30.01, US-30.02, US-30.03 |
 | FEAT-31.01 | EPIC-31 | Consola de ejecución | A:FEAT-31.01 | MVP | US-31.01, US-31.02, US-31.03 |
 | FEAT-31.02 | EPIC-31 | Actividad | B:FEAT-19.02 | MVP | US-31.04, US-31.05 |
+| FEAT-31.03 | EPIC-31 | Interfaz web completa **[v1.3]** | B:FEAT-19.05 | MVP | US-31.06, US-31.07, US-31.08 |
 | FEAT-32.01 | EPIC-32 | Alertas | A:FEAT-32.01 | POST-MVP | US-32.01, US-32.02 |
 | FEAT-32.02 | EPIC-32 | Webhooks | B:FEAT-30.01 | POST-MVP | US-32.03, US-32.04 |
 | FEAT-32.03 | EPIC-32 | Notificaciones | B:FEAT-30.02 | POST-MVP | US-32.05, US-32.06 |

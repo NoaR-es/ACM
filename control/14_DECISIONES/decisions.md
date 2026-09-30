@@ -344,3 +344,27 @@ Consecuencias:
 - El evento no es atómico con la operación (bases distintas): si falla su escritura tras el COMMIT, se pierde (TD-003); la interfaz relee el estado al reconectar.
 - La consulta por conexión escala linealmente con los clientes (sin medir).
 Trade-offs: Si hacen falta muchos clientes o varios servidores, se puede sustituir el lector por un broker sin cambiar el contrato del WebSocket.
+
+## ADR-019 — Interfaz web: React + TypeScript + Vite, build versionado y servido por ACM con CSP
+Fecha: 2026-09-30
+Estado: ACCEPTED
+Contexto: ADR-001 fijó React para la interfaz, pero no su tooling (GAP-002, TASK-000-07). El operador pide una interfaz completa en tiempo real (SPRINT-007). ACM se instala con `pip` y corre como un solo proceso (ADR-014).
+Problema: Cómo construir, empaquetar y servir la interfaz sin romper la instalación de un solo proceso y sin abrir riesgos XSS.
+Alternativas consideradas:
+(a) React sin build (módulos ES desde CDN): sin tipos y dependiente de la red;
+(b) servidor de frontend aparte (Node): un proceso más que desplegar;
+(c) React + TypeScript estricto + Vite; build a `src/acm/webui/` versionado en Git y servido por FastAPI en `/`;
+(d) igual que (c) sin versionar el build: el usuario necesitaría Node para instalar.
+Decisión: (c).
+- Estado de servidor con react-query, invalidado por los eventos del WebSocket (ADR-018).
+- HashRouter: las rutas no chocan con `/api` ni `/mcp`.
+- Markdown saneado con DOMPurify.
+- `SecureStatic` añade CSP (`script-src 'self'`, `connect-src` solo al mismo host), `nosniff`, `no-referrer` y `frame-ancestors 'none'`.
+- La CI (job `web`) recompila y falla si el bundle versionado no coincide con el código.
+Motivo: Tipos en el cliente, build reproducible y una instalación que sigue siendo `pip install` sin Node.
+Consecuencias:
+- El repositorio lleva unos 430 kB de JS generado.
+- Los tipos TS se mantienen a mano frente a la API (`05_CODIGO/types.md`); los desajustes los detectan los e2e.
+- GAP-002 queda resuelto.
+Trade-offs: Si el bundle crece, se puede dividir por rutas o publicar el build como artefacto de release en lugar de versionarlo.
+

@@ -1,4 +1,4 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v3.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v4.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
 
 # Historias técnicas transversales y Spikes (fuente B)
 

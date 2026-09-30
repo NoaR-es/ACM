@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.7.0.dev0] — 2026-09-30 — SPRINT-007 — interfaz web completa
+- **Cambio:**
+  - Interfaz React + TypeScript + Vite (ADR-019) servida por ACM en `/` con CSP y cabeceras de seguridad (`webui_app.py`); build versionado en `src/acm/webui`.
+  - Vistas: panel global, Kanban de uno o varios proyectos (color por proyecto, carriles, arrastre y teclado, rechazo explicado), proyecto (resumen, backlog, trazabilidad, gobernanza, miembros, configuración), historia (criterios, enlaces, transiciones, historial, contexto compacto), actividad (feed en vivo y consola filtrable), documentación (skills, flujo, OpenAPI) y sistema.
+  - Tiempo real por WebSocket con reanudación, indicador de conexión y recarga selectiva; tema claro/oscuro/sistema con contraste AA verificado.
+  - CI: job `web` (vitest, build, bundle al día); e2e obligatorios con Chromium; `code_inventory.py --check`.
+  - Dependencia de desarrollo `playwright==1.63.0`.
+  - `control/`:
+    - definición de producto v1.3 (`product_definition_v4.md`; v3 archivada);
+    - 11 refinamientos y fusiones US-31.05 → US-31.01, US-21.04/US-21.06 → US-31.08;
+    - ADR-019; GAP-002 resuelto; VULN-004 mitigada;
+    - `05_CODIGO/` completo (inventario medido, frontend, tipos, tests, dependencias, convenciones, referencia generada), a petición del operador;
+    - corregidos 55 documentos obsoletos y el estado de la arquitectura (`recovery_log.md`);
+    - SPRINT-006 archivado con su CI (run #12).
+- **Stories:** VERIFIED: US-06.06, 06.07, 31.01, 31.02, 31.04, 31.06, 31.07, 31.08, 21.09, 45.02, 45.03; US-01.02 pasa de IMPLEMENTED a VERIFIED.
+- **Archivos:**
+  - `web/**`;
+  - `src/acm/{webui_app.py, webui/**, app.py, web_api.py, domain/config_schema.py, __init__.py}`;
+  - `tests/{test_webui.py, conftest.py}`;
+  - `control/tools/{code_inventory.py, derive_backlog.py, dedupe.json, item_status.json}`;
+  - `.github/workflows/ci.yml`, `.gitignore`, `pyproject.toml`, `README.md`, `control/**`.
+- **Tests:** 275/275 PASS (24 e2e), 25/25 vitest; 8/8 mutaciones detectadas.
+- **Migración:** ninguna (sin cambios de esquema).
+- **Breaking change:** no. `/` pasa de 404 a servir la interfaz.
+
 ## [0.6.0.dev0] — 2026-09-30 — SPRINT-006 — plataforma de tiempo real
 - **Cambio:**
   - Flujo de estados de historias con historial (esquema de proyecto v3); `acm_story_set_status` y `acm_story_history` (46 herramientas MCP); skill acm-schema 1.4.0.

@@ -1,4 +1,4 @@
-# Seguridad — estado (2026-09-30, SPRINT-004)
+# Seguridad — estado (2026-09-30, SPRINT-007)
 
 | Área | Estado | Detalle |
 |------|--------|---------|
@@ -7,4 +7,5 @@
 | Secretos | IMPLEMENTED | Tokens: solo hash sha256 y prefijo; redactados en la auditoría (`secrets.md`). |
 | Auditoría | IMPLEMENTED | Toda invocación MCP y todo intento rechazado (incluidos los 401) en `mcp_audit`, con `token_id`. Retención: MISSING (EPIC-44). |
 | Exposición de red | WARNING | Escucha en 127.0.0.1 por defecto. Para exponer: proxy TLS + `ACM_ALLOWED_HOSTS` (VULN-002). |
+| Interfaz web | IMPLEMENTED (VERIFIED) | CSP estricta, `nosniff`, `no-referrer`, `DENY`; Markdown saneado; token en sessionStorage (ADR-019, VULN-004). |
 | Integridad de datos | IMPLEMENTED | `foreign_keys=ON` por conexión; transacciones IMMEDIATE; creación atómica. |

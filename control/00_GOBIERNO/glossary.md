@@ -23,7 +23,7 @@
 | Historia técnica (TECH-NNN) | Trabajo técnico transversal necesario para el producto (no es deuda). |
 | GAP-NNN | Hueco/inconsistencia detectado en el sistema de control o backlog. |
 | MVP / POST-MVP | Clasificación de alcance (ADR-010). |
-| Fuente A / Fuente B | A = `backlog_completo_v1.md` (columna vertebral del backlog); B = `product_definition_v3.md` (definición v1.2). ADR-010. |
+| Fuente A / Fuente B | A = `backlog_completo_v1.md` (columna vertebral del backlog); B = `product_definition_v4.md` (definición v1.3). ADR-010. |
 | Backlog unificado | Backlog generado a partir de A y B con IDs sin colisiones; traducción de IDs de B en `id_mapping.md`. |
 | CA-NN | Criterio de aceptación binario PASS/FAIL de una historia. |
 | CONF-NNN | Conflicto de requisitos entre fuentes que requiere decisión del operador. |
@@ -58,3 +58,8 @@
 | Contexto compacto | Contexto de una historia por secciones con fuentes, resumido si supera el presupuesto (US-35.08). |
 | chars/4@v1 | Método versionado de estimación de tokens: ⌈caracteres / 4⌉ del JSON entregado (US-35.09). |
 | TD-NNN | Deuda técnica detectada durante el desarrollo (`13_BUGS/known_issues.md`); distinta de las historias TECH-NNN del backlog. |
+| CSP | Content Security Policy: cabecera con la que el servidor le dice al navegador qué scripts y conexiones admite la interfaz. En ACM: solo scripts propios y conexiones al mismo host (ADR-019). |
+| e2e | Test de extremo a extremo: Chromium real (Playwright) contra ACM real, como lo usaría una persona (`tests/test_webui.py`). |
+| Carril | En el Kanban de varios proyectos, fila propia de cada proyecto (US-06.07 CA-03); la alternativa es la vista mezclada. |
+| WCAG AA | Nivel de accesibilidad exigido a la paleta: contraste ≥ 4.5:1 para texto y ≥ 3:1 para elementos gráficos (US-31.07). |
+| code_reference.md | Referencia de símbolos generada desde el código por `control/tools/code_inventory.py`; no se edita a mano. |

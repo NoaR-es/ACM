@@ -1,3 +1,3 @@
 # Metrics
 
-**Estado del área:** N/A — no existe implementación todavía (2026-09-30). No inventar contenido: rellenar cuando exista código/infraestructura verificable.
+**Estado del área:** sin sistema de métricas (revisado 2026-09-30, SPRINT-007). Hay registros medibles: duración de cada invocación en `mcp_audit`, llamadas de inferencia en `inference_calls` y ahorro de contexto en `context_deliveries` (US-35.09).

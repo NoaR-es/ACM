@@ -28,6 +28,7 @@ from acm.inference.router import EngineRouter
 from acm.mcp_server import build_mcp_server
 from acm.skills_catalog import SkillCatalog
 from acm.web_api import build_api
+from acm.webui_app import SecureStatic, webui_available
 
 
 def build_service(settings: Settings) -> ProjectService:
@@ -124,5 +125,9 @@ def create_app(settings: Settings) -> FastAPI:
     app.include_router(ws)  # WebSocket con autenticación propia (primer mensaje), antes del montaje de /api/v1
     app.mount("/api/v1", BearerAuth(api, IdentityService(service), AuditService(service)))
     app.mount("/mcp", mcp_app)
+    if webui_available():  # ADR-019: la interfaz compilada va dentro del paquete; se monta la última
+        app.mount("/", SecureStatic(), name="webui")
+    else:
+        logger.warning("interfaz web no compilada (src/acm/webui): ejecuta `npm run build` en web/")
     app.state.service = service
     return app

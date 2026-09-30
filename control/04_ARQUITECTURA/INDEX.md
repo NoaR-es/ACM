@@ -2,15 +2,15 @@
 
 **Responde a:** Cómo está diseñado
 
-**Salud:** OK — topología (ADR-014), SQLite (ADR-013) e interfaces de inferencia (ADR-015) decididas; nada implementado
+**Salud:** OK — topología (ADR-014), SQLite (ADR-013), inferencia (ADR-015/016), tokens (ADR-017), eventos (ADR-018) e interfaz web (ADR-019) implementados y verificados; estados por componente en `architecture.md` (revisado en SPRINT-007)
 
 | Documento | Estado |
 |-----------|--------|
 | `architecture.md` | ACTIVE |
 | `system_context.md` | ACTIVE |
-| `components.md` | N/A (plantilla) |
-| `modules.md` | N/A (plantilla) |
-| `services.md` | N/A (plantilla) |
+| `components.md` | ACTIVE |
+| `modules.md` | ACTIVE |
+| `services.md` | ACTIVE |
 | `dependencies.md` | ACTIVE |
 | `inference_ports.md` | ACTIVE (DESIGN, ADR-015) |
 | `architecture_decision_records.md` | ACTIVE |

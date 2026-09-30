@@ -156,11 +156,13 @@ def build_api(
     # ------------------------------------------------------------------ identidad y metadatos
     @r.get("/me")
     def me() -> dict[str, Any]:
+        """Tu identidad: principal, tipo, rol global, proyectos y tokens activos."""
         who = request_principal()
         return identity.get_principal(who, who)
 
     @r.get("/meta")
     def meta() -> dict[str, Any]:
+        """Versión de ACM, estados de historia, transiciones permitidas, columnas del Kanban y último evento."""
         return {
             "acm_version": __version__,
             "story_statuses": list(STORY_STATUSES),
@@ -186,15 +188,18 @@ def build_api(
 
     @r.get("/projects")
     def projects() -> dict[str, Any]:
+        """Cartera: proyectos accesibles con su semáforo de gobernanza y las historias por estado."""
         who = request_principal()
         return {"projects": [portfolio_entry(who, p) for p in service.list_for(who)]}
 
     @r.get("/projects/{project_id}")
     def project(project_id: str) -> dict[str, Any]:
+        """Metadatos del proyecto, tu rol y su configuración."""
         return service.open(request_principal(), project_id)
 
     @r.get("/projects/{project_id}/backlog")
     def project_backlog(project_id: str) -> dict[str, Any]:
+        """Backlog completo: requisitos, épicas con features, historias con criterios y huecos de trazabilidad."""
         who = request_principal()
         return {
             "project_id": project_id,
@@ -206,6 +211,7 @@ def build_api(
 
     @r.get("/projects/{project_id}/stories/{story_id}")
     def story(project_id: str, story_id: str) -> dict[str, Any]:
+        """Historia con criterios, requisitos, historial de estados y transiciones permitidas."""
         who = request_principal()
         return {
             **backlog.get_story(who, project_id, story_id),
@@ -215,6 +221,7 @@ def build_api(
 
     @r.post("/projects/{project_id}/stories/{story_id}/status")
     def story_status(project_id: str, story_id: str, change: StatusChange) -> dict[str, Any]:
+        """Mueve la historia a otro estado permitido (DONE solo desde VERIFIED)."""
         who = request_principal()
         args = {"project_id": project_id, "story_id": story_id, "status": change.status, "reason": change.reason}
         return mutate(
@@ -225,39 +232,47 @@ def build_api(
 
     @r.post("/projects/{project_id}/stories/{story_id}/ready")
     def story_ready(project_id: str, story_id: str) -> dict[str, Any]:
+        """Gate de calidad: pasa la historia de PLANNED a READY si está completa."""
         who = request_principal()
         args = {"project_id": project_id, "story_id": story_id}
         return mutate("rest:story_mark_ready", args, lambda: backlog.mark_ready(who, project_id, story_id))
 
     @r.get("/projects/{project_id}/requirements/{requirement_id}/trace")
     def trace(project_id: str, requirement_id: str) -> dict[str, Any]:
+        """Trazabilidad de un requisito: épicas, features e historias que lo implementan."""
         return backlog.trace_requirement(request_principal(), project_id, requirement_id)
 
     @r.get("/projects/{project_id}/context/{story_id}")
     def compact_context(project_id: str, story_id: str) -> dict[str, Any]:
+        """Contexto compacto de una historia para agentes, con fuentes y tokens ahorrados."""
         return context.compact(request_principal(), project_id, story_id)
 
     @r.get("/projects/{project_id}/members")
     def members(project_id: str) -> dict[str, Any]:
+        """Miembros del proyecto con su rol y tipo."""
         return identity.list_members(request_principal(), project_id)
 
     @r.get("/projects/{project_id}/config")
     def config(project_id: str) -> dict[str, Any]:
+        """Parámetros de configuración del proyecto con valor, valores permitidos y quién los usa."""
         return service.get_config(request_principal(), project_id)
 
     @r.get("/projects/{project_id}/governance")
     def governance(project_id: str, limit: int = 20) -> dict[str, Any]:
+        """Semáforo, integridad e histórico de auditorías del Watchdog."""
         who = request_principal()
         return {**watchdog.status(who, project_id), "history": watchdog.history(who, project_id, limit)["runs"]}
 
     @r.post("/projects/{project_id}/watchdog")
     def watchdog_run(project_id: str) -> dict[str, Any]:
+        """Ejecuta ahora una auditoría de gobernanza del proyecto."""
         who = request_principal()
         return mutate("rest:watchdog_run", {"project_id": project_id}, lambda: watchdog.run(who, project_id))
 
     # ------------------------------------------------------------------ Kanban (US-06.01; uno o varios proyectos)
     @r.get("/kanban")
     def kanban(projects: str | None = Query(default=None, description="project_id separados por comas")) -> dict:
+        """Tablero Kanban de uno o varios proyectos: columnas, transiciones y tarjetas."""
         who = request_principal()
         accessible = [p["project_id"] for p in service.list_for(who)]
         wanted = accessible if not projects else [p.strip() for p in projects.split(",") if p.strip()]
@@ -298,12 +313,14 @@ def build_api(
     def activity(
         limit: int = 100, project_id: str | None = None, principal_id: str | None = None, operation: str | None = None
     ) -> dict[str, Any]:
+        """Auditoría de invocaciones (solo admin), filtrable por proyecto, principal y operación."""
         return audit.list(
             request_principal(), limit=limit, filter_principal=principal_id, operation=operation, project_id=project_id
         )
 
     @r.get("/events")
     def events(after: int = 0, limit: int = 200) -> dict[str, Any]:
+        """Eventos de dominio posteriores a un seq, filtrados por visibilidad."""
         who = request_principal()
         if not 1 <= limit <= REPLAY_MAX:
             raise InvalidArgument(f"debe estar entre 1 y {REPLAY_MAX}", field="limit")
@@ -315,23 +332,28 @@ def build_api(
 
     @r.get("/health")
     def health() -> dict[str, Any]:
+        """Salud de cada componente: bases SQLite, catálogo de skills y motores (solo admin)."""
         return watchdog.health(request_principal(), catalog)
 
     @r.get("/engines")
     def engines_list() -> dict[str, Any]:
+        """Motores de inferencia registrados, estado, modelos detectados y reglas disponibles."""
         rules = next(e for e in engines.registry.decision if e.provider == "rules")
         return {"engines": engines.registry.list(), "rules": rules.catalog()}  # type: ignore[attr-defined]
 
     @r.get("/savings")
     def savings(principal_id: str | None = None, project_id: str | None = None) -> dict[str, Any]:
+        """Tokens ahorrados a los agentes por el contexto compacto (solo admin)."""
         return context.savings_report(request_principal(), filter_principal=principal_id, project_id=project_id)
 
     @r.get("/skills")
     def skills() -> dict[str, Any]:
+        """Catálogo de skills que ACM sirve a los agentes."""
         return {"skills": catalog.entries(), "rejected": catalog.rejected}
 
     @r.get("/skills/{name}")
     def skill(name: str) -> dict[str, Any]:
+        """Archivos de una skill (Markdown con frontmatter)."""
         entry = catalog.skills.get(name)
         if entry is None:
             raise NotFound(f"la skill {name!r} no existe", field="name")
@@ -339,10 +361,12 @@ def build_api(
 
     @r.get("/principals")
     def principals() -> dict[str, Any]:
+        """Principales (usuarios y agentes) y roles disponibles (solo admin)."""
         return identity.list_principals(request_principal())
 
     @r.get("/tokens")
     def tokens(principal_id: str | None = None) -> dict[str, Any]:
+        """Tokens sin su secreto: prefijo, estado y uso."""
         return identity.list_tokens(request_principal(), principal_id)
 
     api.include_router(r)

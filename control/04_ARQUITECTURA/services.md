@@ -1,3 +1,3 @@
 # Services
 
-**Estado del área:** N/A — no existe implementación todavía (2026-09-30). No inventar contenido: rellenar cuando exista código/infraestructura verificable.
+**Estado del área:** ACTIVE (SPRINT-007). Un solo servicio desplegable: el proceso `acm serve` (ADR-014), con interfaz `/`, REST `/api/v1`, WebSocket `/api/v1/ws` y MCP `/mcp`; `acm mcp-stdio` es el mismo servidor MCP sobre stdio. Servicios de dominio internos: `../05_CODIGO/services.md`.

@@ -1,6 +1,6 @@
 # Visión de producto
 
-> Resumen. Texto íntegro: `01_PRODUCTO/product_definition_v3.md` §1, §17, §18 y `01_PRODUCTO/backlog_completo_v1.md`.
+> Resumen. Texto íntegro: `01_PRODUCTO/product_definition_v4.md` §1, §17, §18 y `01_PRODUCTO/backlog_completo_v1.md`.
 
 ACM es una **memoria operativa verificable del desarrollo software**: un motor de estado, conocimiento, gobernanza,
 ejecución y trazabilidad que permite a múltiples agentes IA trabajar de forma autónoma sobre múltiples proyectos

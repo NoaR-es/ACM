@@ -1,3 +1,3 @@
 # Developer documentation
 
-**Estado del área:** N/A — no existe implementación todavía (2026-09-30). No inventar contenido: rellenar cuando exista código/infraestructura verificable.
+**Estado del área:** ACTIVE (SPRINT-007). `/README.md` (desarrollo backend y frontend) y `../05_CODIGO/` (control completo del código: inventario, módulos, frontend, tests, convenciones en `file_documentation.md`).

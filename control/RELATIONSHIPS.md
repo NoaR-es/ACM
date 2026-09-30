@@ -9,18 +9,22 @@ SPRINT-000
 ├── TASK-000-02 → control/01_PRODUCTO/product_definition_v1.md (ahora en 99_ARCHIVO), control/tools/derive_backlog.py, TEST-CTRL-001, ADR-004
 ├── TASK-000-03 → control/14_DECISIONES/decisions.md (ADR-001..004)
 ├── TASK-000-04 → IMP-001 (CLOSED), GAP-002 → ADR-005
-├── TASK-000-07 → GAP-002 (tooling frontend)
+├── TASK-000-07 → GAP-002 (RESOLVED) → ADR-019 (resuelta en SPRINT-007)
 ├── TASK-000-05 → IMP-002, GAP-003 → ADR-006
 ├── TASK-000-06 → ADR-003 (SUPERSEDED) → ADR-007 (SUPERSEDED) → ADR-009, control/tools/derive_backlog.py
 ├── TASK-000-08 → product_definition_v2.md, ADR-008, ADR-009, 06_API/mcp_server.md
 ├── TASK-000-09 → backlog_completo_v1.md, ADR-010, id_mapping.md, tools/derive_backlog.py
 ├── TASK-000-10 → GAP-006
 ├── TASK-000-11 → IMP-003, CONF-001 → ADR-012, CONF-002 → ADR-011
-└── TASK-000-12 → product_definition_v3.md, ADR-012, US-35.08..US-35.11, US-47.01
+└── TASK-000-12 → product_definition_v3.md (archivado), ADR-012, US-35.08..US-35.11, US-47.01
 ```
 
 ## Código → origen
 ```
+control/tools/code_inventory.py
+├── TASK-007-10 (petición del operador sobre 05_CODIGO)
+└── 05_CODIGO/code_reference.md (generado), 05_CODIGO/file_inventory.md (verificado), CI job `test`
+
 control/tools/derive_backlog.py
 ├── TASK-000-02
 ├── ADR-010 (FEATURE_MAP, NEW_EPICS, constantes MVP; antes ADR-009, ADR-007, ADR-003)
@@ -29,7 +33,7 @@ control/tools/derive_backlog.py
 ```
 
 ## Producto
-- Backlog unificado (ADR-010) = fuente A `01_PRODUCTO/backlog_completo_v1.md` + fuente B `01_PRODUCTO/product_definition_v3.md` (v1.2, que supersede a v1.1 y v1.0 en `99_ARCHIVO/superseded/`). Traducción de IDs de B: `01_PRODUCTO/id_mapping.md`.
+- Backlog unificado (ADR-010) = fuente A `01_PRODUCTO/backlog_completo_v1.md` + fuente B `01_PRODUCTO/product_definition_v4.md` (v1.3, que supersede a v1.2, v1.1 y v1.0 en `99_ARCHIVO/superseded/`). Traducción de IDs de B: `01_PRODUCTO/id_mapping.md`.
 - Épica → Feature → Historia: generado en `01_PRODUCTO/features.md` y `01_PRODUCTO/user_stories.md` (bidireccional por ID).
 - Requisito funcional → Épica: `01_PRODUCTO/requirements.md` (REQ-F-01..40).
 - Épica → Componente arquitectónico: `04_ARQUITECTURA/architecture.md`.
@@ -38,7 +42,7 @@ control/tools/derive_backlog.py
 ## Gaps → afectados
 ```
 GAP-001 → 351 US (todas salvo US-01.01 y US-15.09..12)
-GAP-002 → IMP-001, TASK-000-04, TASK-000-07, ADR-001, ADR-005
+GAP-002 (RESOLVED) → IMP-001, TASK-000-04, TASK-000-07, ADR-001, ADR-005, ADR-019
 GAP-003 (RESOLVED) → IMP-002, ADR-006, EPIC-24, SPIKE-006, TECH-020
 GAP-004 → EPIC-03..EPIC-48
 GAP-005 → 07_DATOS/data_architecture.md, EPIC-13, 16, 17, 27
@@ -80,7 +84,7 @@ ADR-009 (MVP v2)
 ```
 ADR-010 (backlog unificado + MVP v3)
 ├── supersede ADR-009
-├── fuentes: backlog_completo_v1.md (A), product_definition_v3.md (B, antes v2)
+├── fuentes: backlog_completo_v1.md (A), product_definition_v4.md (B, v1.3; antes v3/v2)
 ├── genera: epics.md, features.md, user_stories.md, backlog.md, technical_stories.md, id_mapping.md
 ├── nuevas épicas: EPIC-49 (deuda), EPIC-50 (JEV ← ADR-006), EPIC-51 (sandbox), EPIC-52 (CLI), EPIC-53 (extensiones)
 └── conflictos: CONF-001 (EPIC-47 ↔ EPIC-50), CONF-002 (EPIC-02 ↔ EPIC-18), CONF-003 (EPIC-07/08/09/46), CONF-004 (EPIC-14)
@@ -204,4 +208,20 @@ SPRINT-006
 Código → historias: events.py ← US-21.01, ADR-018 · web_api.py ← US-06.01, 06.03, 21.02, 21.03, 30.01..03 · backlog.set_status ← US-06.02
 
 Código → historias: backlog.py ← US-03.03, 04.01..03, 24.01, 24.03 · audit.py ← US-14.10/11, TD-001 · skills_catalog.py ← US-15.01, 15.06, 15.07 · skills/** ← US-15.08..10 · mcp_server.py ← US-14.04..11, US-15.04..07
+
+SPRINT-007
+├── TASK-000-07 / ADR-019 → web/**, src/acm/webui_app.py, src/acm/webui/ (build), app.py (montaje en /), CI job `web`
+├── US-06.06 → web/src/pages/Story.tsx, KanbanBoard.tsx ← GET /stories/{s}, GET /context/{s} → tests/test_webui.py::test_us0606_*
+├── US-06.07 → web/src/KanbanBoard.tsx, kanban.ts, pages/KanbanPage.tsx ← GET /kanban?projects=, POST …/status → tests/test_webui.py::test_us0607_*, test_us3107_ca04_*; web/src/kanban.test.ts
+├── US-31.01, US-31.02 → web/src/pages/Activity.tsx ← GET /activity, WS activity → tests/test_webui.py::test_us3101_us3102_consola_filtrable (absorbe US-31.05)
+├── US-31.04, US-21.09 → web/src/pages/Activity.tsx (feed), live.tsx ← WS activity → tests/test_webui.py::test_us3104_us2109_*
+├── US-31.06 → web/src/pages/{Project,Story,Docs,System}.tsx ← REST v1 → tests/test_webui.py::test_us3106_*
+├── US-31.07 → web/src/theme.ts, prefs.tsx, styles.css → tests/test_webui.py::test_us3107_*; web/src/theme.test.ts
+├── US-31.08 → web/src/live.tsx, liveCore.ts ← WS /api/v1/ws (ADR-018) → tests/test_webui.py::test_us3108_*; web/src/liveCore.test.ts (absorbe US-21.04, US-21.06)
+├── US-45.02, US-45.03 → web/src/pages/Dashboard.tsx ← GET /projects, WS → tests/test_webui.py::test_us4502_*, test_us4503_*
+├── US-01.02 CA-03/CA-04 → web/src/pages/Project.tsx (migas, navegación, ErrorBox) → tests/test_webui.py::test_us0102_*
+├── VULN-004 → markdown.ts (DOMPurify), webui_app.SecureStatic (CSP) → web/src/markdown.test.ts, tests/test_webui.py::test_ui_sin_errores_de_consola_y_cabeceras_de_seguridad
+└── 05_CODIGO/{frontend,components,hooks,types,tests,dependencies}.md, 16_DOCUMENTACION/user_documentation.md
+
+Código → historias: webui_app.py ← ADR-019, VULN-004 · KanbanBoard.tsx/kanban.ts ← US-06.06, 06.07 · live.tsx/liveCore.ts ← US-31.08, 31.04 · Activity.tsx ← US-31.01, 31.02, 31.04, 21.09 · Dashboard.tsx ← US-45.02, 45.03 · Project/Story/Docs/System.tsx ← US-31.06, US-01.02 · theme.ts/prefs.tsx ← US-31.07
 ```

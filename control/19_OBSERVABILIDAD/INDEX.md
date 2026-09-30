@@ -6,11 +6,11 @@
 
 | Documento | Estado |
 |-----------|--------|
-| `logging.md` | N/A (plantilla) |
-| `metrics.md` | N/A (plantilla) |
-| `tracing.md` | N/A (plantilla) |
-| `alerting.md` | N/A (plantilla) |
-| `dashboards.md` | N/A (plantilla) |
+| `logging.md` | ACTIVE |
+| `metrics.md` | ACTIVE |
+| `tracing.md` | N/A (no existe aún; revisado en SPRINT-007) |
+| `alerting.md` | N/A (no existe aún; revisado en SPRINT-007) |
+| `dashboards.md` | ACTIVE |
 
 Implementado (SPRINT-005):
 - **Salud por componente:** `acm_health` (admin; bases, skills, motores), recalculada en cada llamada; `/api/health` público mínimo.

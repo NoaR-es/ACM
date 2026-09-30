@@ -5,6 +5,29 @@ on:
   pull_request:
 
 jobs:
+  web:
+    # Interfaz web (ADR-019): tipos, tests unitarios y que el bundle versionado en src/acm/webui coincide con web/.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - name: Tests unitarios (vitest)
+        run: npm test
+      - name: Typecheck y build
+        run: npm run build
+      - name: Bundle versionado al día
+        run: |
+          git status --porcelain -- ../src/acm/webui
+          test -z "$(git status --porcelain -- ../src/acm/webui)"
+
   test:
     runs-on: ubuntu-latest
     steps:
@@ -14,9 +37,15 @@ jobs:
         run: |
           uv venv .venv --python 3.11
           uv pip install --python .venv/bin/python -e ".[dev]"
+      - name: Chromium para los tests e2e de la interfaz
+        run: .venv/bin/python -m playwright install --with-deps chromium
       - name: Lint
         run: .venv/bin/ruff check src tests
-      - name: Tests
+      - name: Tests (incluidos e2e obligatorios)
+        env:
+          ACM_E2E_REQUIRED: "1"
         run: .venv/bin/pytest -q
       - name: Integridad del backlog (control/)
         run: python3 control/tools/derive_backlog.py --check
+      - name: Inventario de código al día (control/05_CODIGO)
+        run: python3 control/tools/code_inventory.py --check

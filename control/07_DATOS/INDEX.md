@@ -2,13 +2,13 @@
 
 **Responde a:** Cómo se almacenan los datos
 
-**Salud:** OK — bases global y de proyecto v1 implementadas (`databases.md`); resto del modelo pendiente (GAP-005)
+**Salud:** OK — bases global v6 y de proyecto v3 implementadas (`databases.md`); resto del modelo pendiente (GAP-005)
 
 | Documento | Estado |
 |-----------|--------|
 | `data_architecture.md` | ACTIVE |
 | `databases.md` | ACTIVE |
-| `data_flows.md` | N/A (plantilla) |
+| `data_flows.md` | ACTIVE |
 | `relational/` | directorio vacío |
 | `nosql/` | directorio vacío |
 | `vector/` | directorio vacío |

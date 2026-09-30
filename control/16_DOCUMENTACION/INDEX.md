@@ -2,16 +2,16 @@
 
 **Responde a:** Cómo está documentado
 
-**Salud:** N/A
+**Salud:** OK — documentación de usuario, desarrollo, API, despliegue y operación (SPRINT-007)
 
 | Documento | Estado |
 |-----------|--------|
-| `documentation_index.md` | N/A (plantilla) |
-| `user_documentation.md` | N/A (plantilla) |
-| `developer_documentation.md` | N/A (plantilla) |
-| `api_documentation.md` | N/A (plantilla) |
-| `deployment_documentation.md` | N/A (plantilla) |
-| `operations.md` | N/A (plantilla) |
+| `documentation_index.md` | ACTIVE |
+| `user_documentation.md` | ACTIVE |
+| `developer_documentation.md` | ACTIVE |
+| `api_documentation.md` | ACTIVE |
+| `deployment_documentation.md` | ACTIVE |
+| `operations.md` | ACTIVE |
 
 Documentos históricos: ninguno (ver `99_ARCHIVO/`).
 Relaciones: `../RELATIONSHIPS.md`.

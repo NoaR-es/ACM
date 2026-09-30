@@ -1,8 +1,8 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v3.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v4.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
 
 # Épicas (backlog unificado)
 
-Total: **53** · Fuentes: A=`01_PRODUCTO/backlog_completo_v1.md`, B=`01_PRODUCTO/product_definition_v3.md` · Regla: ADR-010
+Total: **53** · Fuentes: A=`01_PRODUCTO/backlog_completo_v1.md`, B=`01_PRODUCTO/product_definition_v4.md` · Regla: ADR-010
 
 | ID | Título | Origen | Alcance | Estado | Features | Historias | CA |
 |----|--------|--------|---------|--------|----------|-----------|----|
@@ -11,7 +11,7 @@ Total: **53** · Fuentes: A=`01_PRODUCTO/backlog_completo_v1.md`, B=`01_PRODUCTO
 | EPIC-03 | PRODUCT OWNER Y DESCUBRIMIENTO DE REQUISITOS | A+B | MVP | PLANNED | 3 | 10 | 14 |
 | EPIC-04 | PRODUCT BACKLOG Y ÉPICAS | A+B | MVP | PLANNED | 5 | 10 | 14 |
 | EPIC-05 | SCRUM MASTER Y PLANIFICACIÓN | A+B | MVP | PLANNED | 4 | 12 | 12 |
-| EPIC-06 | KANBAN REACTIVO | A+B | MVP | PLANNED | 2 | 5 | 12 |
+| EPIC-06 | KANBAN REACTIVO | A+B | MVP | PLANNED | 3 | 6 | 19 |
 | EPIC-07 | ORQUESTADOR DE AGENTES | A+B | POST-MVP | PLANNED | 4 | 10 | 14 |
 | EPIC-08 | AGENTES, INSTANCIAS Y HILOS | A | POST-MVP | PLANNED | 1 | 3 | 13 |
 | EPIC-09 | ROLES PROFESIONALES DEL EQUIPO IA | A | POST-MVP | PLANNED | 1 | 3 | 13 |
@@ -26,7 +26,7 @@ Total: **53** · Fuentes: A=`01_PRODUCTO/backlog_completo_v1.md`, B=`01_PRODUCTO
 | EPIC-18 | SQLITE Y PERSISTENCIA | A+B | MVP | PLANNED | 4 | 9 | 11 |
 | EPIC-19 | CONCURRENCIA Y LOCKING | A+B | MVP | PLANNED | 3 | 8 | 10 |
 | EPIC-20 | RBAC, IDENTIDAD Y TOKENS | A+B | MVP | PLANNED | 6 | 11 | 21 |
-| EPIC-21 | WEBSOCKETS Y EVENT BUS | A+B | MVP | PLANNED | 4 | 11 | 10 |
+| EPIC-21 | WEBSOCKETS Y EVENT BUS | A+B | MVP | PLANNED | 4 | 9 | 11 |
 | EPIC-22 | MODELOS IA LOCALES Y OLLAMA | A+B | MVP | PLANNED | 4 | 8 | 11 |
 | EPIC-23 | GOBERNANZA DE INFERENCIA | A+B | POST-MVP | PLANNED | 3 | 8 | 11 |
 | EPIC-24 | GESTIÓN MULTIPROYECTO | A+B | MVP | PLANNED | 2 | 3 | 10 |
@@ -36,7 +36,7 @@ Total: **53** · Fuentes: A=`01_PRODUCTO/backlog_completo_v1.md`, B=`01_PRODUCTO
 | EPIC-28 | QA, TESTING Y CALIDAD | A+B | MVP | PLANNED | 4 | 10 | 11 |
 | EPIC-29 | BUGS, INCIDENTES Y RECUPERACIÓN | A+B | MVP | PLANNED | 7 | 18 | 11 |
 | EPIC-30 | APIs Y SERVICIOS | A | MVP | PLANNED | 1 | 3 | 11 |
-| EPIC-31 | CONSOLA Y SUPERVISIÓN OPERATIVA | A+B | MVP | PLANNED | 2 | 5 | 11 |
+| EPIC-31 | CONSOLA Y SUPERVISIÓN OPERATIVA | A+B | MVP | PLANNED | 3 | 7 | 24 |
 | EPIC-32 | NOTIFICACIONES Y EVENTOS DE NEGOCIO | A+B | POST-MVP | PLANNED | 5 | 10 | 6 |
 | EPIC-33 | CONFIGURACIÓN DEL SISTEMA | A | POST-MVP | PLANNED | 1 | 2 | 7 |
 | EPIC-34 | GESTIÓN DE RECURSOS DEL AGENTE | A | POST-MVP | PLANNED | 1 | 3 | 10 |
@@ -50,7 +50,7 @@ Total: **53** · Fuentes: A=`01_PRODUCTO/backlog_completo_v1.md`, B=`01_PRODUCTO
 | EPIC-42 | GESTIÓN DEL CONTEXTO DE SPRINT | A | POST-MVP | PLANNED | 1 | 2 | 8 |
 | EPIC-43 | REPORTING DEL PRODUCTO | A+B | POST-MVP | PLANNED | 5 | 8 | 7 |
 | EPIC-44 | SEGURIDAD OPERATIVA | A+B | MVP | PLANNED | 4 | 8 | 7 |
-| EPIC-45 | EXPERIENCIA DE SUPERVISIÓN | A+B | POST-MVP | PLANNED | 2 | 3 | 8 |
+| EPIC-45 | EXPERIENCIA DE SUPERVISIÓN | A+B | POST-MVP | PLANNED | 2 | 3 | 11 |
 | EPIC-46 | AUTOMATIZACIÓN DEL CICLO DE DESARROLLO | A+B | POST-MVP | PLANNED | 5 | 10 | 9 |
 | EPIC-47 | PREPARACIÓN PARA JEV / EVOLUCIÓN DEL ENTORNO DE EJECUCIÓN | A | MVP | PLANNED | 1 | 2 | 7 |
 | EPIC-48 | CONTROL Y GOBERNANZA FINAL DEL SISTEMA | A+B | POST-MVP | PLANNED | 4 | 9 | 15 |

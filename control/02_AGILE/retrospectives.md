@@ -106,3 +106,24 @@
 **Acciones**
 - Releer cada helper de test antes de ejecutarlo, no solo el código de producto.
 - Buscar el término en el glosario antes de añadirlo.
+
+## SPRINT-007 (2026-09-30)
+**Bien**
+- Los e2e prueban los CA con un navegador real contra ACM real, y en la CI son obligatorios: si falta el navegador, la suite falla en vez de saltarse (`ACM_E2E_REQUIRED=1`).
+- El contraste se verifica dos veces: sobre la paleta (vitest) y sobre la página renderizada en ambos temas (e2e).
+- Escribir los refinamientos destapó dos huecos: el filtro por principal no tenía test y la consola no avisaba cuando un filtro no daba resultados. Se añadieron test y mensaje antes de cerrar.
+
+**Mal**
+- **El operador tuvo que avisar de que `05_CODIGO/` no reflejaba el código.** Se iba escribiendo frontend y tests sin actualizar el inventario. Además, un primer borrador de `file_inventory.md` traía recuentos de tests inventados, que se sustituyeron por los medidos con `pytest --collect-only`. Causa: la regla existía, pero nada la hacía cumplir.
+- Dos tests e2e fallaron por la forma de la prueba, no por el producto:
+  - arrastre a una columna fuera de pantalla;
+  - una etiqueta «Principal» ambigua con la navegación.
+
+**Acciones**
+- `code_inventory.py --check` en la CI:
+  - cada archivo de código necesita fila en `file_inventory.md` y cabecera;
+  - `code_reference.md` se genera desde el código.
+  Hecho en este sprint.
+- Nunca escribir cifras en `control/` sin la orden que las mide al lado.
+- En e2e, localizar controles por rol y nombre exacto.
+

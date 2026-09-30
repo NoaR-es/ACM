@@ -1,3 +1,3 @@
 # Regression tests
 
-**Estado del área:** N/A — no existe implementación todavía (2026-09-30). No inventar contenido: rellenar cuando exista código/infraestructura verificable.
+**Estado del área:** ACTIVE (SPRINT-007). Regresión = la suite completa en cada push (CI: pytest con e2e obligatorios, vitest, build reproducible, `derive_backlog --check`, `code_inventory --check`), más mutación manual de invariantes por sprint (`test_results.md`).

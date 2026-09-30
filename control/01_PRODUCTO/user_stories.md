@@ -1,8 +1,8 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v3.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v4.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
 
 # User Stories (backlog unificado)
 
-Total activas: **472** · Con criterios de aceptación: **161** · Sin criterios: **311** · Posibles solapamientos señalados: **30**
+Total activas: **473** · Con criterios de aceptación: **169** · Sin criterios: **304** · Posibles solapamientos señalados: **29**
 
 > READY exige la cadena completa de la *Regla de aceptación del backlog* (fuente A): precondiciones, flujo,
 > alternativas, errores, reglas, validaciones, casos límite, CA, tareas y pruebas. Se documenta en
@@ -53,7 +53,7 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-01.02 — Abrir y seleccionar un proyecto
 
 - **Como** usuario autorizado **quiero** seleccionar un proyecto existente **para** trabajar sobre su contexto, memoria y backlog.
-- Origen: A:US-01.02 · Épica: EPIC-01 · Feature: FEAT-01.01 · Alcance: MVP · Prioridad: P1 · Estado: IMPLEMENTED · Sprint: SPRINT-001
+- Origen: A:US-01.02 · Épica: EPIC-01 · Feature: FEAT-01.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-001
 - Absorbe a: US-01.05
 - Refinamiento: `refinements/US-01.02.md` — completo (regla READY de A)
 - Criterios de aceptación:
@@ -548,8 +548,25 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-06.06
 
 - Enunciado: Como operador quiero abrir una tarjeta para consultar su contexto completo.
-- Origen: B:US-19.03 · Épica: EPIC-06 · Feature: FEAT-06.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-19.03 · Épica: EPIC-06 · Feature: FEAT-06.02 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-007
+- Refinamiento: `refinements/US-06.06.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Pulsar una tarjeta del Kanban abre la ficha de su historia. (definido en refinamiento)
+  - [ ] CA-02: La ficha muestra enunciado, criterios, requisitos, épica, feature y estado. (definido en refinamiento)
+  - [ ] CA-03: Desde la ficha se puede generar el contexto compacto con su estimación de ahorro. (definido en refinamiento)
+
+### FEAT-06.03 — Kanban multiproyecto **[v1.3]** · origen B:FEAT-19.06
+
+#### US-06.07
+
+- Enunciado: Como operador quiero ver en un mismo tablero Kanban uno o varios proyectos a la vez, distinguidos por color, para supervisar todo el trabajo de un vistazo.
+- Origen: B:US-19.13 · Épica: EPIC-06 · Feature: FEAT-06.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-007
+- Refinamiento: `refinements/US-06.07.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: El operador elige qué proyectos aparecen en el tablero: uno o varios.
+  - [ ] CA-02: Cada tarjeta indica a qué proyecto pertenece con su color y su nombre.
+  - [ ] CA-03: Los proyectos pueden verse mezclados o en un carril por proyecto.
+  - [ ] CA-04: Una tarjeta se puede mover a otro estado permitido arrastrándola o con teclado; un movimiento no permitido se rechaza con un mensaje.
 
 ## EPIC-07 — ORQUESTADOR DE AGENTES
 
@@ -2021,7 +2038,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-21.04
 
 - Enunciado: Como frontend quiero recibir cambios de estado del proyecto en tiempo real.
-- Origen: B:US-18.01 · Épica: EPIC-21 · Feature: FEAT-21.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-18.01 · Épica: EPIC-21 · Feature: FEAT-21.02 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-31.08 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 #### US-21.05
@@ -2033,7 +2051,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-21.06
 
 - Enunciado: Como frontend quiero recibir movimientos del Kanban en tiempo real.
-- Origen: B:US-18.03 · Épica: EPIC-21 · Feature: FEAT-21.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-18.03 · Épica: EPIC-21 · Feature: FEAT-21.02 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-31.08 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 ### FEAT-21.03 — Actividad de agentes · origen B:FEAT-18.02
@@ -2053,8 +2072,10 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-21.09
 
 - Enunciado: Como operador quiero ver qué herramienta está ejecutando un agente.
-- Origen: B:US-18.06 · Épica: EPIC-21 · Feature: FEAT-21.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-18.06 · Épica: EPIC-21 · Feature: FEAT-21.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-007
+- Refinamiento: `refinements/US-21.09.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: El feed muestra el nombre de la herramienta invocada y el proyecto sobre el que actúa. (definido en refinamiento)
 
 ### FEAT-21.04 — Presencia · origen B:FEAT-18.03
 
@@ -2915,7 +2936,9 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-31.01 — Consultar consola de actividad
 
 - **Como** usuario técnico **quiero** visualizar actividad del sistema **para** supervisar las ejecuciones.
-- Origen: A:US-31.01 · Épica: EPIC-31 · Feature: FEAT-31.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-31.01 · Épica: EPIC-31 · Feature: FEAT-31.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-007
+- Absorbe a: US-31.05
+- Refinamiento: `refinements/US-31.01.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Se muestran eventos relevantes.
   - [ ] CA-02: Los eventos incluyen timestamp.
@@ -2925,7 +2948,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-31.02 — Filtrar actividad
 
 - **Como** usuario técnico **quiero** filtrar la actividad **para** localizar rápidamente un incidente.
-- Origen: A:US-31.02 · Épica: EPIC-31 · Feature: FEAT-31.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-31.02 · Épica: EPIC-31 · Feature: FEAT-31.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-007
+- Refinamiento: `refinements/US-31.02.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: El filtro se aplica al conjunto de eventos.
   - [ ] CA-02: Los resultados coinciden con los filtros.
@@ -2946,15 +2970,53 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-31.04
 
 - Enunciado: Como operador quiero ver un feed de actividad de los agentes.
-- Origen: B:US-19.04 · Épica: EPIC-31 · Feature: FEAT-31.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-19.04 · Épica: EPIC-31 · Feature: FEAT-31.02 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-007
+- Refinamiento: `refinements/US-31.04.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Cada invocación de un agente aparece en el feed sin recargar. (definido en refinamiento)
+  - [ ] CA-02: Una invocación fallida se distingue visualmente y con texto. (definido en refinamiento)
 
 #### US-31.05
 
 - Enunciado: Como operador quiero consultar el historial de actividad de un agente.
-- Origen: B:US-19.05 · Épica: EPIC-31 · Feature: FEAT-31.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- ⚠ Posible solapamiento con US-31.01: revisar si es duplicado, detalle o historia distinta (GAP-006)
+- Origen: B:US-19.05 · Épica: EPIC-31 · Feature: FEAT-31.02 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-31.01 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
+
+### FEAT-31.03 — Interfaz web completa **[v1.3]** · origen B:FEAT-19.05
+
+#### US-31.06
+
+- Enunciado: Como operador quiero revisar desde la interfaz web todo lo que ACM guarda de mis proyectos y la documentación de ACM, sin usar herramientas de agente.
+- Origen: B:US-19.10 · Épica: EPIC-31 · Feature: FEAT-31.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-007
+- Refinamiento: `refinements/US-31.06.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Cada tipo de dato que ACM guarda de un proyecto (requisitos, épicas, features, historias, criterios de aceptación, trazabilidad, estados e historial, gobernanza, miembros y configuración) tiene una vista en la interfaz.
+  - [ ] CA-02: Desde una historia se puede navegar a su épica, feature, requisitos y criterios.
+  - [ ] CA-03: La documentación de ACM (skills, flujo de estados y referencia de la API) se puede consultar en la interfaz.
+  - [ ] CA-04: Solo se muestran los proyectos y datos a los que el usuario tiene acceso.
+
+#### US-31.07
+
+- Enunciado: Como usuario quiero una interfaz legible, con colores de contraste suficiente en tema claro y oscuro, para trabajar sin esfuerzo visual.
+- Origen: B:US-19.11 · Épica: EPIC-31 · Feature: FEAT-31.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-007
+- Refinamiento: `refinements/US-31.07.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Todo texto tiene un contraste mínimo de 4.5:1 sobre su fondo (WCAG 2.1 AA), en tema claro y en tema oscuro.
+  - [ ] CA-02: El estado nunca se comunica solo con color: siempre va acompañado de texto o de un símbolo.
+  - [ ] CA-03: El usuario puede elegir tema claro, oscuro o el del sistema.
+  - [ ] CA-04: Las acciones de la interfaz pueden realizarse con teclado.
+
+#### US-31.08
+
+- Enunciado: Como operador quiero que la información de la interfaz se actualice en tiempo real, sin recargar la página.
+- Origen: B:US-19.12 · Épica: EPIC-31 · Feature: FEAT-31.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-007
+- Absorbe a: US-21.04, US-21.06
+- Refinamiento: `refinements/US-31.08.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Un cambio hecho por un agente aparece en la interfaz sin recargar la página.
+  - [ ] CA-02: La interfaz indica si está conectada en tiempo real.
+  - [ ] CA-03: Tras perder la conexión, la interfaz se reconecta y recupera los cambios ocurridos mientras tanto.
 
 ## EPIC-32 — NOTIFICACIONES Y EVENTOS DE NEGOCIO
 
@@ -3707,7 +3769,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-45.02 — Acceder a un elemento desde el dashboard
 
 - **Como** usuario **quiero** abrir una ejecución, historia o agente desde el dashboard **para** investigar su estado.
-- Origen: A:US-45.02 · Épica: EPIC-45 · Feature: FEAT-45.01 · Alcance: POST-MVP · Prioridad: P3 · Estado: PLANNED
+- Origen: A:US-45.02 · Épica: EPIC-45 · Feature: FEAT-45.01 · Alcance: POST-MVP · Prioridad: P3 · Estado: VERIFIED · Sprint: SPRINT-007
+- Refinamiento: `refinements/US-45.02.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Cada elemento navegable abre su detalle.
   - [ ] CA-02: Se conserva el contexto del proyecto.
@@ -3718,9 +3781,13 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-45.03
 
 - Enunciado: Como operador quiero visualizar actividad de varios proyectos desde un panel global.
-- Origen: B:US-19.09 · Épica: EPIC-45 · Feature: FEAT-45.02 · Alcance: POST-MVP · Prioridad: P3 · Estado: PLANNED
+- Origen: B:US-19.09 · Épica: EPIC-45 · Feature: FEAT-45.02 · Alcance: POST-MVP · Prioridad: P3 · Estado: VERIFIED · Sprint: SPRINT-007
+- Refinamiento: `refinements/US-45.03.md` — completo (regla READY de A)
 - ⚠ Posible solapamiento con US-45.01: revisar si es duplicado, detalle o historia distinta (GAP-006)
-- Criterios de aceptación: MISSING
+- Criterios de aceptación:
+  - [ ] CA-01: El panel muestra cada proyecto accesible con su semáforo de gobernanza y su reparto de estados. (definido en refinamiento)
+  - [ ] CA-02: Los cambios de cualquier proyecto aparecen en el panel en tiempo real. (definido en refinamiento)
+  - [ ] CA-03: Desde el panel se abre el Kanban de todos los proyectos. (definido en refinamiento)
 
 ## EPIC-46 — AUTOMATIZACIÓN DEL CICLO DE DESARROLLO
 

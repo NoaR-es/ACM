@@ -2,7 +2,7 @@
 
 **Responde a:** Cómo funcionan las APIs
 
-**Salud:** OK — MCP (46 herramientas), API REST v1 y WebSocket (SPRINT-006)
+**Salud:** OK — MCP (46 herramientas), API REST v1, WebSocket (SPRINT-006) e interfaz web en `/` (SPRINT-007)
 
 | Documento | Estado |
 |-----------|--------|
@@ -12,9 +12,9 @@
 | `endpoints.md` | ACTIVE |
 | `authentication.md` | ACTIVE |
 | `authorization.md` | ACTIVE |
-| `schemas.md` | N/A (plantilla) |
-| `errors.md` | N/A (plantilla) |
-| `integrations.md` | N/A (plantilla) |
+| `schemas.md` | ACTIVE |
+| `errors.md` | ACTIVE |
+| `integrations.md` | ACTIVE |
 | `contract_tests.md` | ACTIVE |
 
 Documentos históricos: ninguno (ver `99_ARCHIVO/`).

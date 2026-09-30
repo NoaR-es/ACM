@@ -7,7 +7,7 @@ Uso:
 
 Fuentes (no se editan a mano; ver ADR-004 y ADR-010):
     A: control/01_PRODUCTO/backlog_completo_v1.md   — columna vertebral (48 épicas con criterios CA-NN)
-    B: control/01_PRODUCTO/product_definition_v3.md — definición v1.2 (visión, 48 épicas propias, TECH, SPIKE)
+    B: control/01_PRODUCTO/product_definition_v4.md — definición v1.3 (visión, 48 épicas propias, TECH, SPIKE)
 
 Regla de unificación:
     - Épicas, features e historias de A conservan su ID.
@@ -32,7 +32,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = ROOT / "01_PRODUCTO"
 SRC_A_REL = "01_PRODUCTO/backlog_completo_v1.md"
-SRC_B_REL = "01_PRODUCTO/product_definition_v3.md"
+SRC_B_REL = "01_PRODUCTO/product_definition_v4.md"
 SRC_A = ROOT / SRC_A_REL
 SRC_B = ROOT / SRC_B_REL
 # Estados distintos de PLANNED (historias, TECH, SPIKE). Sin entrada = PLANNED. Solo estados permitidos (CLAUDE.md §4).
@@ -82,7 +82,7 @@ FEATURE_MAP = {
     "FEAT-16.01": 20, "FEAT-16.02": 20, "FEAT-16.03": 20, "FEAT-16.04": 20,
     "FEAT-17.01": 19, "FEAT-17.02": 19, "FEAT-17.03": 41, "FEAT-17.04": 41,
     "FEAT-18.01": 21, "FEAT-18.02": 21, "FEAT-18.03": 21,
-    "FEAT-19.01": 6, "FEAT-19.02": 31, "FEAT-19.03": 26, "FEAT-19.04": 45,
+    "FEAT-19.01": 6, "FEAT-19.02": 31, "FEAT-19.03": 26, "FEAT-19.04": 45, "FEAT-19.05": 31, "FEAT-19.06": 6,
     "FEAT-20.01": 27, "FEAT-20.02": 27, "FEAT-20.03": 27,
     "FEAT-21.01": 16, "FEAT-21.02": 16, "FEAT-21.03": 16, "FEAT-21.04": 16, "FEAT-21.05": 16,
     "FEAT-22.01": 15, "FEAT-22.02": 15, "FEAT-22.03": 15, "FEAT-22.04": 15,
