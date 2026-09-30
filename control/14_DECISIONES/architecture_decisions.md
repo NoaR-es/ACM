@@ -1,3 +1,3 @@
 # Decisiones arquitectónicas
 
-ADR-001 (stack conceptual). Registro completo: `decisions.md`.
+ADR-001 (stack conceptual), ADR-005 (backend Python). Registro completo: `decisions.md`.

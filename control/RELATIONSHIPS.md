@@ -8,7 +8,8 @@ SPRINT-000
 ├── TASK-000-01 → control/** (estructura)
 ├── TASK-000-02 → control/01_PRODUCTO/product_definition_v1.md, control/tools/derive_backlog.py, TEST-CTRL-001, ADR-004
 ├── TASK-000-03 → control/14_DECISIONES/decisions.md (ADR-001..004)
-├── TASK-000-04 → IMP-001, GAP-002 → (futuro ADR-005)
+├── TASK-000-04 → IMP-001 (CLOSED), GAP-002 → ADR-005
+├── TASK-000-07 → GAP-002 (tooling frontend)
 ├── TASK-000-05 → IMP-002, GAP-003, EPIC-24, SPIKE-006
 └── TASK-000-06 → ADR-003, control/01_PRODUCTO/requirements.md
 ```
@@ -31,7 +32,7 @@ control/tools/derive_backlog.py
 ## Gaps → afectados
 ```
 GAP-001 → 351 US (todas salvo US-01.01)
-GAP-002 → IMP-001, TASK-000-04, ADR-001
+GAP-002 → IMP-001, TASK-000-04, TASK-000-07, ADR-001, ADR-005
 GAP-003 → IMP-002, EPIC-24, SPIKE-006, TECH-020
 GAP-004 → EPIC-03..EPIC-48
 GAP-005 → 07_DATOS/data_architecture.md, EPIC-13, 16, 17, 27

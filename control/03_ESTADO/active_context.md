@@ -14,4 +14,4 @@ control/tools/derive_backlog.py (constantes MVP_EPICS / POST_MVP_FEATURES)
 control/01_PRODUCTO/requirements.md
 
 LOCK: none
-LAST_UPDATED: 2026-09-30
+LAST_UPDATED: 2026-09-30 (tras ADR-005)

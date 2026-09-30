@@ -43,3 +43,17 @@ Decisión: `control/tools/derive_backlog.py` genera los inventarios; `--check` d
 Motivo: Determinismo y verificabilidad (CLAUDE.md §4, §41).
 Consecuencias: Los archivos generados no se editan a mano. Refinamientos futuros deben entrar por la fuente (o por un mecanismo de anexos a decidir).
 Trade-offs: El formato de la definición pasa a ser un contrato del parser.
+
+## ADR-005 — Python como lenguaje del backend
+Fecha: 2026-09-30
+Estado: ACCEPTED
+Contexto: ADR-001 dejó sin decidir el runtime del backend (IMP-001 / GAP-002).
+Problema: Elegir el lenguaje del núcleo, servidor MCP, API, WebSockets, Watchdog, RAG y adaptadores de modelos.
+Alternativas consideradas: TypeScript/Node (mismo lenguaje que el frontend React, SDK MCP oficial); Python.
+Decisión: **Python (≥ 3.11)** para todo el backend, incluido el servidor MCP. El frontend sigue siendo React (ADR-001).
+Motivo: Decisión del operador. Encaja con el dominio: `sqlite3` en stdlib, SDK MCP oficial para Python, ecosistema RAG/embeddings/vector stores y cliente Ollama maduros, y coherencia con el tooling existente (`derive_backlog.py`).
+Consecuencias:
+- El frontend (React) y el backend quedan en lenguajes distintos: los contratos API/WebSocket deben definirse explícitamente (esquemas compartidos, contract tests — `06_API/contract_tests.md`).
+- Framework HTTP/WebSocket, cliente SQLite (sync/async) y gestión de paquetes se fijan en ADRs posteriores tras SPIKE-001 (concurrencia SQLite) y SPIKE-002 (MCP multi-proyecto).
+- Tooling del frontend React (bundler, TypeScript o no) sigue abierto (GAP-002, reducido).
+Trade-offs: Concurrencia limitada por el GIL y por SQLite en escrituras; se mitiga con asyncio/procesos y se mide en SPIKE-001/SPIKE-005.

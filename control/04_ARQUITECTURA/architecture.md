@@ -36,6 +36,8 @@ Humanos ──(Web React / CLI / MCP)──► ACM Core (Governance + State)
 | CLI | EPIC-31, TECH-029 | PLANNED (POST-MVP completa) |
 
 ## Decisiones abiertas
-- Runtime/lenguaje backend (IMP-001).
-- Proceso único vs. servicios separados (MCP / API / WS) — pendiente tras IMP-001.
+- ~~Runtime/lenguaje backend (IMP-001)~~ → **Python ≥ 3.11 (ADR-005)**.
+- Proceso único vs. servicios separados (MCP / API / WS) — pendiente de SPIKE-002.
+- Framework HTTP/WebSocket y acceso SQLite sync/async — pendiente de SPIKE-001/002.
+- Tooling del frontend React — GAP-002.
 - Vector store concreto (SPIKE-003 propone evaluar ChromaDB).
