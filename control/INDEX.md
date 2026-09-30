@@ -12,7 +12,7 @@ Proyecto: **Agile Context Manager (ACM)** · Constitución: `/CLAUDE.md` · Actu
 | `01_PRODUCTO/` | Qué debemos hacer | WARNING — 351/352 historias sin criterios de aceptación (GAP-001) |
 | `02_AGILE/` | Sprint, Kanban e impedimentos | OK |
 | `03_ESTADO/` | Dónde estamos | OK |
-| `04_ARQUITECTURA/` | Cómo está diseñado | WARNING — arquitectura objetivo conceptual; runtime backend sin decidir |
+| `04_ARQUITECTURA/` | Cómo está diseñado | WARNING — arquitectura objetivo conceptual; backend Python (ADR-005), framework pendiente |
 | `05_CODIGO/` | Dónde está implementado | OK — solo existe tooling de control |
 | `06_API/` | Cómo funcionan las APIs | N/A |
 | `07_DATOS/` | Cómo se almacenan los datos | N/A — modelo conceptual en data_architecture.md |
@@ -21,7 +21,7 @@ Proyecto: **Agile Context Manager (ACM)** · Constitución: `/CLAUDE.md` · Actu
 | `10_IA/` | Qué IA utilizamos | WARNING — JEV sin definir (GAP-003) |
 | `11_SEGURIDAD/` | Cómo se protege | N/A |
 | `12_TESTING/` | Cómo se prueba | OK — solo test de integridad del backlog |
-| `13_BUGS/` | Qué problemas existen | WARNING — 5 gaps abiertos (GAP-001..005) |
+| `13_BUGS/` | Qué problemas existen | WARNING — 4 gaps abiertos + GAP-002 parcialmente resuelto |
 | `14_DECISIONES/` | Por qué se tomaron decisiones | OK |
 | `15_CAMBIOS/` | Qué ha cambiado | OK |
 | `16_DOCUMENTACION/` | Cómo está documentado | N/A |

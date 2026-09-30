@@ -2,7 +2,7 @@
 
 **Responde a:** Cómo está diseñado
 
-**Salud:** WARNING — arquitectura objetivo conceptual; runtime backend sin decidir
+**Salud:** WARNING — arquitectura objetivo conceptual; backend Python (ADR-005), framework pendiente
 
 | Documento | Estado |
 |-----------|--------|

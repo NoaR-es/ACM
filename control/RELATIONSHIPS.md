@@ -37,3 +37,11 @@ GAP-003 → IMP-002, EPIC-24, SPIKE-006, TECH-020
 GAP-004 → EPIC-03..EPIC-48
 GAP-005 → 07_DATOS/data_architecture.md, EPIC-13, 16, 17, 27
 ```
+
+## Decisiones → alcance
+```
+ADR-005 (Python backend)
+├── EPIC-01, 15, 18, 21, 23 (todo el backend)
+├── SPIKE-001, SPIKE-002, SPIKE-005
+└── 06_API/contract_tests.md (contrato React ↔ Python)
+```
