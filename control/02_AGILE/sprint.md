@@ -21,7 +21,7 @@
 | ID | Tipo | Título | Historias | Estado |
 |----|------|--------|-----------|--------|
 | TASK-000-10 | DOCUMENTATION | Depurar solapamientos de EPIC-01/18/24 (6 fusiones en `tools/dedupe.json`); resto de épicas pendiente | GAP-006 | VERIFIED (parcial: 35 solapamientos siguen pendientes en otras épicas) |
-| TASK-001-01 | INFRASTRUCTURE | Esqueleto: `pyproject.toml`, paquete `src/acm`, CLI, configuración, CI | todas | VERIFIED (CI definida y ejecutada en local; primera ejecución en GitHub pendiente de comprobar) |
+| TASK-001-01 | INFRASTRUCTURE | Esqueleto: `pyproject.toml`, paquete `src/acm`, CLI, configuración, CI | todas | VERIFIED (CI en GitHub: success, [run #1](https://github.com/NoaR-es/ACM/actions/runs/36758248042)) |
 | TASK-001-02 | TASK | Capa de datos: conexión (ADR-013), transacciones, migrador y catálogos v1 | US-18.01..03 | VERIFIED |
 | TASK-001-03 | TASK | `ProjectService`: crear, listar, abrir, configurar; principales y pertenencias | US-01.01..03 | VERIFIED |
 | TASK-001-04 | TASK | Servidor MCP: herramientas de proyecto, `instructions`, errores explícitos (GAP-007) | US-01.01..03, US-01.06 | VERIFIED |

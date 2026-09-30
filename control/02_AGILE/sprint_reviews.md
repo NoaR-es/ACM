@@ -10,4 +10,4 @@
 - **Goal:** cumplido en el backend. Un agente MCP (HTTP o stdio) crea, lista, abre y configura proyectos, cada uno con su base SQLite.
 - **Entregado:** 6 historias VERIFIED (US-01.01, 01.03, 01.06, 18.01, 18.02, 18.03) y 1 IMPLEMENTED (US-01.02, falta la UI). TASK-001-01..06.
 - **Evidencia:** 50 tests en PASS; matriz CA↔test en `12_TESTING/sprint_001_evidence.md`; 6 mutaciones del código detectadas por los tests.
-- **No entregado:** interfaz web (TASK-000-07); la primera ejecución de la CI en GitHub está pendiente de comprobar.
+- **No entregado:** interfaz web (TASK-000-07). CI en GitHub: success (run #1).

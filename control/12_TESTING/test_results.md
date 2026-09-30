@@ -16,3 +16,4 @@
 | 2026-09-30 | TEST-PROD-S01 | PASS 50/50 | `pytest -q` en 4,9 s; `ruff check` limpio |
 | 2026-09-30 | Mutación manual (6 invariantes) | 6/6 detectadas | BEGIN DEFERRED, foreign_keys=OFF, sin limpieza atómica, sin validar rango, error no traducido a ToolError, migración sin re-comprobar |
 | 2026-09-30 | TEST-CTRL-001 (refs a tests) | PASS | 41 referencias válidas; prueba negativa con un test inventado → exit 2 |
+| 2026-09-30 | CI GitHub Actions (ruff + pytest + derive_backlog --check) | PASS | [run #1](https://github.com/NoaR-es/ACM/actions/runs/36758248042), commit `04f32c3` |

@@ -10,5 +10,5 @@
 | IA | OK | JEV definido (ADR-006); nada integrado |
 | Código | OK | Paquete `src/acm` (SPRINT-001): lint limpio, 50 tests en verde |
 | Testing | OK | Único test existente (integridad backlog) pasa |
-| CI/CD | WARNING | CI definida (`.github/workflows/ci.yml`); primera ejecución remota pendiente de comprobar |
+| CI/CD | OK | CI en verde en GitHub ([run #1](https://github.com/NoaR-es/ACM/actions/runs/36758248042)); sin CD |
 | Seguridad | WARNING | Sin autenticación hasta EPIC-20: el HTTP escucha en 127.0.0.1 por defecto (VULN-001) |

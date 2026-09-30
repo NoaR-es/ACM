@@ -26,7 +26,7 @@ Proyecto: **Agile Context Manager (ACM)** · Constitución: `/CLAUDE.md` · Actu
 | `15_CAMBIOS/` | Qué ha cambiado | OK |
 | `16_DOCUMENTACION/` | Cómo está documentado | N/A |
 | `17_GIT/` | Cómo se versiona el código | OK |
-| `18_CICD/` | Cómo se despliega | WARNING — CI definida, sin CD |
+| `18_CICD/` | Cómo se despliega | OK — CI en verde; sin CD |
 | `19_OBSERVABILIDAD/` | Cómo se observa | N/A |
 | `20_PERFORMANCE/` | Cómo rinde | OK — SPIKE-001 medido |
 | `21_COMPLIANCE/` | Cumple normativa | N/A |

@@ -8,5 +8,5 @@ Disparadores: `push` y `pull_request`. Pasos:
 4. `pytest -q`.
 5. `python3 control/tools/derive_backlog.py --check`.
 
-Estado: los pasos 3–5 se ejecutaron en local (PASS). **La primera ejecución en GitHub está pendiente de comprobar.**
+Estado: primera ejecución en GitHub **success** ([run #1](https://github.com/NoaR-es/ACM/actions/runs/36758248042), commit `04f32c3`).
 CD: MISSING (sin despliegue).

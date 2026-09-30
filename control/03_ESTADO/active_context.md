@@ -3,7 +3,6 @@ STORY: —
 SPRINT: SPRINT-001
 
 NEXT CANDIDATES:
-Verificar la primera ejecución de la CI en GitHub
 Planificar SPRINT-002 (ver 03_ESTADO/pending_work.md)
 
 RELEVANT DOCUMENTS:

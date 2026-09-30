@@ -1,6 +1,6 @@
 # Trabajo pendiente (ordenado)
 
-1. **Comprobar la primera ejecución de la CI en GitHub** (`.github/workflows/ci.yml`).
+1. ~~Comprobar la primera ejecución de la CI en GitHub~~ → success (run #1).
 2. **Propuesta de SPRINT-002: "Skills y backlog por MCP"**
    - Servidor MCP: extensión Skills en producto (FEAT-15.02, US-15.04..07) con las 5 skills oficiales (FEAT-15.03, US-15.08..12).
    - Núcleo de backlog en SQLite del proyecto: épicas, features, historias y CA (EPIC-04 y US-24.01/24.03, para verificar backlog y memoria independientes por proyecto).

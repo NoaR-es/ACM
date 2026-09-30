@@ -9,7 +9,7 @@
 | .gitignore | Excluye cachés de Python, `.venv/` y `.acm-data/` | Config | git | — | ACTIVE |
 | pyproject.toml | Paquete `acm`, dependencias fijadas, pytest y ruff | Config | uv/pip, CI | todos | ACTIVE |
 | README.md | Instalación, pruebas y ejecución | Doc | desarrolladores | — | ACTIVE |
-| .github/workflows/ci.yml | CI: ruff, pytest, derive_backlog --check | CI | GitHub Actions | — | ACTIVE (primera ejecución pendiente de comprobar) |
+| .github/workflows/ci.yml | CI: ruff, pytest, derive_backlog --check | CI | GitHub Actions | — | ACTIVE (run #1 success) |
 | src/acm/** | Código de producto (detalle en `modules.md`) | Python | — | tests/** | IMPLEMENTED (SPRINT-001) |
 | tests/** | Tests pytest, un test por CA | Python | CI | — | ACTIVE |
 | control/tools/dedupe.json | Fusión de historias duplicadas (GAP-006) | Datos | derive_backlog.py | TEST-CTRL-001 | ACTIVE |

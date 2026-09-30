@@ -2,7 +2,7 @@
 
 **Responde a:** Cómo se despliega
 
-**Salud:** WARNING — CI definida; primera ejecución remota pendiente de comprobar; sin CD
+**Salud:** OK — CI en verde en GitHub; sin CD (no hay despliegue)
 
 | Documento | Estado |
 |-----------|--------|
