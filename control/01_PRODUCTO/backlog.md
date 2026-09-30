@@ -1,38 +1,47 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/product_definition_v2.md. No editar a mano: editar la fuente y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v2.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
 
-# Product Backlog (resumen)
+# Product Backlog unificado (resumen)
 
-| Tipo | Total | MVP | POST-MVP |
-|------|-------|-----|----------|
-| EPIC | 48 | 21 | 27 |
-| FEATURE | 151 | 55 | 96 |
-| USER_STORY | 356 | 156 | 200 |
-| TECH (historia técnica) | 30 | — | — |
-| SPIKE | 12 | — | — |
+| Tipo | Total | MVP | POST-MVP | Origen A | Origen B |
+|------|-------|-----|----------|----------|----------|
+| EPIC | 53 | 29 | 24 | 48 | 5 nuevas |
+| FEATURE | 199 | 83 | 116 | 48 | 151 |
+| USER_STORY | 488 | 228 | 260 | 132 | 356 |
+| Criterios de aceptación | 531 | — | — | 515 | 16 |
+| TECH (historia técnica, B) | 30 | — | — | — | 30 |
+| SPIKE (B) | 12 | — | — | — | 12 |
 
-Detalle: `epics.md`, `features.md`, `user_stories.md`, `technical_stories.md`.
-Clasificación MVP: ADR-009.
+Posibles solapamientos B↔A señalados (heurística Jaccard ≥ 0.2, GAP-006): **37**.
+Correspondencia de IDs de la definición v1.1: `id_mapping.md`. Alcance MVP: ADR-010.
 
 ## Historias MVP por épica
 
-- **EPIC-01** (10): US-01.01, US-01.02, US-01.03, US-01.04, US-01.05, US-01.06, US-01.07, US-01.08, US-01.09, US-01.10
-- **EPIC-02** (7): US-02.01, US-02.02, US-02.03, US-02.04, US-02.05, US-02.06, US-02.07
-- **EPIC-03** (7): US-03.01, US-03.02, US-03.03, US-03.04, US-03.05, US-03.06, US-03.07
-- **EPIC-04** (10): US-04.01, US-04.02, US-04.03, US-04.04, US-04.05, US-04.06, US-04.07, US-04.08, US-04.09, US-04.10
+- **EPIC-01** (11): US-01.01, US-01.02, US-01.03, US-01.04, US-01.05, US-01.06, US-01.07, US-01.08, US-01.09, US-01.10, US-01.11
+- **EPIC-02** (3): US-02.01, US-02.02, US-02.03
+- **EPIC-03** (3): US-03.01, US-03.02, US-03.03
+- **EPIC-04** (13): US-04.01, US-04.02, US-04.03, US-04.04, US-04.05, US-04.06, US-04.07, US-04.08, US-04.09, US-04.10, US-04.11, US-04.12, US-04.13
+- **EPIC-05** (9): US-05.01, US-05.02, US-05.03, US-05.04, US-05.05, US-05.06, US-05.07, US-05.08, US-05.09
 - **EPIC-06** (6): US-06.01, US-06.02, US-06.03, US-06.04, US-06.05, US-06.06
-- **EPIC-07** (7): US-07.01, US-07.02, US-07.03, US-07.04, US-07.08, US-07.09, US-07.10
-- **EPIC-08** (8): US-08.01, US-08.02, US-08.03, US-08.04, US-08.05, US-08.06, US-08.07, US-08.08
-- **EPIC-09** (7): US-09.01, US-09.02, US-09.03, US-09.04, US-09.05, US-09.06, US-09.07
-- **EPIC-10** (8): US-10.01, US-10.02, US-10.03, US-10.04, US-10.05, US-10.06, US-10.07, US-10.08
+- **EPIC-10** (15): US-10.01, US-10.02, US-10.03, US-10.04, US-10.05, US-10.06, US-10.07, US-10.11, US-10.12, US-10.13, US-10.14, US-10.15, US-10.16, US-10.17, US-10.18
 - **EPIC-11** (6): US-11.01, US-11.02, US-11.03, US-11.04, US-11.05, US-11.06
-- **EPIC-13** (6): US-13.01, US-13.02, US-13.03, US-13.04, US-13.05, US-13.06
-- **EPIC-15** (12): US-15.01, US-15.02, US-15.03, US-15.04, US-15.05, US-15.06, US-15.07, US-15.08, US-15.09, US-15.10, US-15.11, US-15.12
-- **EPIC-16** (11): US-16.01, US-16.02, US-16.03, US-16.04, US-16.05, US-16.06, US-16.07, US-16.08, US-16.09, US-16.10, US-16.11
-- **EPIC-18** (8): US-18.01, US-18.02, US-18.03, US-18.04, US-18.05, US-18.06, US-18.07, US-18.08
-- **EPIC-19** (8): US-19.01, US-19.02, US-19.03, US-19.04, US-19.05, US-19.06, US-19.07, US-19.08
-- **EPIC-20** (9): US-20.01, US-20.02, US-20.03, US-20.04, US-20.05, US-20.06, US-20.07, US-20.08, US-20.09
-- **EPIC-21** (5): US-21.01, US-21.02, US-21.03, US-21.04, US-21.05
-- **EPIC-22** (5): US-22.01, US-22.02, US-22.03, US-22.04, US-22.05
-- **EPIC-23** (4): US-23.01, US-23.02, US-23.03, US-23.04
-- **EPIC-27** (7): US-27.01, US-27.02, US-27.03, US-27.04, US-27.05, US-27.06, US-27.07
-- **EPIC-43** (5): US-43.01, US-43.02, US-43.03, US-43.04, US-43.05
+- **EPIC-12** (8): US-12.01, US-12.02, US-12.04, US-12.05, US-12.06, US-12.07, US-12.08, US-12.09
+- **EPIC-13** (11): US-13.03, US-13.04, US-13.05, US-13.06, US-13.07, US-13.08, US-13.09, US-13.10, US-13.11, US-13.12, US-13.13
+- **EPIC-14** (8): US-14.04, US-14.05, US-14.06, US-14.07, US-14.08, US-14.09, US-14.10, US-14.11
+- **EPIC-15** (11): US-15.01, US-15.03, US-15.04, US-15.05, US-15.06, US-15.07, US-15.08, US-15.09, US-15.10, US-15.11, US-15.12
+- **EPIC-16** (7): US-16.01, US-16.02, US-16.04, US-16.05, US-16.06, US-16.07, US-16.08
+- **EPIC-17** (10): US-17.01, US-17.02, US-17.03, US-17.04, US-17.05, US-17.06, US-17.07, US-17.08, US-17.09, US-17.10
+- **EPIC-18** (3): US-18.01, US-18.02, US-18.03
+- **EPIC-19** (3): US-19.01, US-19.02, US-19.03
+- **EPIC-20** (14): US-20.01, US-20.02, US-20.03, US-20.04, US-20.05, US-20.06, US-20.07, US-20.08, US-20.09, US-20.10, US-20.11, US-20.12, US-20.13, US-20.14
+- **EPIC-21** (11): US-21.01, US-21.02, US-21.03, US-21.04, US-21.05, US-21.06, US-21.07, US-21.08, US-21.09, US-21.10, US-21.11
+- **EPIC-22** (7): US-22.01, US-22.02, US-22.03, US-22.04, US-22.05, US-22.06, US-22.07
+- **EPIC-24** (2): US-24.01, US-24.03
+- **EPIC-25** (8): US-25.02, US-25.04, US-25.05, US-25.06, US-25.07, US-25.08, US-25.09, US-25.10
+- **EPIC-26** (10): US-26.01, US-26.02, US-26.03, US-26.04, US-26.05, US-26.06, US-26.07, US-26.08, US-26.09, US-26.10
+- **EPIC-27** (12): US-27.01, US-27.02, US-27.03, US-27.04, US-27.05, US-27.06, US-27.07, US-27.08, US-27.09, US-27.10, US-27.11, US-27.12
+- **EPIC-28** (9): US-28.01, US-28.02, US-28.04, US-28.05, US-28.06, US-28.07, US-28.08, US-28.09, US-28.10
+- **EPIC-29** (9): US-29.01, US-29.02, US-29.03, US-29.04, US-29.05, US-29.06, US-29.07, US-29.08, US-29.09
+- **EPIC-30** (3): US-30.01, US-30.02, US-30.03
+- **EPIC-31** (4): US-31.01, US-31.02, US-31.04, US-31.05
+- **EPIC-35** (7): US-35.01, US-35.02, US-35.03, US-35.04, US-35.05, US-35.06, US-35.07
+- **EPIC-44** (5): US-44.01, US-44.02, US-44.06, US-44.07, US-44.08

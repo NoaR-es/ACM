@@ -17,11 +17,11 @@ Proyecto: **Agile Context Manager (ACM)** · Constitución: `/CLAUDE.md` · Actu
 | `06_API/` | Cómo funcionan las APIs | OK — servidor MCP planificado (ADR-008) |
 | `07_DATOS/` | Cómo se almacenan los datos | N/A — modelo conceptual en data_architecture.md |
 | `08_INFRAESTRUCTURA/` | Cómo se ejecuta | N/A |
-| `09_MENSAJERIA/` | Cómo se comunican los componentes | N/A — WebSockets previstos (EPIC-18) |
+| `09_MENSAJERIA/` | Cómo se comunican los componentes | N/A — WebSockets previstos (EPIC-21) |
 | `10_IA/` | Qué IA utilizamos | OK — JEV definido (ADR-006); nada integrado |
 | `11_SEGURIDAD/` | Cómo se protege | N/A |
 | `12_TESTING/` | Cómo se prueba | OK — solo test de integridad del backlog |
-| `13_BUGS/` | Qué problemas existen | WARNING — 3 gaps abiertos (GAP-001, 004, 005) + GAP-002 parcialmente resuelto |
+| `13_BUGS/` | Qué problemas existen | WARNING — 4 gaps abiertos, 3 conflictos de requisitos (CONF-001..003) |
 | `14_DECISIONES/` | Por qué se tomaron decisiones | OK |
 | `15_CAMBIOS/` | Qué ha cambiado | OK |
 | `16_DOCUMENTACION/` | Cómo está documentado | N/A |

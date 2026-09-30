@@ -1,9 +1,8 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/product_definition_v2.md. No editar a mano: editar la fuente y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v2.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
 
-# Historias técnicas transversales y Spikes
+# Historias técnicas transversales y Spikes (fuente B)
 
-> Los IDs `TECH-XXX` de la definición de producto designan **historias técnicas**, no deuda técnica.
-> La deuda técnica se registra como `TD-XXX` en `13_BUGS/`/`01_PRODUCTO/backlog.md` (ADR-002).
+> Los IDs `TECH-XXX` designan **historias técnicas**, no deuda técnica (la deuda usa `TD-NNN`, ADR-002).
 
 ## Historias técnicas
 

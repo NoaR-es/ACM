@@ -6,6 +6,8 @@
 > Los cambios de alcance se registran como nueva versión y la anterior pasa a `99_ARCHIVO/superseded/`.
 > Las enmiendas se marcan en el texto con **[v1.1]**.
 >
+> **Desde ADR-010 (2026-09-30):** esta definición es la **fuente B** del backlog unificado. Sus épicas (§7) se integran, renumeradas, en el backlog cuya columna vertebral es `backlog_completo_v1.md` (fuente A). Correspondencia de IDs: `id_mapping.md`.
+>
 > **Historial de versiones**
 > | Versión | Fecha | Cambio | Origen |
 > |---------|-------|--------|--------|

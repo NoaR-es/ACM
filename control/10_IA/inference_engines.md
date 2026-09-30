@@ -2,10 +2,12 @@
 
 Estado: **PLANNED** — ninguno integrado ni probado en este entorno. Información de fuentes públicas consultadas el 2026-09-30.
 
-## Ollama (generativo) — EPIC-23, TECH-018
+## Ollama (generativo) — EPIC-22, TECH-018
 Modelos locales generativos. Detalle pendiente de SPIKE-005.
 
-## Ollaya (decisional, "JEV") — EPIC-24, TECH-020, ADR-006
+## Ollaya (decisional, "JEV") — EPIC-50, TECH-020, ADR-006
+
+> CONF-001: la fuente A (EPIC-47) usa "JEV" como entorno de ejecución futuro. Pendiente de confirmación del operador.
 
 | Campo | Valor |
 |-------|-------|
@@ -36,8 +38,8 @@ Límites: 1–256 preguntas; 2–255 opciones por `choice`; 2–10 niveles por `
 Errores: `INVALID_REQUEST`/`INPUT_TOO_LONG`/`STATE_TRUNCATED`/`TOO_MANY_OPTIONS` (422), `MODEL_NOT_FOUND` (404), `QUEUE_FULL` (503 + `Retry-After`), `MODEL_LOAD_FAILED` (500).
 
 ### Usos previstos en ACM (POST-MVP)
-- Watchdog: ¿historia INVEST? (`noul` por criterio), ¿criterio verificable? (US-05.02), severidad de bug (`score`), ¿cambio viola ADR? (US-24.07).
-- Router: tarea generativa → Ollama, decisión → Ollaya (US-24.03).
+- Watchdog: ¿historia INVEST? (`noul` por criterio), ¿criterio verificable? (US-04.15), severidad de bug (`score`), ¿cambio viola ADR? (US-50.07).
+- Router: tarea generativa → Ollama, decisión → Ollaya (US-50.03).
 
 ### SPIKE-006 (refinado)
 Validar en hardware real: instalación Docker fijada, latencia y calibración de `laya`/`decider` con preguntas de gobernanza ACM, estabilidad del contrato entre versiones, comportamiento con `QUEUE_FULL`.

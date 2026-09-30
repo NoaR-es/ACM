@@ -9,3 +9,4 @@
 | 2026-09-30 | TASK-000-05 | JEV = modelos de decisión servidos por Ollaya (investigación con fuentes) | ADR-006, `10_IA/inference_engines.md` | VERIFIED |
 | 2026-09-30 | TASK-000-06 | Alcance MVP cerrado por delegación del operador | ADR-007, `derive_backlog.py --check` OK | VERIFIED |
 | 2026-09-30 | TASK-000-08 | Cambio de alcance: servidor MCP propio con distribución de skills (definición v1.1 con FEAT-15.04 / US-15.09..12) | ADR-008, ADR-009, `06_API/mcp_server.md`, `derive_backlog.py --check` OK | VERIFIED |
+| 2026-09-30 | TASK-000-09 | Fuente A registrada íntegra; backlog unificado A+B con correspondencia de IDs; MVP v3 | ADR-010, `id_mapping.md`, `derive_backlog.py --check` OK | VERIFIED |

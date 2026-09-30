@@ -11,7 +11,7 @@
 | Sprint Goal | Que cualquier agente pueda reconstruir qué es ACM, qué hay que hacer y qué decisiones faltan leyendo `control/` |
 | Historias | Ninguna de producto (trabajo de tipo DOCUMENTATION/INFRASTRUCTURE) |
 | Riesgos | Decisiones de stack no tomadas; historias sin criterios |
-| Impedimentos | Ninguno abierto (IMP-001, IMP-002 cerrados) |
+| Impedimentos | IMP-003 abierto (conflictos de requisitos); IMP-001 e IMP-002 cerrados |
 | Velocidad | No se mide |
 
 ### Tasks
@@ -24,6 +24,9 @@
 | TASK-000-04 | DECISION | Decidir runtime/lenguaje backend | VERIFIED (Python, ADR-005) |
 | TASK-000-07 | DECISION | Decidir tooling del frontend React (GAP-002) | PLANNED |
 | TASK-000-08 | DOCUMENTATION | Incorporar el cambio de alcance "servidor MCP propio + skills" (definición v1.1, ADR-008, ADR-009) | VERIFIED |
+| TASK-000-09 | DOCUMENTATION | Registrar el backlog completo (fuente A) y unificarlo con la definición v1.1 (ADR-010) | VERIFIED |
+| TASK-000-10 | DOCUMENTATION | Revisar los 37 solapamientos A↔B y fusionar o descartar duplicados (GAP-006) | PLANNED |
+| TASK-000-11 | DECISION | Resolver CONF-001 (JEV en EPIC-47) y CONF-002 (fuente de verdad) con el operador | BLOCKED (IMP-003) |
 | TASK-000-05 | RESEARCH | Aclarar qué es JEV (GAP-003) | VERIFIED (ADR-006) |
 | TASK-000-06 | DECISION | Cerrar alcance MVP (delegado por el operador) | VERIFIED (ADR-007) |
 

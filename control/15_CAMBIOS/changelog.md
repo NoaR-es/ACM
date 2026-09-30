@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.5] — 2026-09-30 — SPRINT-000
+- **Cambio:** Registro íntegro del backlog completo del operador (fuente A). Unificación con la definición v1.1 (fuente B) en un backlog de 53 épicas, 199 features, 488 historias y 531 criterios, con `id_mapping.md`. ADR-010 (supersede a ADR-009; MVP v3 = 228 historias). Nuevas épicas EPIC-49..53. Conflictos CONF-001..004, GAP-006 e IMP-003. Documentos activos traducidos a la numeración unificada.
+- **Motivo:** El operador aporta el prompt inicial completo.
+- **Archivos:** `control/01_PRODUCTO/` (fuente A, fuentes y generados), `tools/derive_backlog.py` (reescrito), `14_DECISIONES/`, `13_BUGS/`, `02_AGILE/`, `03_ESTADO/`, `04_ARQUITECTURA/`, `06_API/`, `07_DATOS/`, `10_IA/`, `00_GOBIERNO/`, `05_CODIGO/`, `12_TESTING/`, `RELATIONSHIPS.md`, `INDEX.md`.
+- **Impacto:** Cambian los IDs de las historias de la definición v1.1; tabla de traducción en `id_mapping.md`.
+- **Tests:** TEST-CTRL-001 PASS.
+- **Breaking change:** sí, para referencias a IDs de B (documental; no hay código de producto).
+
 ## [0.0.4] — 2026-09-30 — SPRINT-000
 - **Cambio:** Definición de producto v1.1: ACM implementa y gestiona su propio servidor MCP y distribuye por él sus skills (nueva FEAT-15.04 con US-15.09..12, con criterios de aceptación; objetivos de EPIC-15 y EPIC-22; punto 27 del MVP). ADR-008 (extensión oficial MCP Skills SEP-2640 + `instructions` + herramientas de respaldo). ADR-009 (EPIC-22/FEAT-22.01 al MVP; supersede ADR-007). v1.0 archivada en `99_ARCHIVO/superseded/`. Nuevo `06_API/mcp_server.md`.
 - **Motivo:** Aclaración del operador.

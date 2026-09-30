@@ -120,7 +120,7 @@ Trade-offs: La extensión es muy reciente (≈2 semanas); el soporte en clientes
 
 ## ADR-009 — Alcance del MVP v2 (supersede a ADR-007)
 Fecha: 2026-09-30
-Estado: ACCEPTED
+Estado: SUPERSEDED por ADR-010 (2026-09-30)
 Contexto: Con la definición v1.1, las skills son el mecanismo por el que los agentes aprenden a usar ACM (ADR-008). Sin ellas, el servidor MCP del MVP no es utilizable de forma autónoma.
 Problema: EPIC-22 estaba fuera del MVP (ADR-007).
 Alternativas consideradas: (a) mantener EPIC-22 fuera y servir solo `instructions`; (b) incluir EPIC-22 completa; (c) incluir solo FEAT-22.01 (catálogo de skills ACM).
@@ -131,3 +131,31 @@ Decisión: (c). Los cambios respecto a ADR-007 son:
 Motivo: La petición explícita del operador y la coherencia con el principio de ADR-007: el razonamiento lo aportan agentes externos, y las skills son justo lo que les permite hacerlo bien (p. ej. la skill de Discovery Socrático permite hacer discovery desde fuera aunque FEAT-02.03 sea POST-MVP).
 Consecuencias: MVP = 21 épicas, 55 features, 156 historias; POST-MVP = 96 features, 200 historias (total 356). Fuente: `01_PRODUCTO/backlog.md` (generado).
 Trade-offs: El MVP crece con 5 skills y 4 historias de distribución.
+
+## ADR-010 — Backlog unificado de dos fuentes y alcance MVP v3 (supersede a ADR-009)
+Fecha: 2026-09-30
+Estado: ACCEPTED
+Contexto: El operador aporta el "prompt inicial del proyecto" (`01_PRODUCTO/backlog_completo_v1.md`, **fuente A**): 48 épicas, 48 features, 132 historias y 515 criterios CA-NN. Indica que la definición anterior estaba incompleta. El análisis muestra que A **no contiene** a la definición v1.1 (`product_definition_v2.md`, **fuente B**: 48 épicas, 151 features, 356 historias), y que ambas usan los mismos IDs con significados distintos (p. ej. EPIC-15 es Skills en A y el servidor MCP en B).
+Problema: Obtener un único backlog sin perder contenido de ninguna fuente y sin colisiones de IDs.
+Alternativas consideradas:
+(a) A sustituye a B. Rechazada: se perderían capacidades pedidas por el operador que solo están en B (deuda técnica, JEV/Ollaya, sandbox, CLI, plugins, implementation plans, walkthroughs…) y las enmiendas v1.1.
+(b) B sigue como backlog y A se archiva. Rechazada: A es la versión que el operador considera completa y aporta 515 criterios de aceptación.
+(c) Unificación con A como columna vertebral. Elegida.
+Decisión:
+1. **A es la columna vertebral.** Sus épicas, features e historias conservan sus IDs.
+2. **Cada feature de B se integra** en la épica de A equivalente (mapa `FEATURE_MAP` en `tools/derive_backlog.py`) y se renumera a continuación. Su ID original queda en `01_PRODUCTO/id_mapping.md`, con la notación `B:US-15.09`.
+3. **Lo que no tiene equivalente en A** crea cinco épicas nuevas: EPIC-49 Deuda técnica, EPIC-50 Modelos de decisión JEV (Ollaya), EPIC-51 Sandbox, gemelo digital y usuarios sintéticos, EPIC-52 CLI y EPIC-53 Extensiones.
+4. **B sigue ACTIVE** como fuente de visión, actores, reglas, TECH-001..030 y SPIKE-001..012.
+5. **Los documentos anteriores a este ADR** (ADR-003..009, 06_API, 10_IA hasta hoy) usan la numeración B y se traducen con `id_mapping.md`. Los documentos activos se han actualizado a la numeración unificada.
+6. **Solapamientos entre historias de A y B:** se marcan con una heurística (Jaccard ≥ 0,20) y **no se fusionan automáticamente** (GAP-006, TASK-000-10).
+7. **Alcance MVP v3.** Principio de ADR-007 mantenido: ACM como memoria de estado y gobernanza operada por agentes externos vía su servidor MCP propio.
+   - Épicas MVP: EPIC-01, 02, 03, 04, 05, 06, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 30, 31, 35, 44.
+   - Historias de A excluidas del MVP porque requieren el orquestador interno o son avanzadas: US-12.03, US-13.01, US-13.02, US-14.01..03 (ACM como *cliente* de servidores MCP externos), US-15.02, US-16.03, US-24.02, US-25.01, US-25.03, US-28.03, US-31.03.
+   - Las historias de B conservan la clasificación de ADR-009. El script verifica que ninguna historia MVP de B cae en una épica no MVP.
+   - **Orquestador interno** (EPIC-07, 08, 09, 46), gobernanza de inferencia (23), memoria de agentes (36) y resto de épicas: POST-MVP.
+Motivo: Es la única opción que conserva toda la información (CLAUDE.md §46) y deja trazabilidad determinista entre numeraciones.
+Consecuencias:
+- 53 épicas, 199 features, 488 historias (A=132, B=356) y 531 criterios.
+- MVP: 29 épicas, 83 features, 228 historias.
+- Tres conflictos de requisitos quedan abiertos para el operador (CONF-001..003 en `13_BUGS/known_issues.md`).
+Trade-offs: Backlog más grande y con solapamientos pendientes de depurar. Se acepta a cambio de no perder alcance.

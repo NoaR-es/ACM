@@ -7,7 +7,9 @@ SPIKE-001 — concurrencia SQLite/WAL en Python
 SPIKE-002 — servidor MCP propio multi-proyecto + extensión Skills (06_API/mcp_server.md)
 
 RELEVANT DOCUMENTS:
-14_DECISIONES/decisions.md (ADR-001, 005, 008, 009)
+14_DECISIONES/decisions.md (ADR-001, 005, 008, 010)
+01_PRODUCTO/backlog.md, id_mapping.md
+13_BUGS/known_issues.md (CONF-001..003)
 06_API/mcp_server.md
 01_PRODUCTO/technical_stories.md
 04_ARQUITECTURA/architecture.md

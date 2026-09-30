@@ -21,5 +21,5 @@
 | Calidad | adrs | Decisiones arquitectónicas |
 | Calidad | walkthrough_logs | Evidencias de ejecución |
 
-Motor previsto: SQLite, una base por proyecto (US-01.01). Modo WAL/locking: SPIKE-001. Migraciones: TECH-007.
+Motor previsto: SQLite, una base por proyecto (US-01.01, EPIC-18). Relación con la memoria `control/` de cada proyecto (EPIC-02): pendiente de CONF-002. Modo WAL/locking: SPIKE-001. Migraciones: TECH-007.
 Faltan en el modelo conceptual (a diseñar): auditoría, tokens/RBAC, snapshots, agentes/sesiones, locks.

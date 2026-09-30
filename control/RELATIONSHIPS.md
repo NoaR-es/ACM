@@ -12,20 +12,23 @@ SPRINT-000
 ├── TASK-000-07 → GAP-002 (tooling frontend)
 ├── TASK-000-05 → IMP-002, GAP-003 → ADR-006
 ├── TASK-000-06 → ADR-003 (SUPERSEDED) → ADR-007 (SUPERSEDED) → ADR-009, control/tools/derive_backlog.py
-└── TASK-000-08 → product_definition_v2.md, ADR-008, ADR-009, 06_API/mcp_server.md
+├── TASK-000-08 → product_definition_v2.md, ADR-008, ADR-009, 06_API/mcp_server.md
+├── TASK-000-09 → backlog_completo_v1.md, ADR-010, id_mapping.md, tools/derive_backlog.py
+├── TASK-000-10 → GAP-006
+└── TASK-000-11 → IMP-003, CONF-001, CONF-002
 ```
 
 ## Código → origen
 ```
 control/tools/derive_backlog.py
 ├── TASK-000-02
-├── ADR-009 (constantes MVP; antes ADR-007, ADR-003)
+├── ADR-010 (FEATURE_MAP, NEW_EPICS, constantes MVP; antes ADR-009, ADR-007, ADR-003)
 ├── ADR-004
 └── TEST-CTRL-001
 ```
 
 ## Producto
-- Definición de producto: `01_PRODUCTO/product_definition_v2.md` (v1.1) ← supersede `99_ARCHIVO/superseded/product_definition_v1.md`.
+- Backlog unificado (ADR-010) = fuente A `01_PRODUCTO/backlog_completo_v1.md` + fuente B `01_PRODUCTO/product_definition_v2.md` (v1.1, que supersede `99_ARCHIVO/superseded/product_definition_v1.md`). Traducción de IDs de B: `01_PRODUCTO/id_mapping.md`.
 - Épica → Feature → Historia: generado en `01_PRODUCTO/features.md` y `01_PRODUCTO/user_stories.md` (bidireccional por ID).
 - Requisito funcional → Épica: `01_PRODUCTO/requirements.md` (REQ-F-01..40).
 - Épica → Componente arquitectónico: `04_ARQUITECTURA/architecture.md`.
@@ -71,4 +74,18 @@ ADR-008 (servidor MCP propio + skills)
 ADR-009 (MVP v2)
 ├── supersede ADR-007
 └── control/tools/derive_backlog.py (MVP_EPICS incluye 22; FEAT-22.02/03/04 POST-MVP)
+```
+
+```
+ADR-010 (backlog unificado + MVP v3)
+├── supersede ADR-009
+├── fuentes: backlog_completo_v1.md (A), product_definition_v2.md (B)
+├── genera: epics.md, features.md, user_stories.md, backlog.md, technical_stories.md, id_mapping.md
+├── nuevas épicas: EPIC-49 (deuda), EPIC-50 (JEV ← ADR-006), EPIC-51 (sandbox), EPIC-52 (CLI), EPIC-53 (extensiones)
+└── conflictos: CONF-001 (EPIC-47 ↔ EPIC-50), CONF-002 (EPIC-02 ↔ EPIC-18), CONF-003 (EPIC-07/08/09/46), CONF-004 (EPIC-14)
+
+Servidor MCP propio (ADR-008) en numeración unificada
+├── FEAT-14.02..14.04 (US-14.04..US-14.11) ← B:FEAT-15.01..15.03
+├── FEAT-15.02 (US-15.04..US-15.07) ← B:FEAT-15.04
+└── FEAT-15.03 (US-15.08..US-15.12) ← B:FEAT-22.01 → catálogo skill://acm/*
 ```

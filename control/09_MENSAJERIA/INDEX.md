@@ -2,7 +2,7 @@
 
 **Responde a:** Cómo se comunican los componentes
 
-**Salud:** N/A — WebSockets previstos (EPIC-18)
+**Salud:** N/A — WebSockets previstos (EPIC-21)
 
 | Documento | Estado |
 |-----------|--------|
