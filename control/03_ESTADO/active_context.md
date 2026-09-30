@@ -1,17 +1,17 @@
-# Active Context
-
-TASK: TASK-000-06
-STORY: — (DOCUMENTATION)
+TASK: none (SPRINT-000 sin tareas activas)
+STORY: —
 SPRINT: SPRINT-000
 
-RELEVANT DOCUMENTS:
-14_DECISIONES/decisions.md (ADR-003)
-01_PRODUCTO/backlog.md
-01_PRODUCTO/requirements.md
+NEXT CANDIDATES:
+SPIKE-001 — concurrencia SQLite/WAL en Python
+SPIKE-002 — servidor MCP multi-proyecto (SDK Python)
 
-FILES AFFECTED:
-control/tools/derive_backlog.py (constantes MVP_EPICS / POST_MVP_FEATURES)
-control/01_PRODUCTO/requirements.md
+RELEVANT DOCUMENTS:
+14_DECISIONES/decisions.md (ADR-001, 005, 007)
+01_PRODUCTO/technical_stories.md
+04_ARQUITECTURA/architecture.md
+
+FILES AFFECTED: —
 
 LOCK: none
-LAST_UPDATED: 2026-09-30 (tras ADR-005)
+LAST_UPDATED: 2026-09-30

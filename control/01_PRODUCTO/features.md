@@ -12,7 +12,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **150**
 | FEAT-01.04 | EPIC-01 | Metadatos | MVP | PLANNED | US-01.09, US-01.10 |
 | FEAT-02.01 | EPIC-02 | Módulos | MVP | PLANNED | US-02.01, US-02.02, US-02.03, US-02.04 |
 | FEAT-02.02 | EPIC-02 | Funcionalidades | MVP | PLANNED | US-02.05, US-02.06, US-02.07 |
-| FEAT-02.03 | EPIC-02 | Discovery Socrático | MVP | PLANNED | US-02.08, US-02.09, US-02.10, US-02.11, US-02.12 |
+| FEAT-02.03 | EPIC-02 | Discovery Socrático | POST-MVP | PLANNED | US-02.08, US-02.09, US-02.10, US-02.11, US-02.12 |
 | FEAT-02.04 | EPIC-02 | Matriz de riesgo | POST-MVP | PLANNED | US-02.13, US-02.14 |
 | FEAT-03.01 | EPIC-03 | Stack tecnológico | MVP | PLANNED | US-03.01, US-03.02, US-03.03 |
 | FEAT-03.02 | EPIC-03 | ADR | MVP | PLANNED | US-03.04, US-03.05, US-03.06, US-03.07 |
@@ -27,7 +27,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **150**
 | FEAT-06.02 | EPIC-06 | Capacidad | MVP | PLANNED | US-06.04, US-06.05, US-06.06 |
 | FEAT-06.03 | EPIC-06 | Predicción | POST-MVP | PLANNED | US-06.07, US-06.08, US-06.09 |
 | FEAT-07.01 | EPIC-07 | Tasks | MVP | PLANNED | US-07.01, US-07.02, US-07.03, US-07.04 |
-| FEAT-07.02 | EPIC-07 | Descomposición automática | MVP | PLANNED | US-07.05, US-07.06, US-07.07 |
+| FEAT-07.02 | EPIC-07 | Descomposición automática | POST-MVP | PLANNED | US-07.05, US-07.06, US-07.07 |
 | FEAT-07.03 | EPIC-07 | Vinculación con código | MVP | PLANNED | US-07.08, US-07.09, US-07.10 |
 | FEAT-08.01 | EPIC-08 | Planes | MVP | PLANNED | US-08.01, US-08.02, US-08.03 |
 | FEAT-08.02 | EPIC-08 | Validadores | MVP | PLANNED | US-08.04, US-08.05, US-08.06 |

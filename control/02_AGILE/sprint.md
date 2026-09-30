@@ -11,7 +11,7 @@
 | Sprint Goal | Que cualquier agente pueda reconstruir qué es ACM, qué hay que hacer y qué decisiones faltan leyendo `control/` |
 | Historias | Ninguna de producto (trabajo de tipo DOCUMENTATION/INFRASTRUCTURE) |
 | Riesgos | Decisiones de stack no tomadas; historias sin criterios |
-| Impedimentos | IMP-002 abierto; IMP-001 cerrado (ver impediments.md) |
+| Impedimentos | Ninguno abierto (IMP-001, IMP-002 cerrados) |
 | Velocidad | No se mide |
 
 ### Tasks
@@ -23,7 +23,7 @@
 | TASK-000-03 | DOCUMENTATION | Registrar ADRs iniciales (001–004) | VERIFIED |
 | TASK-000-04 | DECISION | Decidir runtime/lenguaje backend | VERIFIED (Python, ADR-005) |
 | TASK-000-07 | DECISION | Decidir tooling del frontend React (GAP-002) | PLANNED |
-| TASK-000-05 | RESEARCH | Aclarar qué es JEV (GAP-003) | BLOCKED (IMP-002) |
-| TASK-000-06 | DOCUMENTATION | Validar con operador clasificación MVP (ADR-003) y mapeo REQ-F → épicas | READY |
+| TASK-000-05 | RESEARCH | Aclarar qué es JEV (GAP-003) | VERIFIED (ADR-006) |
+| TASK-000-06 | DECISION | Cerrar alcance MVP (delegado por el operador) | VERIFIED (ADR-007) |
 
 VERIFIED = comprobado en sistema de archivos y con `derive_backlog.py --check`. No se marcan DONE hasta la revisión del operador (merge).

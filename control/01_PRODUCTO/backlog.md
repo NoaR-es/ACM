@@ -5,22 +5,22 @@
 | Tipo | Total | MVP | POST-MVP |
 |------|-------|-----|----------|
 | EPIC | 48 | 20 | 28 |
-| FEATURE | 150 | 55 | 95 |
-| USER_STORY | 352 | 155 | 197 |
+| FEATURE | 150 | 53 | 97 |
+| USER_STORY | 352 | 147 | 205 |
 | TECH (historia técnica) | 30 | — | — |
 | SPIKE | 12 | — | — |
 
 Detalle: `epics.md`, `features.md`, `user_stories.md`, `technical_stories.md`.
-Clasificación MVP: ADR-003 (propuesta pendiente de validación del operador).
+Clasificación MVP: ADR-007.
 
 ## Historias MVP por épica
 
 - **EPIC-01** (10): US-01.01, US-01.02, US-01.03, US-01.04, US-01.05, US-01.06, US-01.07, US-01.08, US-01.09, US-01.10
-- **EPIC-02** (12): US-02.01, US-02.02, US-02.03, US-02.04, US-02.05, US-02.06, US-02.07, US-02.08, US-02.09, US-02.10, US-02.11, US-02.12
+- **EPIC-02** (7): US-02.01, US-02.02, US-02.03, US-02.04, US-02.05, US-02.06, US-02.07
 - **EPIC-03** (7): US-03.01, US-03.02, US-03.03, US-03.04, US-03.05, US-03.06, US-03.07
 - **EPIC-04** (10): US-04.01, US-04.02, US-04.03, US-04.04, US-04.05, US-04.06, US-04.07, US-04.08, US-04.09, US-04.10
 - **EPIC-06** (6): US-06.01, US-06.02, US-06.03, US-06.04, US-06.05, US-06.06
-- **EPIC-07** (10): US-07.01, US-07.02, US-07.03, US-07.04, US-07.05, US-07.06, US-07.07, US-07.08, US-07.09, US-07.10
+- **EPIC-07** (7): US-07.01, US-07.02, US-07.03, US-07.04, US-07.08, US-07.09, US-07.10
 - **EPIC-08** (8): US-08.01, US-08.02, US-08.03, US-08.04, US-08.05, US-08.06, US-08.07, US-08.08
 - **EPIC-09** (7): US-09.01, US-09.02, US-09.03, US-09.04, US-09.05, US-09.06, US-09.07
 - **EPIC-10** (8): US-10.01, US-10.02, US-10.03, US-10.04, US-10.05, US-10.06, US-10.07, US-10.08

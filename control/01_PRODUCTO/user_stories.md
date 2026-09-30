@@ -168,7 +168,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **352** · Con criterio
 #### US-02.08
 
 - Enunciado: Como Product Owner quiero que el agente formule preguntas sobre la visión antes de crear el backlog.
-- Épica: EPIC-02 · Feature: FEAT-02.03 · Alcance: MVP · Prioridad: P1
+- Épica: EPIC-02 · Feature: FEAT-02.03 · Alcance: POST-MVP · Prioridad: P3
 - Sprint: — · Estado: PLANNED · Estimación: —
 - Criterios de aceptación: MISSING (pendiente de refinamiento)
 - Creada: 2026-09-30 · Última actualización: 2026-09-30
@@ -176,7 +176,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **352** · Con criterio
 #### US-02.09
 
 - Enunciado: Como operador quiero revisar los supuestos detectados durante Discovery.
-- Épica: EPIC-02 · Feature: FEAT-02.03 · Alcance: MVP · Prioridad: P1
+- Épica: EPIC-02 · Feature: FEAT-02.03 · Alcance: POST-MVP · Prioridad: P3
 - Sprint: — · Estado: PLANNED · Estimación: —
 - Criterios de aceptación: MISSING (pendiente de refinamiento)
 - Creada: 2026-09-30 · Última actualización: 2026-09-30
@@ -184,7 +184,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **352** · Con criterio
 #### US-02.10
 
 - Enunciado: Como agente quiero identificar dependencias ocultas antes de convertir funcionalidades en historias.
-- Épica: EPIC-02 · Feature: FEAT-02.03 · Alcance: MVP · Prioridad: P1
+- Épica: EPIC-02 · Feature: FEAT-02.03 · Alcance: POST-MVP · Prioridad: P3
 - Sprint: — · Estado: PLANNED · Estimación: —
 - Criterios de aceptación: MISSING (pendiente de refinamiento)
 - Creada: 2026-09-30 · Última actualización: 2026-09-30
@@ -192,7 +192,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **352** · Con criterio
 #### US-02.11
 
 - Enunciado: Como agente quiero identificar restricciones técnicas y de negocio antes de diseñar una solución.
-- Épica: EPIC-02 · Feature: FEAT-02.03 · Alcance: MVP · Prioridad: P1
+- Épica: EPIC-02 · Feature: FEAT-02.03 · Alcance: POST-MVP · Prioridad: P3
 - Sprint: — · Estado: PLANNED · Estimación: —
 - Criterios de aceptación: MISSING (pendiente de refinamiento)
 - Creada: 2026-09-30 · Última actualización: 2026-09-30
@@ -200,7 +200,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **352** · Con criterio
 #### US-02.12
 
 - Enunciado: Como operador quiero detectar conflictos entre requisitos para resolverlos antes de crear tareas.
-- Épica: EPIC-02 · Feature: FEAT-02.03 · Alcance: MVP · Prioridad: P1
+- Épica: EPIC-02 · Feature: FEAT-02.03 · Alcance: POST-MVP · Prioridad: P3
 - Sprint: — · Estado: PLANNED · Estimación: —
 - Criterios de aceptación: MISSING (pendiente de refinamiento)
 - Creada: 2026-09-30 · Última actualización: 2026-09-30
@@ -592,7 +592,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **352** · Con criterio
 #### US-07.05
 
 - Enunciado: Como agente Scrum quiero descomponer una historia en tareas técnicas.
-- Épica: EPIC-07 · Feature: FEAT-07.02 · Alcance: MVP · Prioridad: P1
+- Épica: EPIC-07 · Feature: FEAT-07.02 · Alcance: POST-MVP · Prioridad: P3
 - Sprint: — · Estado: PLANNED · Estimación: —
 - Criterios de aceptación: MISSING (pendiente de refinamiento)
 - Creada: 2026-09-30 · Última actualización: 2026-09-30
@@ -600,7 +600,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **352** · Con criterio
 #### US-07.06
 
 - Enunciado: Como agente quiero estimar el esfuerzo de las tareas.
-- Épica: EPIC-07 · Feature: FEAT-07.02 · Alcance: MVP · Prioridad: P1
+- Épica: EPIC-07 · Feature: FEAT-07.02 · Alcance: POST-MVP · Prioridad: P3
 - Sprint: — · Estado: PLANNED · Estimación: —
 - Criterios de aceptación: MISSING (pendiente de refinamiento)
 - Creada: 2026-09-30 · Última actualización: 2026-09-30
@@ -608,7 +608,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **352** · Con criterio
 #### US-07.07
 
 - Enunciado: Como Watchdog quiero detectar tareas huérfanas sin historia de origen.
-- Épica: EPIC-07 · Feature: FEAT-07.02 · Alcance: MVP · Prioridad: P1
+- Épica: EPIC-07 · Feature: FEAT-07.02 · Alcance: POST-MVP · Prioridad: P3
 - Sprint: — · Estado: PLANNED · Estimación: —
 - Criterios de aceptación: MISSING (pendiente de refinamiento)
 - Creada: 2026-09-30 · Última actualización: 2026-09-30

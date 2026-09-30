@@ -12,12 +12,12 @@ Humanos ──(Web React / CLI / MCP)──► ACM Core (Governance + State)
                 └───────────────────────┼───────────────────────┘
                                  Agent Orchestrator
                           ┌─────────────┼─────────────┐
-                        Ollama        JEV*      Agentes externos (MCP)
+                        Ollama    Ollaya/JEV*   Agentes externos (MCP)
                                         │
                                   Watchdog (gates)
                                         │
                                   Estado verificado
-                  * JEV: POST-MVP, sin definir (GAP-003)
+                  * JEV: modelos de decisión servidos por Ollaya; POST-MVP (ADR-006)
 ```
 
 ## Componentes previstos

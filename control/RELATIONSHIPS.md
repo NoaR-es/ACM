@@ -10,15 +10,15 @@ SPRINT-000
 ├── TASK-000-03 → control/14_DECISIONES/decisions.md (ADR-001..004)
 ├── TASK-000-04 → IMP-001 (CLOSED), GAP-002 → ADR-005
 ├── TASK-000-07 → GAP-002 (tooling frontend)
-├── TASK-000-05 → IMP-002, GAP-003, EPIC-24, SPIKE-006
-└── TASK-000-06 → ADR-003, control/01_PRODUCTO/requirements.md
+├── TASK-000-05 → IMP-002, GAP-003 → ADR-006
+└── TASK-000-06 → ADR-003 (SUPERSEDED) → ADR-007, control/tools/derive_backlog.py
 ```
 
 ## Código → origen
 ```
 control/tools/derive_backlog.py
 ├── TASK-000-02
-├── ADR-003 (constantes MVP)
+├── ADR-007 (constantes MVP; antes ADR-003)
 ├── ADR-004
 └── TEST-CTRL-001
 ```
@@ -33,7 +33,7 @@ control/tools/derive_backlog.py
 ```
 GAP-001 → 351 US (todas salvo US-01.01)
 GAP-002 → IMP-001, TASK-000-04, TASK-000-07, ADR-001, ADR-005
-GAP-003 → IMP-002, EPIC-24, SPIKE-006, TECH-020
+GAP-003 (RESOLVED) → IMP-002, ADR-006, EPIC-24, SPIKE-006, TECH-020
 GAP-004 → EPIC-03..EPIC-48
 GAP-005 → 07_DATOS/data_architecture.md, EPIC-13, 16, 17, 27
 ```
@@ -44,4 +44,16 @@ ADR-005 (Python backend)
 ├── EPIC-01, 15, 18, 21, 23 (todo el backend)
 ├── SPIKE-001, SPIKE-002, SPIKE-005
 └── 06_API/contract_tests.md (contrato React ↔ Python)
+```
+
+```
+ADR-006 (JEV vía Ollaya)
+├── EPIC-24, TECH-020, SPIKE-006
+├── US-24.03 (router Ollama ↔ Ollaya), US-24.07 (Watchdog JEV)
+└── 10_IA/inference_engines.md, providers.md, models.md
+
+ADR-007 (MVP)
+├── supersede ADR-003
+├── control/tools/derive_backlog.py (MVP_EPICS, POST_MVP_FEATURES)
+└── 01_PRODUCTO/backlog.md, epics.md, features.md, user_stories.md
 ```

@@ -26,13 +26,15 @@ SOURCE = ROOT / "01_PRODUCTO" / "product_definition_v1.md"
 OUT_DIR = ROOT / "01_PRODUCTO"
 SOURCE_REL = "01_PRODUCTO/product_definition_v1.md"
 
-# Clasificación MVP / POST-MVP. Propuesta del agente (ADR-003) a partir de las
-# secciones 12 y 13 de la definición; pendiente de validación por el operador.
+# Clasificación MVP / POST-MVP (ADR-007, supersede a ADR-003). Decidida por el
+# agente con delegación explícita del operador, a partir de las secciones 12 y 13.
 MVP_EPICS = {1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 13, 15, 16, 18, 19, 20, 21, 23, 27, 43}
 POST_MVP_FEATURES = {
+    "FEAT-02.03",  # Discovery Socrático (inteligencia generativa interna)
     "FEAT-02.04",  # Matriz de riesgo
     "FEAT-03.03",  # Gobierno arquitectónico multiagente
     "FEAT-06.03",  # Predicción / simulación de sprint
+    "FEAT-07.02",  # Descomposición automática (inteligencia generativa interna)
     "FEAT-11.03",  # AutoRoot
     "FEAT-13.03",  # Protección avanzada (depende de EPIC-16 completo)
     "FEAT-19.04",  # Panel multi-proyecto global
@@ -258,7 +260,7 @@ def render_backlog(epics: list[Epic], techs: list[Item], spikes: list[Item]) -> 
            f"| TECH (historia técnica) | {len(techs)} | — | — |\n",
            f"| SPIKE | {len(spikes)} | — | — |\n\n",
            "Detalle: `epics.md`, `features.md`, `user_stories.md`, `technical_stories.md`.\n",
-           "Clasificación MVP: ADR-003 (propuesta pendiente de validación del operador).\n\n",
+           "Clasificación MVP: ADR-007.\n\n",
            "## Historias MVP por épica\n\n"]
     for e in epics:
         ids = [s.id for (ee, f, s) in mvp if ee.id == e.id]

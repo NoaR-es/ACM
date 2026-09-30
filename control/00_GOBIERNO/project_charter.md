@@ -11,7 +11,7 @@
 Plataforma de gobernanza, memoria, ejecución y trazabilidad Agile para desarrollo software realizado por humanos y agentes IA.
 
 ## Alcance inicial
-MVP definido en §12 de la definición de producto; clasificación por épica en ADR-003 (provisional).
+MVP definido en §12 de la definición de producto; clasificación por épica y feature en ADR-007.
 
 ## Fuera de alcance del MVP
 §13 de la definición (JEV, sandbox avanzado, gemelos sintéticos, chaos testing, autocorrección, plugins, etc.).

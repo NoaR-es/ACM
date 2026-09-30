@@ -1,3 +1,3 @@
-# Models
+# Modelos
 
-**Estado del área:** N/A — no existe implementación todavía (2026-09-30). No inventar contenido: rellenar cuando exista código/infraestructura verificable.
+Ningún modelo integrado. Candidatos decisionales observados en Ollaya (no evaluados): `laya` (router; `laya:en` 421M, `laya:multilingual` 322M), `decider` (Qwen3.5 2B), `kev`, `winnow`, `nli`, `gliclass`. Detalle: `inference_engines.md`.

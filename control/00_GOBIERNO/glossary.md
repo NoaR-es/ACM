@@ -11,7 +11,9 @@
 | MCP | Model Context Protocol: interfaz por la que los agentes invocan herramientas de ACM. |
 | RAG | Retrieval-Augmented Generation: recuperación semántica de contexto. |
 | Ollama | Motor de inferencia de modelos locales. |
-| JEV | Motor de inferencia decisional (post-MVP). **Definición exacta UNKNOWN** — ver GAP-003. |
+| JEV / Jev | Modelos de decisión "System One" (TypeSafe): estado + preguntas tipadas → respuestas con probabilidades calibradas, sin generar texto. POST-MVP (ADR-006). |
+| Ollaya | Runtime local tipo Ollama para modelos de decisión estilo Jev (puerto 11435). |
+| choice / score / noul | Tipos de pregunta de un modelo de decisión: categoría, puntuación, sí/no. |
 | Walkthrough | Secuencia de pasos (algunos ejecutables) que evidencia que una funcionalidad funciona (EPIC-09). |
 | Done-Done | Código terminado **y** verificado con evidencia. |
 | Snapshot | Estado coordinado SQLite + Git restaurable (EPIC-13). |
@@ -19,4 +21,4 @@
 | Historia técnica (TECH-NNN) | Trabajo técnico transversal necesario para el producto (no es deuda). |
 | TD-NNN | Deuda técnica registrada. |
 | GAP-NNN | Hueco/inconsistencia detectado en el sistema de control o backlog. |
-| MVP / POST-MVP | Clasificación de alcance (ADR-003). |
+| MVP / POST-MVP | Clasificación de alcance (ADR-007). |

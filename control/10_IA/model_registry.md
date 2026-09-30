@@ -1,3 +1,3 @@
 # Registro de modelos
 
-Ningún modelo integrado. Previstos: modelos locales vía Ollama (EPIC-23, sin selección concreta), motor JEV (EPIC-24, GAP-003).
+Ningún modelo integrado en código. Previstos: modelos generativos vía Ollama (EPIC-23, sin selección) y modelos de decisión vía Ollaya/TypeSafe (EPIC-24, ADR-006; candidatos en `models.md`).

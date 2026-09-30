@@ -2,14 +2,14 @@
 
 **Responde a:** Qué IA utilizamos
 
-**Salud:** WARNING — JEV sin definir (GAP-003)
+**Salud:** OK — JEV definido (ADR-006); nada integrado
 
 | Documento | Estado |
 |-----------|--------|
 | `ai_architecture.md` | ACTIVE |
-| `providers.md` | N/A (plantilla) |
-| `inference_engines.md` | N/A (plantilla) |
-| `models.md` | N/A (plantilla) |
+| `providers.md` | ACTIVE |
+| `inference_engines.md` | ACTIVE |
+| `models.md` | ACTIVE |
 | `model_registry.md` | ACTIVE |
 | `prompts.md` | N/A (plantilla) |
 | `agents.md` | N/A (plantilla) |

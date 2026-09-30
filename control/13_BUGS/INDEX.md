@@ -2,7 +2,7 @@
 
 **Responde a:** Qué problemas existen
 
-**Salud:** WARNING — 4 gaps abiertos + GAP-002 parcialmente resuelto
+**Salud:** WARNING — 3 gaps abiertos (GAP-001, 004, 005) + GAP-002 parcialmente resuelto
 
 | Documento | Estado |
 |-----------|--------|
