@@ -1,6 +1,6 @@
 # Visión de producto
 
-> Resumen. Texto íntegro: `01_PRODUCTO/product_definition_v1.md` §1, §17, §18.
+> Resumen. Texto íntegro: `01_PRODUCTO/product_definition_v2.md` §1, §17, §18.
 
 ACM es una **memoria operativa verificable del desarrollo software**: un motor de estado, conocimiento, gobernanza,
 ejecución y trazabilidad que permite a múltiples agentes IA trabajar de forma autónoma sobre múltiples proyectos
@@ -11,6 +11,9 @@ qué riesgos existen, qué código está afectado, qué evidencia demuestra que 
 
 ## Cadena de trazabilidad objetivo
 Visión → Módulo → Feature → Épica → Historia → Requisito/AC → Sprint → Tarea → Plan → Código → Commit → Walkthrough → Log → Bug → Causa raíz → ADR → Documentación.
+
+## Interfaz con agentes
+ACM implementa su propio servidor MCP y, al conectarse, cada agente descarga las skills de ACM para saber usarlo (v1.1, ADR-008).
 
 ## Nota de dogfooding
 Este directorio `control/` es la versión manual (Markdown) de lo que ACM automatizará (SQLite + MCP).

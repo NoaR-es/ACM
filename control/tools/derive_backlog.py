@@ -6,7 +6,7 @@ Uso:
     python3 control/tools/derive_backlog.py          # regenera los inventarios
     python3 control/tools/derive_backlog.py --check  # falla (exit 1) si están desincronizados
 
-Entrada:  control/01_PRODUCTO/product_definition_v1.md
+Entrada:  control/01_PRODUCTO/product_definition_v2.md
 Salidas:  control/01_PRODUCTO/{epics,features,user_stories,backlog,technical_stories}.md
 
 Invariantes verificadas (exit 2 si fallan):
@@ -22,13 +22,13 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "01_PRODUCTO" / "product_definition_v1.md"
+SOURCE = ROOT / "01_PRODUCTO" / "product_definition_v2.md"
 OUT_DIR = ROOT / "01_PRODUCTO"
-SOURCE_REL = "01_PRODUCTO/product_definition_v1.md"
+SOURCE_REL = "01_PRODUCTO/product_definition_v2.md"
 
-# Clasificación MVP / POST-MVP (ADR-007, supersede a ADR-003). Decidida por el
-# agente con delegación explícita del operador, a partir de las secciones 12 y 13.
-MVP_EPICS = {1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 13, 15, 16, 18, 19, 20, 21, 23, 27, 43}
+# Clasificación MVP / POST-MVP (ADR-009, supersede a ADR-007 y ADR-003). Decidida por
+# el agente con delegación explícita del operador, a partir de las secciones 12 y 13.
+MVP_EPICS = {1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 13, 15, 16, 18, 19, 20, 21, 22, 23, 27, 43}
 POST_MVP_FEATURES = {
     "FEAT-02.03",  # Discovery Socrático (inteligencia generativa interna)
     "FEAT-02.04",  # Matriz de riesgo
@@ -41,6 +41,9 @@ POST_MVP_FEATURES = {
     "FEAT-21.03",  # Reranking
     "FEAT-21.04",  # Caché RAG
     "FEAT-21.05",  # Auditoría RAG
+    "FEAT-22.02",  # Selección dinámica de skills
+    "FEAT-22.03",  # Auditoría de skills
+    "FEAT-22.04",  # Sandbox de skills
     "FEAT-23.03",  # Supervisión de recursos
     "FEAT-23.04",  # Failover
 }
@@ -260,7 +263,7 @@ def render_backlog(epics: list[Epic], techs: list[Item], spikes: list[Item]) -> 
            f"| TECH (historia técnica) | {len(techs)} | — | — |\n",
            f"| SPIKE | {len(spikes)} | — | — |\n\n",
            "Detalle: `epics.md`, `features.md`, `user_stories.md`, `technical_stories.md`.\n",
-           "Clasificación MVP: ADR-007.\n\n",
+           "Clasificación MVP: ADR-009.\n\n",
            "## Historias MVP por épica\n\n"]
     for e in epics:
         ids = [s.id for (ee, f, s) in mvp if ee.id == e.id]

@@ -2,7 +2,7 @@
 
 > **Fuente:** definición aportada por el operador humano (NoaR-es) el 2026-09-30.
 > **Autoridad:** documento de producto de referencia (nivel 6 — planificación, §52 CLAUDE.md).
-> **Estado:** ACTIVE. Transcripción íntegra. No editar el contenido; los cambios de alcance se registran
+> **Estado:** SUPERSEDED por `01_PRODUCTO/product_definition_v2.md` (v1.1) el 2026-09-30. Transcripción íntegra. No editar el contenido; los cambios de alcance se registran
 > como nueva versión (`product_definition_v2.md`) y esta pasa a `99_ARCHIVO/superseded/`.
 > Los inventarios `epics.md`, `features.md`, `user_stories.md`, `backlog.md` y `technical_stories.md`
 > se **derivan** de este documento con `control/tools/derive_backlog.py`.

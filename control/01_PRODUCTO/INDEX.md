@@ -2,11 +2,11 @@
 
 **Responde a:** Qué debemos hacer
 
-**Salud:** WARNING — 351/352 historias sin criterios de aceptación (GAP-001)
+**Salud:** WARNING — 351/356 historias sin criterios de aceptación (GAP-001)
 
 | Documento | Estado |
 |-----------|--------|
-| `product_definition_v1.md` | ACTIVE |
+| `product_definition_v2.md` | ACTIVE (v1.1; v1.0 en `99_ARCHIVO/superseded/`) |
 | `roadmap.md` | ACTIVE |
 | `releases.md` | ACTIVE |
 | `requirements.md` | ACTIVE |

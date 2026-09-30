@@ -1,8 +1,8 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/product_definition_v1.md. No editar a mano: editar la fuente y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/product_definition_v2.md. No editar a mano: editar la fuente y regenerar. -->
 
 # Épicas
 
-Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **48**
+Fuente: `01_PRODUCTO/product_definition_v2.md` · Total: **48**
 
 | ID | Título | Alcance | Prioridad | Estado | Features | Historias |
 |----|--------|---------|-----------|--------|----------|-----------|
@@ -20,14 +20,14 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **48**
 | EPIC-12 | Gestión de Deuda Técnica | POST-MVP | P3 | PLANNED | 3 | 7 |
 | EPIC-13 | Snapshots, Time Machine y Rollback | MVP | P1 | PLANNED | 3 | 8 |
 | EPIC-14 | Documentación Viva y DocuTwin | POST-MVP | P3 | PLANNED | 3 | 7 |
-| EPIC-15 | Servidor MCP Multi-Proyecto | MVP | P1 | PLANNED | 3 | 8 |
+| EPIC-15 | Servidor MCP Multi-Proyecto | MVP | P1 | PLANNED | 4 | 12 |
 | EPIC-16 | Identidad, Tokens, RBAC y Seguridad | MVP | P1 | PLANNED | 4 | 11 |
 | EPIC-17 | Concurrencia Multi-Agente | POST-MVP | P3 | PLANNED | 4 | 10 |
 | EPIC-18 | Comunicación Reactiva y WebSockets | MVP | P1 | PLANNED | 3 | 8 |
 | EPIC-19 | Dashboard, Kanban y Observabilidad | MVP | P1 | PLANNED | 4 | 9 |
 | EPIC-20 | Trazabilidad E2E | MVP | P1 | PLANNED | 3 | 9 |
 | EPIC-21 | Memoria Vectorial y RAG | MVP | P1 | PLANNED | 5 | 10 |
-| EPIC-22 | Skills para Agentes | POST-MVP | P3 | PLANNED | 4 | 11 |
+| EPIC-22 | Skills para Agentes | MVP | P1 | PLANNED | 4 | 11 |
 | EPIC-23 | Ollama y Modelos Locales | MVP | P1 | PLANNED | 4 | 8 |
 | EPIC-24 | Motor JEV y Decisiones | POST-MVP | P3 | PLANNED | 4 | 8 |
 | EPIC-25 | Sandbox y Gemelo Digital | POST-MVP | P3 | PLANNED | 4 | 8 |
@@ -59,5 +59,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **48**
 
 - **EPIC-01** — Objetivo: proporcionar el contexto raíz sobre el que se ejecuta todo el sistema. · Valor: garantizar que cada agente y cada operación sepan sobre qué proyecto están trabajando.
 - **EPIC-02** — Objetivo: impedir que los agentes salten directamente al desarrollo sin comprender primero el producto.
+- **EPIC-15** — Objetivo: **[v1.1]** ACM implementa y gestiona su propio servidor MCP: es la puerta de entrada de los agentes IA a ACM. · Valor: **[v1.1]** cualquier agente que se conecte aprende a usar ACM descargando sus skills desde el propio servidor, sin configuración previa.
+- **EPIC-22** — Objetivo: **[v1.1]** disponer de las skills que enseñan a los agentes a usar ACM; ACM las gestiona y las distribuye a través de su servidor MCP (FEAT-15.04).
 
-Épicas sin objetivo explícito en la fuente (46): EPIC-03, EPIC-04, EPIC-05, EPIC-06, EPIC-07, EPIC-08, EPIC-09, EPIC-10, EPIC-11, EPIC-12, EPIC-13, EPIC-14, EPIC-15, EPIC-16, EPIC-17, EPIC-18, EPIC-19, EPIC-20, EPIC-21, EPIC-22, EPIC-23, EPIC-24, EPIC-25, EPIC-26, EPIC-27, EPIC-28, EPIC-29, EPIC-30, EPIC-31, EPIC-32, EPIC-33, EPIC-34, EPIC-35, EPIC-36, EPIC-37, EPIC-38, EPIC-39, EPIC-40, EPIC-41, EPIC-42, EPIC-43, EPIC-44, EPIC-45, EPIC-46, EPIC-47, EPIC-48
+Épicas sin objetivo explícito en la fuente (44): EPIC-03, EPIC-04, EPIC-05, EPIC-06, EPIC-07, EPIC-08, EPIC-09, EPIC-10, EPIC-11, EPIC-12, EPIC-13, EPIC-14, EPIC-16, EPIC-17, EPIC-18, EPIC-19, EPIC-20, EPIC-21, EPIC-23, EPIC-24, EPIC-25, EPIC-26, EPIC-27, EPIC-28, EPIC-29, EPIC-30, EPIC-31, EPIC-32, EPIC-33, EPIC-34, EPIC-35, EPIC-36, EPIC-37, EPIC-38, EPIC-39, EPIC-40, EPIC-41, EPIC-42, EPIC-43, EPIC-44, EPIC-45, EPIC-46, EPIC-47, EPIC-48

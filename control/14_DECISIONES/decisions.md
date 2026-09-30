@@ -78,7 +78,7 @@ Trade-offs: Un tercer motor de inferencia (Ollama + Ollaya + vector) añade oper
 
 ## ADR-007 — Alcance del MVP (supersede a ADR-003)
 Fecha: 2026-09-30
-Estado: ACCEPTED
+Estado: SUPERSEDED por ADR-009 (2026-09-30)
 Contexto: El operador delega en el agente la decisión del MVP.
 Problema: Delimitar un MVP entregable y coherente con §12 de la definición.
 Alternativas consideradas: (a) mantener ADR-003; (b) MVP mínimo (solo backlog + MCP, sin tiempo real ni IA); (c) ADR-003 ajustado.
@@ -89,3 +89,45 @@ Decisión: (c). Principio rector: **el MVP es ACM como memoria de estado y gober
 Motivo: Cambios respecto a ADR-003: FEAT-02.03 y FEAT-07.02 exigen que ACM razone con LLM propio, lo que §12 no pide (§12 pide "crear módulos/funcionalidades/tareas", no descubrirlas o descomponerlas). Un agente externo puede hacerlo a través de MCP. La detección de tareas huérfanas (US-07.07) sigue cubierta en MVP por US-10.03.
 Consecuencias: MVP = 20 épicas, 53 features, 147 historias (antes 55 / 155); POST-MVP = 97 features, 205 historias. Fuente: `01_PRODUCTO/backlog.md` (generado).
 Trade-offs: El MVP sigue siendo grande (20 épicas). Se entregará en incrementos según `01_PRODUCTO/roadmap.md`; revisable al cerrar la Fase 1.
+
+## ADR-008 — Servidor MCP propio de ACM con distribución de skills (extensión MCP Skills)
+Fecha: 2026-09-30
+Estado: ACCEPTED
+Contexto: El operador aclara que el servidor MCP **es la propia aplicación ACM**, que lo implementa y gestiona, junto con las skills asociadas: cualquier agente IA que se conecte debe descargar todas las skills para saber usar ACM y sacarle partido. Definición de producto actualizada a v1.1 (FEAT-15.04).
+Problema: Cómo entrega un servidor MCP las skills al agente de forma estándar e interoperable.
+Hechos verificados (fuentes públicas, 2026-09-30; no probado en este entorno):
+- Existe la **extensión oficial MCP Skills** (SEP-2640, identificador `io.modelcontextprotocol/skills`), final desde el 2026-09-13, sobre la revisión base `2026-07-28` del protocolo.
+- El servidor declara `capabilities.resources` y `capabilities.extensions["io.modelcontextprotocol/skills"]`, implementa `skills/list` y `skills/get`, y sirve cada archivo como recurso `skill://<ruta>/<archivo>` legible con `resources/read`. Cada recurso publica `digest` (sha256) y `size`.
+- `SKILL.md` debe empezar con frontmatter YAML con al menos `name` y `description`. El último segmento de la ruta debe coincidir con `name`. Límites: 512 recursos y 16 MiB por skill.
+- Seguridad (obligaciones del cliente): tratar las skills servidas como entrada no confiable, sin ejecución local implícita e ignorando `allowed-tools` salvo aprobación.
+Alternativas consideradas:
+(a) Solo `instructions` de inicialización con un texto largo. Rechazada: no versionable ni modular.
+(b) Solo herramientas propias (`get_skills`). Rechazada como mecanismo principal: no es estándar.
+(c) Extensión MCP Skills + `instructions` + herramientas de respaldo.
+Decisión: (c).
+1. ACM **implementa su propio servidor MCP** (Python, ADR-005) como parte de la aplicación, no como servicio de terceros. El SDK oficial de MCP para Python se usará solo como librería de protocolo si soporta lo necesario (lo verifica SPIKE-002).
+2. `instructions` en la inicialización indica al agente que descargue y cargue las skills de ACM antes de operar.
+3. Las skills se sirven con la extensión MCP Skills bajo el prefijo `skill://acm/<nombre>/...`.
+4. Hay herramientas MCP de respaldo equivalentes (listar y obtener skill) para clientes sin soporte de la extensión.
+5. Las skills oficiales viven como archivos `SKILL.md` versionados dentro del código de ACM (frontmatter con `name`, `description` y `version`) y se publican con cada release. Las skills personalizadas por proyecto (EPIC-32/48) se guardarán más adelante en la base de datos.
+6. Cada descarga de skill se audita (US-15.08).
+Motivo: Es el estándar oficial para exactamente este caso de uso; es interoperable con cualquier cliente que lo soporte, y el `digest` resuelve la detección de skills desactualizadas (US-15.11).
+Consecuencias:
+- SPIKE-002 debe comprobar si el SDK MCP de Python soporta la revisión `2026-07-28` y los métodos `skills/*`. Si no los soporta, ACM los implementará sobre el servidor (JSON-RPC propio o SDK extendido).
+- El catálogo inicial de skills se define en `06_API/mcp_server.md`.
+- Las skills son parte del contrato público de ACM: un cambio en ellas es un cambio versionado (changelog).
+Trade-offs: La extensión es muy reciente (≈2 semanas); el soporte en clientes puede ser desigual, lo que se mitiga con `instructions` y las herramientas de respaldo.
+
+## ADR-009 — Alcance del MVP v2 (supersede a ADR-007)
+Fecha: 2026-09-30
+Estado: ACCEPTED
+Contexto: Con la definición v1.1, las skills son el mecanismo por el que los agentes aprenden a usar ACM (ADR-008). Sin ellas, el servidor MCP del MVP no es utilizable de forma autónoma.
+Problema: EPIC-22 estaba fuera del MVP (ADR-007).
+Alternativas consideradas: (a) mantener EPIC-22 fuera y servir solo `instructions`; (b) incluir EPIC-22 completa; (c) incluir solo FEAT-22.01 (catálogo de skills ACM).
+Decisión: (c). Los cambios respecto a ADR-007 son:
+- EPIC-22 pasa a MVP solo con FEAT-22.01; FEAT-22.02, FEAT-22.03 y FEAT-22.04 siguen POST-MVP.
+- La nueva FEAT-15.04 (distribución de skills) es MVP porque EPIC-15 ya lo era.
+- El resto de ADR-007 se mantiene sin cambios.
+Motivo: La petición explícita del operador y la coherencia con el principio de ADR-007: el razonamiento lo aportan agentes externos, y las skills son justo lo que les permite hacerlo bien (p. ej. la skill de Discovery Socrático permite hacer discovery desde fuera aunque FEAT-02.03 sea POST-MVP).
+Consecuencias: MVP = 21 épicas, 55 features, 156 historias; POST-MVP = 96 features, 200 historias (total 356). Fuente: `01_PRODUCTO/backlog.md` (generado).
+Trade-offs: El MVP crece con 5 skills y 4 historias de distribución.

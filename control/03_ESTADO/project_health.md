@@ -5,7 +5,7 @@
 | Área | Estado | Motivo |
 |------|--------|--------|
 | Control | OK | Estructura completa, índices y relaciones creados |
-| Producto | WARNING | 351/352 historias sin criterios (GAP-001) |
+| Producto | WARNING | 351/356 historias sin criterios (GAP-001) |
 | Arquitectura | WARNING | Backend Python decidido (ADR-005); framework y topología de procesos pendientes de SPIKE-001/002 |
 | IA | OK | JEV definido (ADR-006); nada integrado |
 | Código | N/A | No existe código de producto |

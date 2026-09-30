@@ -24,7 +24,7 @@ Humanos ──(Web React / CLI / MCP)──► ACM Core (Governance + State)
 | Componente | Épicas | Estado |
 |-----------|--------|--------|
 | Núcleo de estado (SQLite por proyecto) | EPIC-01, 34, TECH-003..009 | PLANNED |
-| Servidor MCP multi-proyecto | EPIC-15, TECH-010/011 | PLANNED |
+| Servidor MCP propio multi-proyecto + distribución de skills | EPIC-15 (incl. FEAT-15.04), EPIC-22, TECH-010/011, ADR-008 | PLANNED |
 | Motor de eventos + bus WebSocket | EPIC-18, TECH-001/002 | PLANNED |
 | Frontend React (Kanban, actividad, grafos) | EPIC-19, 20, 46 | PLANNED |
 | Watchdog | EPIC-05, 10, 36, 42 | PLANNED |

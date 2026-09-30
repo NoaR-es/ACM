@@ -1,8 +1,8 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/product_definition_v1.md. No editar a mano: editar la fuente y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/product_definition_v2.md. No editar a mano: editar la fuente y regenerar. -->
 
 # Features
 
-Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **150**
+Fuente: `01_PRODUCTO/product_definition_v2.md` · Total: **151**
 
 | ID | Épica | Título | Alcance | Estado | Historias |
 |----|-------|--------|---------|--------|-----------|
@@ -53,6 +53,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **150**
 | FEAT-15.01 | EPIC-15 | MCP | MVP | PLANNED | US-15.01, US-15.02, US-15.03 |
 | FEAT-15.02 | EPIC-15 | Multi-proyecto | MVP | PLANNED | US-15.04, US-15.05, US-15.06 |
 | FEAT-15.03 | EPIC-15 | Auditoría MCP | MVP | PLANNED | US-15.07, US-15.08 |
+| FEAT-15.04 | EPIC-15 | Distribución de skills ACM **[v1.1]** | MVP | PLANNED | US-15.09, US-15.10, US-15.11, US-15.12 |
 | FEAT-16.01 | EPIC-16 | Identidad | MVP | PLANNED | US-16.01, US-16.02 |
 | FEAT-16.02 | EPIC-16 | RBAC | MVP | PLANNED | US-16.03, US-16.04, US-16.05 |
 | FEAT-16.03 | EPIC-16 | Tokens | MVP | PLANNED | US-16.06, US-16.07, US-16.08 |
@@ -76,7 +77,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **150**
 | FEAT-21.03 | EPIC-21 | Reranking | POST-MVP | PLANNED | US-21.06, US-21.07 |
 | FEAT-21.04 | EPIC-21 | Caché | POST-MVP | PLANNED | US-21.08 |
 | FEAT-21.05 | EPIC-21 | Auditoría RAG | POST-MVP | PLANNED | US-21.09, US-21.10 |
-| FEAT-22.01 | EPIC-22 | Skills ACM | POST-MVP | PLANNED | US-22.01, US-22.02, US-22.03, US-22.04, US-22.05 |
+| FEAT-22.01 | EPIC-22 | Skills ACM | MVP | PLANNED | US-22.01, US-22.02, US-22.03, US-22.04, US-22.05 |
 | FEAT-22.02 | EPIC-22 | Selección dinámica | POST-MVP | PLANNED | US-22.06, US-22.07 |
 | FEAT-22.03 | EPIC-22 | Auditoría | POST-MVP | PLANNED | US-22.08, US-22.09 |
 | FEAT-22.04 | EPIC-22 | Sandbox | POST-MVP | PLANNED | US-22.10, US-22.11 |

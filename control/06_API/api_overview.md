@@ -1,3 +1,9 @@
-# Api overview
+# API — visión general
 
-**Estado del área:** N/A — no existe implementación todavía (2026-09-30). No inventar contenido: rellenar cuando exista código/infraestructura verificable.
+Nada implementado. Interfaces previstas:
+
+| Interfaz | Consumidor | Documento | Estado |
+|----------|-----------|-----------|--------|
+| Servidor MCP propio (+ skills) | Agentes IA | `mcp_server.md` | PLANNED |
+| API HTTP | Frontend React, CLI | por definir | PLANNED |
+| WebSockets | Frontend React | `09_MENSAJERIA/` | PLANNED |

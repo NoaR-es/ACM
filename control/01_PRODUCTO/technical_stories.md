@@ -1,4 +1,4 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/product_definition_v1.md. No editar a mano: editar la fuente y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/product_definition_v2.md. No editar a mano: editar la fuente y regenerar. -->
 
 # Historias técnicas transversales y Spikes
 

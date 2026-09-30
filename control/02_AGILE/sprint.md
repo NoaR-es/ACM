@@ -23,6 +23,7 @@
 | TASK-000-03 | DOCUMENTATION | Registrar ADRs iniciales (001–004) | VERIFIED |
 | TASK-000-04 | DECISION | Decidir runtime/lenguaje backend | VERIFIED (Python, ADR-005) |
 | TASK-000-07 | DECISION | Decidir tooling del frontend React (GAP-002) | PLANNED |
+| TASK-000-08 | DOCUMENTATION | Incorporar el cambio de alcance "servidor MCP propio + skills" (definición v1.1, ADR-008, ADR-009) | VERIFIED |
 | TASK-000-05 | RESEARCH | Aclarar qué es JEV (GAP-003) | VERIFIED (ADR-006) |
 | TASK-000-06 | DECISION | Cerrar alcance MVP (delegado por el operador) | VERIFIED (ADR-007) |
 

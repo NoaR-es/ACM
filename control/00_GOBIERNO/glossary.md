@@ -21,4 +21,6 @@
 | Historia técnica (TECH-NNN) | Trabajo técnico transversal necesario para el producto (no es deuda). |
 | TD-NNN | Deuda técnica registrada. |
 | GAP-NNN | Hueco/inconsistencia detectado en el sistema de control o backlog. |
-| MVP / POST-MVP | Clasificación de alcance (ADR-007). |
+| MVP / POST-MVP | Clasificación de alcance (ADR-009). |
+| Skill | Paquete de instrucciones (`SKILL.md` con frontmatter YAML) que enseña a un agente a realizar una tarea; ACM sirve las suyas por MCP (ADR-008). |
+| Extensión MCP Skills | SEP-2640, `io.modelcontextprotocol/skills`: estándar para descubrir y distribuir skills por MCP (`skills/list`, `skills/get`, URIs `skill://`). |

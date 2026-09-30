@@ -1,8 +1,8 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/product_definition_v1.md. No editar a mano: editar la fuente y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/product_definition_v2.md. No editar a mano: editar la fuente y regenerar. -->
 
 # User Stories
 
-Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **352** · Con criterios de aceptación: **1** · Sin criterios: **351**
+Fuente: `01_PRODUCTO/product_definition_v2.md` · Total: **356** · Con criterios de aceptación: **5** · Sin criterios: **351**
 
 > Estado READY exige criterios de aceptación binarios (Regla 3 del producto, §15 CLAUDE.md).
 > Las historias sin criterios permanecen en PLANNED hasta su refinamiento (ver BUG/gap `GAP-001`).
@@ -1199,6 +1199,52 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **352** · Con criterio
 - Criterios de aceptación: MISSING (pendiente de refinamiento)
 - Creada: 2026-09-30 · Última actualización: 2026-09-30
 
+### FEAT-15.04 — Distribución de skills ACM **[v1.1]**
+
+#### US-15.09
+
+- Enunciado: Como agente IA quiero que, al conectarme al servidor MCP de ACM, este me indique cómo usarlo y qué skills tiene disponibles, para operar correctamente desde el primer momento.
+- Épica: EPIC-15 · Feature: FEAT-15.04 · Alcance: MVP · Prioridad: P1
+- Sprint: — · Estado: PLANNED · Estimación: —
+- Criterios de aceptación:
+  - [ ] La respuesta de inicialización MCP incluye `instructions` que indican al agente que descargue y cargue las skills de ACM antes de operar.
+  - [ ] El servidor declara la capacidad `resources` y la extensión `io.modelcontextprotocol/skills`.
+  - [ ] `skills/list` devuelve todas las skills oficiales de ACM con `name`, `description`, `uri` y la lista de recursos con `digest` sha256 y `size`.
+- Creada: 2026-09-30 · Última actualización: 2026-09-30
+
+#### US-15.10
+
+- Enunciado: Como agente IA quiero descargar todas las skills de ACM desde el propio servidor MCP para saber usarlo y sacarle el máximo partido.
+- Épica: EPIC-15 · Feature: FEAT-15.04 · Alcance: MVP · Prioridad: P1
+- Sprint: — · Estado: PLANNED · Estimación: —
+- Criterios de aceptación:
+  - [ ] Cada archivo de cada skill se puede leer con `resources/read` bajo la URI `skill://acm/<nombre>/<archivo>`.
+  - [ ] `skills/get` devuelve la skill solicitada y una skill inexistente devuelve el error `-32602`.
+  - [ ] Los clientes sin soporte de la extensión pueden listar y obtener las mismas skills mediante herramientas MCP de ACM.
+- Creada: 2026-09-30 · Última actualización: 2026-09-30
+
+#### US-15.11
+
+- Enunciado: Como agente IA quiero saber si las skills que descargué están desactualizadas para volver a descargarlas.
+- Épica: EPIC-15 · Feature: FEAT-15.04 · Alcance: MVP · Prioridad: P1
+- Sprint: — · Estado: PLANNED · Estimación: —
+- Criterios de aceptación:
+  - [ ] Cada SKILL.md declara `version` en su frontmatter.
+  - [ ] El `digest` de un recurso cambia si y solo si cambia su contenido.
+  - [ ] Cuando cambia el catálogo de skills, el servidor emite la notificación de cambio de lista de recursos.
+- Creada: 2026-09-30 · Última actualización: 2026-09-30
+
+#### US-15.12
+
+- Enunciado: Como operador quiero que ACM gestione el catálogo de skills que sirve para controlar qué aprenden los agentes.
+- Épica: EPIC-15 · Feature: FEAT-15.04 · Alcance: MVP · Prioridad: P1
+- Sprint: — · Estado: PLANNED · Estimación: —
+- Criterios de aceptación:
+  - [ ] Las skills oficiales se versionan junto con el código de ACM.
+  - [ ] Una skill retirada deja de aparecer en `skills/list` y su URI devuelve error.
+  - [ ] Cada descarga de skill queda registrada en la auditoría MCP (US-15.08).
+- Creada: 2026-09-30 · Última actualización: 2026-09-30
+
 ## EPIC-16 — Identidad, Tokens, RBAC y Seguridad
 
 ### FEAT-16.01 — Identidad
@@ -1720,7 +1766,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **352** · Con criterio
 #### US-22.01
 
 - Enunciado: Como agente quiero disponer de una skill que explique el esquema ACM.
-- Épica: EPIC-22 · Feature: FEAT-22.01 · Alcance: POST-MVP · Prioridad: P3
+- Épica: EPIC-22 · Feature: FEAT-22.01 · Alcance: MVP · Prioridad: P1
 - Sprint: — · Estado: PLANNED · Estimación: —
 - Criterios de aceptación: MISSING (pendiente de refinamiento)
 - Creada: 2026-09-30 · Última actualización: 2026-09-30
@@ -1728,7 +1774,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **352** · Con criterio
 #### US-22.02
 
 - Enunciado: Como agente quiero disponer de una skill de validación INVEST.
-- Épica: EPIC-22 · Feature: FEAT-22.01 · Alcance: POST-MVP · Prioridad: P3
+- Épica: EPIC-22 · Feature: FEAT-22.01 · Alcance: MVP · Prioridad: P1
 - Sprint: — · Estado: PLANNED · Estimación: —
 - Criterios de aceptación: MISSING (pendiente de refinamiento)
 - Creada: 2026-09-30 · Última actualización: 2026-09-30
@@ -1736,7 +1782,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **352** · Con criterio
 #### US-22.03
 
 - Enunciado: Como agente quiero disponer de una skill de Discovery Socrático.
-- Épica: EPIC-22 · Feature: FEAT-22.01 · Alcance: POST-MVP · Prioridad: P3
+- Épica: EPIC-22 · Feature: FEAT-22.01 · Alcance: MVP · Prioridad: P1
 - Sprint: — · Estado: PLANNED · Estimación: —
 - Criterios de aceptación: MISSING (pendiente de refinamiento)
 - Creada: 2026-09-30 · Última actualización: 2026-09-30
@@ -1744,7 +1790,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **352** · Con criterio
 #### US-22.04
 
 - Enunciado: Como agente quiero disponer de una skill de análisis de errores.
-- Épica: EPIC-22 · Feature: FEAT-22.01 · Alcance: POST-MVP · Prioridad: P3
+- Épica: EPIC-22 · Feature: FEAT-22.01 · Alcance: MVP · Prioridad: P1
 - Sprint: — · Estado: PLANNED · Estimación: —
 - Criterios de aceptación: MISSING (pendiente de refinamiento)
 - Creada: 2026-09-30 · Última actualización: 2026-09-30
@@ -1752,7 +1798,7 @@ Fuente: `01_PRODUCTO/product_definition_v1.md` · Total: **352** · Con criterio
 #### US-22.05
 
 - Enunciado: Como agente quiero disponer de una skill de documentación.
-- Épica: EPIC-22 · Feature: FEAT-22.01 · Alcance: POST-MVP · Prioridad: P3
+- Épica: EPIC-22 · Feature: FEAT-22.01 · Alcance: MVP · Prioridad: P1
 - Sprint: — · Estado: PLANNED · Estimación: —
 - Criterios de aceptación: MISSING (pendiente de refinamiento)
 - Creada: 2026-09-30 · Última actualización: 2026-09-30

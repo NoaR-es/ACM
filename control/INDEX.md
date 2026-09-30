@@ -9,12 +9,12 @@ Proyecto: **Agile Context Manager (ACM)** · Constitución: `/CLAUDE.md` · Actu
 | Área | Responde a | Salud |
 |------|-----------|-------|
 | `00_GOBIERNO/` | Qué estamos construyendo y con qué reglas | OK |
-| `01_PRODUCTO/` | Qué debemos hacer | WARNING — 351/352 historias sin criterios de aceptación (GAP-001) |
+| `01_PRODUCTO/` | Qué debemos hacer | WARNING — 351/356 historias sin criterios de aceptación (GAP-001) |
 | `02_AGILE/` | Sprint, Kanban e impedimentos | OK |
 | `03_ESTADO/` | Dónde estamos | OK |
 | `04_ARQUITECTURA/` | Cómo está diseñado | WARNING — arquitectura objetivo conceptual; backend Python (ADR-005), framework pendiente |
 | `05_CODIGO/` | Dónde está implementado | OK — solo existe tooling de control |
-| `06_API/` | Cómo funcionan las APIs | N/A |
+| `06_API/` | Cómo funcionan las APIs | OK — servidor MCP planificado (ADR-008) |
 | `07_DATOS/` | Cómo se almacenan los datos | N/A — modelo conceptual en data_architecture.md |
 | `08_INFRAESTRUCTURA/` | Cómo se ejecuta | N/A |
 | `09_MENSAJERIA/` | Cómo se comunican los componentes | N/A — WebSockets previstos (EPIC-18) |
@@ -30,7 +30,7 @@ Proyecto: **Agile Context Manager (ACM)** · Constitución: `/CLAUDE.md` · Actu
 | `19_OBSERVABILIDAD/` | Cómo se observa | N/A |
 | `20_PERFORMANCE/` | Cómo rinde | N/A |
 | `21_COMPLIANCE/` | Cumple normativa | N/A |
-| `99_ARCHIVO/` | Documentación histórica, deprecada y supersedida | OK — vacío |
+| `99_ARCHIVO/` | Documentación histórica, deprecada y supersedida | OK — 1 documento supersedido |
 
 ## Transversales
 - `RELATIONSHIPS.md` — grafo de relaciones entre elementos.
