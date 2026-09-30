@@ -35,5 +35,7 @@
 | 2026-09-30 | TEST-PROD-S05 | PASS 220/220 | 22 tests nuevos (`test_watchdog.py`) |
 | 2026-09-30 | Mutación manual SPRINT-005 (8 invariantes) | 8/8 detectadas | cuarentena sin bloqueo; sin `foreign_key_check`; no calibrado como WARNING; CRITICAL sin RED; evaluar sobre base corrupta; histórico invertido; periódico sin auditar; calidad sin interfaz de decisión |
 | 2026-09-30 | CI GitHub Actions run #10 | PASS | commit `cc2b9a8` (SPRINT-005) |
+| 2026-09-30 | TEST-PROD-S06 | PASS 251/251 | 31 tests nuevos (`test_realtime.py`), incluido un agente stdio en otro proceso cuyo cambio llega por WebSocket |
+| 2026-09-30 | Mutación manual SPRINT-006 (8 invariantes) | 8/8 detectadas | transición sin validar; cambio de estado sin evento; eventos visibles para todos; reconexión ignora `after`; desconexión no libera; Kanban ignora el filtro; errores de validación en otro formato; actividad visible para todos |
 | 2026-09-30 | Ollama real | NO EJECUTADO | Sin acceso a Ollama ni a modelos (IMP-004) |
 | 2026-09-30 | `tools/evidence.py` | PASS | SPRINT-002: 21 historias, solo US-24.03 CA-02 PENDIENTE; SPRINT-001 reproducida (solo US-01.02 CA-03 sin test) |

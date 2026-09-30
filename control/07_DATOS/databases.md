@@ -1,9 +1,9 @@
-# Bases de datos (SPRINT-001; v2 en SPRINT-002; global v3 en SPRINT-003; global v4 en SPRINT-004; global v5 en SPRINT-005, 2026-09-30)
+# Bases de datos (SPRINT-001; v2 en SPRINT-002; global v3 en SPRINT-003; global v4 en SPRINT-004; global v5 en SPRINT-005; global v6 y proyecto v3 en SPRINT-006, 2026-09-30)
 
 | Base | Ruta | Motor | Propósito | Esquema | Migraciones |
 |------|------|-------|-----------|---------|-------------|
-| Global | `<ACM_DATA_DIR>/acm.db` | SQLite 3 (WAL) | Principales, registro de proyectos, pertenencias, auditoría MCP, motores y llamadas de inferencia, entregas de contexto, tokens de acceso, Watchdog | `acm.db.schema.GLOBAL` v5 | `schema_migrations` |
-| Proyecto | `<ACM_DATA_DIR>/projects/<project_id>/project.db` | SQLite 3 (WAL) | Metadatos y configuración del proyecto y backlog (y, en el futuro, todo su estado: ADR-011) | `acm.db.schema.PROJECT` v2 | `schema_migrations` |
+| Global | `<ACM_DATA_DIR>/acm.db` | SQLite 3 (WAL) | Principales, registro de proyectos, pertenencias, auditoría MCP, motores y llamadas de inferencia, entregas de contexto, tokens de acceso, Watchdog, eventos | `acm.db.schema.GLOBAL` v6 | `schema_migrations` |
+| Proyecto | `<ACM_DATA_DIR>/projects/<project_id>/project.db` | SQLite 3 (WAL) | Metadatos y configuración del proyecto y backlog con historial de estados (y, en el futuro, todo su estado: ADR-011) | `acm.db.schema.PROJECT` v3 | `schema_migrations` |
 
 ## Esquema global v1
 | Tabla | Columnas | Restricciones |
@@ -44,6 +44,16 @@ Retención de `inference_calls` y `context_deliveries`: sin política (MISSING, 
 |--------|---------|
 | `projects.integrity_status` / `integrity_detail` / `integrity_checked_at` | `unknown` \| `ok` \| `corrupt`; `corrupt` bloquea las escrituras del proyecto (US-13.11) |
 | `watchdog_runs` | Histórico de auditorías: proyecto, fecha, trigger (`manual` \| `scheduled`), principal, semáforo, recuentos por severidad, hallazgos (JSON), motores, duración. Retención: sin política (MISSING, EPIC-44) |
+
+## Esquema global v6 (SPRINT-006)
+| Tabla | Uso |
+|-------|-----|
+| `events` | Eventos de dominio: `seq` (orden total), `ts`, `type`, `project_id`, `principal`, `entity_type`, `entity_id`, `data_json`. Retención: últimos `ACM_EVENTS_KEEP` (ADR-018) |
+
+## Esquema de proyecto v3 (SPRINT-006)
+| Tabla | Uso |
+|-------|-----|
+| `story_status_history` | Cada cambio de estado de una historia: de, a, motivo, quién, cuándo (US-06.02 CA-02) |
 
 ## Esquema de proyecto v2 (SPRINT-002)
 | Tabla | Uso | Restricciones |

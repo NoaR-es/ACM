@@ -13,14 +13,14 @@ Proyecto: **Agile Context Manager (ACM)** · Constitución: `/CLAUDE.md` · Actu
 | `02_AGILE/` | Sprint, Kanban e impedimentos | WARNING — IMP-004 abierto |
 | `03_ESTADO/` | Dónde estamos | OK |
 | `04_ARQUITECTURA/` | Cómo está diseñado | OK — topología, SQLite e interfaces de inferencia (ADR-013..016), implementadas |
-| `05_CODIGO/` | Dónde está implementado | OK — `src/acm` (SPRINT-005) |
-| `06_API/` | Cómo funcionan las APIs | OK — MCP: proyectos, backlog, auditoría, extensión Skills, segundo cerebro, identidad y Watchdog; HTTP con token (SPRINT-005) |
-| `07_DATOS/` | Cómo se almacenan los datos | OK — SQLite global v5 + por proyecto v2 (SPRINT-005) |
+| `05_CODIGO/` | Dónde está implementado | OK — `src/acm` (SPRINT-006) |
+| `06_API/` | Cómo funcionan las APIs | OK — MCP: proyectos, backlog, auditoría, extensión Skills, segundo cerebro, identidad y Watchdog; API REST v1 y WebSocket (SPRINT-006) |
+| `07_DATOS/` | Cómo se almacenan los datos | OK — SQLite global v6 + por proyecto v3 (SPRINT-006) |
 | `08_INFRAESTRUCTURA/` | Cómo se ejecuta | OK — ejecución local (`acm serve`/`mcp-stdio`) |
-| `09_MENSAJERIA/` | Cómo se comunican los componentes | N/A — WebSockets previstos (EPIC-21) |
+| `09_MENSAJERIA/` | Cómo se comunican los componentes | OK — eventos persistidos y WebSocket (ADR-018) |
 | `10_IA/` | Qué IA utilizamos | WARNING — reglas y adaptador Ollama implementados; Ollama sin verificar en real (IMP-004); JEV pendiente (EPIC-50) |
 | `11_SEGURIDAD/` | Cómo se protege | WARNING — tokens y RBAC implementados (VULN-001 resuelta); sin TLS propio (VULN-002) |
-| `12_TESTING/` | Cómo se prueba | OK — 220 tests de producto en PASS |
+| `12_TESTING/` | Cómo se prueba | OK — 251 tests de producto en PASS |
 | `13_BUGS/` | Qué problemas existen | WARNING — 4 gaps abiertos, TD-001, BUG-001 corregido; conflictos resueltos o aplazados (CONF-003) |
 | `14_DECISIONES/` | Por qué se tomaron decisiones | OK |
 | `15_CAMBIOS/` | Qué ha cambiado | OK |
@@ -30,7 +30,7 @@ Proyecto: **Agile Context Manager (ACM)** · Constitución: `/CLAUDE.md` · Actu
 | `19_OBSERVABILIDAD/` | Cómo se observa | WARNING — salud por componente y Watchdog; sin métricas ni alertas externas |
 | `20_PERFORMANCE/` | Cómo rinde | OK — SPIKE-001 medido |
 | `21_COMPLIANCE/` | Cumple normativa | N/A |
-| `99_ARCHIVO/` | Documentación histórica, deprecada y supersedida | OK — 2 documentos supersedidos, 5 sprints históricos |
+| `99_ARCHIVO/` | Documentación histórica, deprecada y supersedida | OK — 2 documentos supersedidos, 6 sprints históricos |
 
 ## Transversales
 - `RELATIONSHIPS.md` — grafo de relaciones entre elementos.

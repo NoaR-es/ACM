@@ -1,7 +1,7 @@
 ---
 name: acm-schema
 description: Explica qué es ACM, su modelo de datos (proyecto, requisito, épica, feature, historia, criterio de aceptación) y qué herramienta MCP usar en cada paso. Léela antes de operar sobre cualquier proyecto ACM.
-version: 1.3.0
+version: 1.4.0
 capabilities: [acm-model, acm-tools, acm-workflow, acm-second-brain, acm-identity, acm-governance]
 dependencies: []
 ---
@@ -38,7 +38,9 @@ Proyecto (project_id)
 4. `acm_feature_create` dentro de cada épica; si una feature crece demasiado, `acm_feature_split`.
 5. `acm_story_create` con `as_a`, `i_want`, `so_that`, `requirement_ids` y `acceptance_criteria`
    (ver la skill `acm-invest`). Añade criterios con `acm_story_add_criteria`.
-6. `acm_story_mark_ready` cuando la historia esté completa.
+6. `acm_story_mark_ready` cuando la historia esté completa. Después, refleja el avance real con
+   `acm_story_set_status`: READY → IN_PROGRESS → IMPLEMENTED → TESTING → VERIFIED → DONE (o BLOCKED/FAILED).
+   Nunca marques DONE sin verificación: ACM solo lo permite desde VERIFIED. Los operadores lo ven en vivo.
 7. `acm_epic_confirm_coverage` cuando las features cubran el objetivo de la épica.
 8. `acm_backlog_audit` y `acm_requirement_trace` para detectar huecos de trazabilidad.
 
@@ -94,6 +96,8 @@ Proyecto (project_id)
 | `acm_story_add_criteria` | Añade criterios de aceptación |
 | `acm_story_get` | Historia con requisitos y criterios |
 | `acm_story_mark_ready` | PLANNED → READY si la historia está completa |
+| `acm_story_set_status` | Mueve una historia en el Kanban si la transición está permitida (DONE solo desde VERIFIED) |
+| `acm_story_history` | Historial de cambios de estado de una historia |
 | `acm_backlog_audit` | Huecos: requisitos huérfanos, épicas/features vacías, historias sin criterios |
 | `acm_context_compact` | Contexto compacto de una historia, con fuentes y tokens ahorrados |
 | `acm_decide` | Decisión tipada (noul, choice, score) delegada en el motor de decisión |

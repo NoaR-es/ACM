@@ -1,7 +1,7 @@
 """Catálogos de migraciones de ACM (ADR-011: SQLite es la fuente de verdad del producto; ADR-013).
 
 - GLOBAL: base de plataforma `<data_dir>/acm.db` — principales, proyectos, pertenencias, auditoría MCP, inferencia (v3)
-  tokens de acceso (v4) y Watchdog (v5).
+  tokens de acceso (v4), Watchdog (v5) y eventos (v6).
 - PROJECT: base de cada proyecto `<data_dir>/projects/<id>/project.db` — metadatos, configuración y backlog (v2).
 
 Una migración publicada no se modifica: los cambios van en migraciones nuevas (US-18.03).
@@ -162,6 +162,24 @@ GLOBAL: tuple[Migration, ...] = (
             "CREATE INDEX idx_watchdog_runs_project ON watchdog_runs(project_id, id)",
         ),
     ),
+    Migration(
+        6,
+        "events",
+        (
+            # US-21.01..03 / ADR-018: eventos de dominio persistidos. Los escribe cualquier proceso de ACM (HTTP,
+            # stdio, CLI); el servidor HTTP los lee por `seq` y los empuja por WebSocket. `seq` permite reanudar.
+            """CREATE TABLE events (
+            seq INTEGER PRIMARY KEY AUTOINCREMENT,
+            ts TEXT NOT NULL,
+            type TEXT NOT NULL,
+            project_id TEXT,
+            principal TEXT NOT NULL,
+            entity_type TEXT NOT NULL,
+            entity_id TEXT NOT NULL,
+            data_json TEXT NOT NULL DEFAULT '{}'
+        )""",
+        ),
+    ),
 )
 
 PROJECT: tuple[Migration, ...] = (
@@ -250,6 +268,23 @@ PROJECT: tuple[Migration, ...] = (
             "CREATE INDEX idx_stories_feature ON stories(feature_id)",
             "CREATE INDEX idx_story_requirements_req ON story_requirements(requirement_id)",
             "CREATE INDEX idx_epic_requirements_req ON epic_requirements(requirement_id)",
+        ),
+    ),
+    Migration(
+        3,
+        "story_status_history",
+        (
+            # US-06.02 CA-02: cada cambio de estado de una historia queda registrado
+            """CREATE TABLE story_status_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            story_id TEXT NOT NULL REFERENCES stories(id),
+            from_status TEXT NOT NULL,
+            to_status TEXT NOT NULL,
+            reason TEXT NOT NULL DEFAULT '',
+            changed_at TEXT NOT NULL,
+            changed_by TEXT NOT NULL
+        )""",
+            "CREATE INDEX idx_story_status_history_story ON story_status_history(story_id, id)",
         ),
     ),
 )

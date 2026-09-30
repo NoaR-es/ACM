@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "acm"
-version = "0.5.0.dev0"
+version = "0.6.0.dev0"
 description = "Agile Context Manager: memoria de estado, gobernanza y trazabilidad Agile para agentes IA, servida por MCP."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -15,6 +15,7 @@ dependencies = [
     "uvicorn==0.54.0",     # ADR-014
     "anyio>=4.15,<5",      # ADR-013: sqlite3 en hilos de trabajo
     "httpx==0.28.1",       # EPIC-22: cliente HTTP de Ollama (ya lo traía mcp; ahora dependencia explícita)
+    "websockets==17.1",    # EPIC-21: implementación WebSocket de uvicorn (ADR-018) y cliente de los tests
 ]
 
 [project.optional-dependencies]

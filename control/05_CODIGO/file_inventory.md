@@ -10,8 +10,9 @@
 | pyproject.toml | Paquete `acm`, dependencias fijadas, pytest y ruff | Config | uv/pip, CI | todos | ACTIVE |
 | README.md | Instalación, pruebas y ejecución | Doc | desarrolladores | — | ACTIVE |
 | .github/workflows/ci.yml | CI: ruff, pytest, derive_backlog --check | CI | GitHub Actions | — | ACTIVE (run #1 success) |
-| src/acm/** | Código de producto (detalle en `modules.md`) | Python | — | tests/** | IMPLEMENTED (SPRINT-001..005) |
-| src/acm/skills/*/SKILL.md | Skills oficiales servidas por MCP | Markdown | agentes MCP, `SkillCatalog` | `test_skills.py` | ACTIVE (acm-schema 1.3.0; resto 1.0.0) |
+| src/acm/** | Código de producto (detalle en `modules.md`) | Python | — | tests/** | IMPLEMENTED (SPRINT-001..006) |
+| src/acm/skills/*/SKILL.md | Skills oficiales servidas por MCP | Markdown | agentes MCP, `SkillCatalog` | `test_skills.py` | ACTIVE (acm-schema 1.4.0; resto 1.0.0) |
+| tests/live.py | Fixture `acm`: ACM real por HTTP en un hilo (uvicorn) con acceso a los datos | Python | `test_auth.py`, `test_realtime.py` | — | ACTIVE |
 | tests/fake_ollama.py | Ollama simulado (servidor HTTP real) para los tests de EPIC-22 | Python | `test_inference.py`, `test_context.py` | — | ACTIVE |
 | control/tools/evidence.py | Genera la matriz CA ↔ test de un sprint desde los refinamientos y un JUnit de pytest | Python 3.11 script (stdlib) | agentes al cerrar sprint | reproducida la matriz de SPRINT-001 | IMPLEMENTED |
 | tests/** | Tests pytest, un test por CA | Python | CI | — | ACTIVE |

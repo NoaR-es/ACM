@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.6.0.dev0] — 2026-09-30 — SPRINT-006 — plataforma de tiempo real
+- **Cambio:**
+  - Flujo de estados de historias con historial (esquema de proyecto v3); `acm_story_set_status` y `acm_story_history` (46 herramientas MCP); skill acm-schema 1.4.0.
+  - Eventos de dominio persistidos (`events`, esquema global v6), emitidos desde el dominio en cualquier proceso; eventos `activity` por invocación MCP.
+  - WebSocket `/api/v1/ws` con autenticación, visibilidad, reanudación y `resync`.
+  - API REST v1 (24 rutas) con OpenAPI y formato de error único; Kanban de uno o varios proyectos.
+  - Dependencia `websockets==17.1`; `ACM_EVENTS_KEEP`.
+  - `control/`:
+    - 9 refinamientos;
+    - fusión US-06.05 → US-06.03;
+    - ADR-018 y TD-003;
+    - 09_MENSAJERIA y 06_API completados;
+    - SPRINT-005 archivado;
+    - unificada una definición duplicada de Watchdog en el glosario.
+- **Stories:** VERIFIED: US-06.01, 06.02, 06.03, 21.01, 21.02, 21.03, 30.01, 30.02, 30.03.
+- **Archivos:** `src/acm/{events.py, web_api.py, app.py, config.py, mcp_server.py, db/schema.py, domain/backlog.py, domain/projects.py, domain/identity.py, domain/watchdog.py, __init__.py, skills/acm-schema/SKILL.md}`, `pyproject.toml`, `tests/{live.py, conftest.py, test_realtime.py, test_auth.py, test_mcp.py}`, `control/**`.
+- **Tests:** 251/251 PASS; 8/8 mutaciones detectadas.
+- **Migración:** base global a v6 y bases de proyecto a v3 al abrirse (aditivas).
+- **Breaking change:** no. El gate READY ahora deja constancia en el historial.
+
 ## [0.5.0.dev0] — 2026-09-30 — SPRINT-005 — Watchdog de gobernanza
 - **Cambio:**
   - `WatchdogService`: integridad SQLite (`integrity_check`, `foreign_key_check`), calidad de historias a través de la interfaz de decisión, estructura del backlog, semáforo, histórico y cuarentena de proyectos dañados.

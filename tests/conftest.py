@@ -9,6 +9,8 @@ import pytest
 
 from acm.domain.projects import ProjectService
 
+pytest_plugins = ["tests.live"]  # fixture `acm`: ACM real por HTTP
+
 ADMIN = "local-admin"
 
 

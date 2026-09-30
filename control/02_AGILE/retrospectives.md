@@ -90,3 +90,19 @@
 **Acciones**
 - Aplicar también a las ediciones de código en varios archivos la validación previa de todas las anclas.
 - Medir la duración de la auditoría con proyectos grandes antes de bajar el intervalo por defecto.
+
+## SPRINT-006 (2026-09-30)
+**Bien**
+- Persistir los eventos en SQLite resolvió de una vez tres problemas: agentes en otros procesos, reanudación tras reconexión y deduplicación por `seq`. Lo demuestra un test con un agente stdio real.
+- Revisando el código del test se vio que `{"type": "event", **event}` dejaba que el `type` del evento pisara el del mensaje. Se corrigió el protocolo (evento anidado) antes de que nadie lo consumiera.
+- Los errores de validación de FastAPI (422 con otro formato) se unificaron con el resto al escribir el test de formato consistente.
+
+**Mal**
+- Un primer borrador del helper de eventos del test salió con condiciones sin sentido. Se detectó al releerlo y se reescribió antes de ejecutarlo.
+- El fixture de ACM real se importaba entre módulos de test (avisos de ruff); se movió a `tests/live.py`.
+
+- Por segunda vez se añadió al glosario un término que ya existía (Watchdog, en SPRINT-005). Se unificó.
+
+**Acciones**
+- Releer cada helper de test antes de ejecutarlo, no solo el código de producto.
+- Buscar el término en el glosario antes de añadirlo.

@@ -86,6 +86,18 @@ def build_mcp_server(
     identity = IdentityService(service)
     bus = InMemorySubscriptionBus()
 
+    def activity(who: str, operation: str, arguments: dict[str, Any], status: str, error: str) -> None:
+        """US-21.09 / US-31.04: qué herramienta ejecuta cada agente, en vivo (eventos `activity`, solo admin)."""
+        project_id = arguments.get("project_id") if isinstance(arguments.get("project_id"), str) else None
+        service.events.append(
+            "activity",
+            principal=who,
+            project_id=project_id,
+            entity_type="operation",
+            entity_id=operation,
+            data={"status": status, "error": error[:300]},
+        )
+
     async def audited(operation: str, arguments: dict[str, Any], fn: Callable[..., T], *args: Any) -> T:
         who, token = principal(), token_id()
         start = time.perf_counter()
@@ -104,6 +116,7 @@ def build_mcp_server(
                 error=str(exc) or type(exc).__name__,
             )
             await anyio.to_thread.run_sync(record)
+            await anyio.to_thread.run_sync(partial(activity, who, operation, arguments, "error", str(exc)))
             raise
         elapsed = (time.perf_counter() - start) * 1000
         record = partial(
@@ -117,6 +130,7 @@ def build_mcp_server(
             result=result,
         )
         await anyio.to_thread.run_sync(record)
+        await anyio.to_thread.run_sync(partial(activity, who, operation, arguments, "ok", ""))
         return result
 
     async def call(operation: str, arguments: dict[str, Any], fn: Callable[..., T], *args: Any) -> T:
@@ -451,6 +465,21 @@ def build_mcp_server(
         """Pasa una historia de PLANNED a READY si tiene actor, acción, valor, requisito y criterios."""
         args = {"project_id": project_id, "story_id": story_id}
         return await call("acm_story_mark_ready", args, backlog.mark_ready, principal(), project_id, story_id)
+
+    @server.tool()
+    async def acm_story_set_status(project_id: str, story_id: str, status: str, reason: str = "") -> dict[str, Any]:
+        """Mueve una historia de estado (Kanban) si la transición está permitida. PLANNED → READY: acm_story_mark_ready.
+        DONE solo desde VERIFIED."""
+        args = {"project_id": project_id, "story_id": story_id, "status": status, "reason": reason}
+        return await call(
+            "acm_story_set_status", args, backlog.set_status, principal(), project_id, story_id, status, reason
+        )
+
+    @server.tool()
+    async def acm_story_history(project_id: str, story_id: str) -> dict[str, Any]:
+        """Historial de cambios de estado de una historia (quién, cuándo, de qué a qué y por qué)."""
+        args = {"project_id": project_id, "story_id": story_id}
+        return await call("acm_story_history", args, backlog.status_history, principal(), project_id, story_id)
 
     @server.tool()
     async def acm_backlog_audit(project_id: str) -> dict[str, Any]:

@@ -2,7 +2,7 @@
 
 **Responde a:** Dónde está implementado
 
-**Salud:** OK — paquete `src/acm` documentado en `modules.md` (SPRINT-005)
+**Salud:** OK — paquete `src/acm` documentado en `modules.md` (SPRINT-006)
 
 | Documento | Estado |
 |-----------|--------|

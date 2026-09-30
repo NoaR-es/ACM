@@ -5,7 +5,6 @@
 | ACM | Agile Context Manager, el producto de este repositorio. |
 | control/ | Fuente de verdad operacional del proyecto (Markdown). |
 | Constitución | `/CLAUDE.md`: reglas de funcionamiento del agente. |
-| Watchdog | Agente/subsistema inspector que valida, audita y bloquea operaciones (ACT-05, EPIC-13). |
 | INVEST | Independent, Negotiable, Valuable, Estimable, Small, Testable — criterios de calidad de historias. |
 | ADR | Architecture Decision Record. |
 | MCP | Model Context Protocol: interfaz por la que los agentes invocan herramientas de ACM. |
@@ -46,7 +45,10 @@
 | Extensión Skills | Extensión MCP `io.modelcontextprotocol/skills` (SEP-2640): métodos `skills/list` y `skills/get`, archivos como recursos `skill://`. |
 | Digest | `sha256:<hex>` del contenido de un archivo de skill; cambia solo si cambia el contenido (US-15.06). |
 | Auditoría MCP | Registro en `mcp_audit` de cada invocación: principal, operación, argumentos, estado, error, resultado (truncado) y duración. |
-| Watchdog | Servicio de ACM que audita cada proyecto: integridad SQLite, calidad de historias (vía el motor de decisión) y estructura; produce semáforo e histórico (EPIC-13). |
+| Evento de dominio | Registro en `events` de un cambio confirmado, con `seq` creciente; se empuja por WebSocket a los clientes autorizados (ADR-018). |
+| seq | Número de orden global de un evento: permite reanudar tras reconectar y descartar duplicados. |
+| resync | Aviso del WebSocket: los eventos pedidos ya no están; el cliente recarga el estado por REST. |
+| Watchdog | Subsistema inspector (ACT-05, EPIC-13); en el producto, servicio de ACM que audita cada proyecto: integridad SQLite, calidad de historias (vía el motor de decisión) y estructura; produce semáforo e histórico (EPIC-13). |
 | Semáforo | Resumen de una auditoría: RED (algún CRITICAL), AMBER (WARNING o REVIEW), GREEN; UNKNOWN si nunca se auditó. |
 | Cuarentena | Estado de un proyecto con la base dañada: se rechazan sus escrituras (`DATA_INTEGRITY`) hasta que una auditoría lo encuentre sano. |
 | Motor de decisión | Implementación del puerto `DecisionEngine` (reglas, Ollama, JEV). Responde preguntas `noul`, `choice` o `score`. |

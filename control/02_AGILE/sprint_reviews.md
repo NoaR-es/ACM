@@ -36,3 +36,9 @@
 - **Entregado:** US-13.03, 13.05, 13.06, 13.07, 13.10, 13.11, 13.12, 13.13 VERIFIED; US-35.11 pasa a VERIFIED (CA-01). TASK-005-01..04.
 - **Evidencia:** 220 tests en PASS (22 nuevos, uno con corrupción real de la base); `12_TESTING/sprint_005_evidence.md`; 8/8 mutaciones detectadas.
 - **No entregado:** US-13.01, 13.02, 13.08 y 13.09 (sin entidades que vigilar); vista del semáforo (EPIC-30).
+
+## SPRINT-006 — Plataforma de tiempo real (2026-09-30)
+- **Goal:** cumplido. La API REST v1 lee todo lo que guarda ACM. Las historias tienen flujo de estados con historial. Los cambios llegan por WebSocket a los clientes autorizados, incluidos los de un agente stdio en otro proceso, con reanudación sin pérdidas ni duplicados.
+- **Entregado:** US-06.01, 06.02, 06.03, 21.01, 21.02, 21.03, 30.01, 30.02, 30.03 VERIFIED. TASK-006-01..04. ADR-018.
+- **Evidencia:** 251 tests en PASS (31 nuevos); `12_TESTING/sprint_006_evidence.md`; 8/8 mutaciones detectadas.
+- **Siguiente:** SPRINT-007, la interfaz web sobre esta plataforma.

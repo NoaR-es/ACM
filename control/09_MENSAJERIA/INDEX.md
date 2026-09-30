@@ -2,16 +2,16 @@
 
 **Responde a:** Cómo se comunican los componentes
 
-**Salud:** N/A — WebSockets previstos (EPIC-21)
+**Salud:** OK — eventos de dominio persistidos y WebSocket implementados (SPRINT-006, ADR-018)
 
 | Documento | Estado |
 |-----------|--------|
-| `messaging.md` | N/A (plantilla) |
-| `kafka.md` | N/A (plantilla) |
-| `topics.md` | N/A (plantilla) |
-| `queues.md` | N/A (plantilla) |
-| `events.md` | N/A (plantilla) |
-| `event_schemas.md` | N/A (plantilla) |
+| `messaging.md` | ACTIVE |
+| `events.md` | ACTIVE |
+| `event_schemas.md` | ACTIVE |
+| `kafka.md` | N/A (no se usa broker; ADR-018) |
+| `topics.md` | N/A |
+| `queues.md` | N/A |
 
 Documentos históricos: ninguno (ver `99_ARCHIVO/`).
 Relaciones: `../RELATIONSHIPS.md`.

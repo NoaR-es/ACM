@@ -2,7 +2,7 @@
 
 **Responde a:** Cómo se prueba
 
-**Salud:** OK — 220 tests de producto (SPRINT-001/002) + integridad del backlog + spikes
+**Salud:** OK — 251 tests de producto (SPRINT-001/002) + integridad del backlog + spikes
 
 | Documento | Estado |
 |-----------|--------|
@@ -20,6 +20,7 @@
 | `sprint_003_evidence.md` | ACTIVE (evidencia CA ↔ test) |
 | `sprint_004_evidence.md` | ACTIVE (evidencia CA ↔ test) |
 | `sprint_005_evidence.md` | ACTIVE (evidencia CA ↔ test) |
+| `sprint_006_evidence.md` | ACTIVE (evidencia CA ↔ test) |
 
 Documentos históricos: ninguno (ver `99_ARCHIVO/`).
 Relaciones: `../RELATIONSHIPS.md`.

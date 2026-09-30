@@ -1,8 +1,8 @@
-# Endpoints HTTP
+# Endpoints HTTP (SPRINT-006)
 
-| Método | Ruta | Propósito | Autenticación | Respuesta | Tests |
-|--------|------|-----------|---------------|-----------|-------|
-| GET | `/api/health` | Salud: versión, versión del esquema global, nº de proyectos y PRAGMAs de SQLite; `status` = `ok` si WAL y foreign_keys están activos, si no `degraded` | Ninguna (EPIC-20); escucha en 127.0.0.1 | 200 JSON | `tests/test_app.py::test_fastapi_sirve_api_y_mcp_en_un_proceso` |
-| POST/GET | `/mcp/` | Servidor MCP (Streamable HTTP) | Ninguna (EPIC-20) | protocolo MCP | idem |
-
-Actualizado: 2026-09-30 (SPRINT-001). La API REST de proyectos es EPIC-30.
+| Método | Ruta | Propósito | Autenticación | Tests |
+|--------|------|-----------|---------------|-------|
+| GET | `/api/health` | Salud mínima pública | Ninguna | `tests/test_app.py` |
+| POST/GET | `/mcp/` | Servidor MCP (Streamable HTTP) | Bearer (ADR-017) | `tests/test_app.py`, `tests/test_auth.py` |
+| * | `/api/v1/...` | API REST v1 (`rest_api.md`) | Bearer | `tests/test_realtime.py` |
+| WS | `/api/v1/ws` | Eventos en tiempo real (`09_MENSAJERIA/event_schemas.md`) | Primer mensaje con token | `tests/test_realtime.py` |

@@ -75,5 +75,9 @@
   "US-13.04": {
     "into": "US-13.03",
     "reason": "B:US-01.07 'comprobación de salud de la infraestructura ACM' = A:US-13.03 'Supervisar salud global'"
+  },
+  "US-06.05": {
+    "into": "US-06.03",
+    "reason": "B:US-19.02 'ver los cambios provocados por agentes en tiempo real' = A:US-06.03 'Actualizar Kanban en tiempo real'"
   }
 }

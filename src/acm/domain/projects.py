@@ -23,6 +23,7 @@ from acm.db.connection import Database
 from acm.db.migrations import current_version, migrate
 from acm.domain.config_schema import PARAMETERS, check_stored, validate_changes
 from acm.domain.errors import AlreadyExists, DataIntegrityError, Forbidden, InvalidArgument, NotFound, StorageError
+from acm.events import EventStore
 
 KEY_RE = re.compile(r"^[a-z][a-z0-9-]{1,39}$")
 NAME_MAX = 120
@@ -51,6 +52,7 @@ class ProjectService:
             raise StorageError(f"el directorio de datos no es escribible: {self.data_dir}: {exc}") from exc
         self.global_db = Database(self.data_dir / "acm.db", synchronous=synchronous)
         migrate(self.global_db, schema.GLOBAL)
+        self.events = EventStore(self.global_db)  # ADR-018: todos los servicios emiten a través de aquí
         self._project_dbs: dict[str, Database] = {}
         self._dbs_lock = threading.Lock()
 
@@ -137,7 +139,16 @@ class ProjectService:
         except Exception as exc:
             shutil.rmtree(project_dir, ignore_errors=True)
             raise StorageError(f"no se pudo registrar el proyecto; no se ha creado nada: {exc}") from exc
-        return self._summary(key)
+        summary = self._summary(key)
+        self.events.append(
+            "project.created",
+            principal=principal_id,
+            project_id=key,
+            entity_type="project",
+            entity_id=key,
+            data={"name": name},
+        )
+        return summary
 
     def _init_project_db(self, db_path: Path, key: str, created_at: str) -> None:
         db = Database(db_path)
@@ -259,6 +270,15 @@ class ProjectService:
             if "sqlite.synchronous" in changes:
                 db.set_synchronous(changes["sqlite.synchronous"])
         changed = [k for k, v in changes.items() if before.get(k, PARAMETERS[k].default) != v]
+        if changed:
+            self.events.append(
+                "project.config_changed",
+                principal=principal_id,
+                project_id=project_id,
+                entity_type="project",
+                entity_id=project_id,
+                data={"changed": changed},
+            )
         return {
             "project_id": project_id,
             "parameters": self._effective_config(db),

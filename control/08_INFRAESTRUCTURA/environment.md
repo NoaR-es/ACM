@@ -20,6 +20,7 @@ Producción / despliegue: MISSING (sin definir; EPIC-18/CI-CD).
 | `ACM_HOST` / `ACM_PORT` | `127.0.0.1` / `8765` | Escucha de `acm serve` |
 | `ACM_SQLITE_SYNCHRONOUS` | `FULL` | Durabilidad de la base global (ADR-013) |
 | `ACM_OLLAMA_URL` / `ACM_OLLAMA_MODEL` | sin valor | Motor de generación Ollama (EPIC-22). Deben ir juntos; sin ellos, solo reglas |
+| `ACM_EVENTS_KEEP` | `10000` | Eventos conservados para reanudar clientes WebSocket (ADR-018) |
 | `ACM_WATCHDOG_INTERVAL_S` | `600` | Intervalo de la auditoría periódica de todos los proyectos en `acm serve` (US-13.06); `0` la desactiva |
 | `ACM_ALLOWED_HOSTS` | sin valor | Nombres extra aceptados en la cabecera Host (p. ej. `acm.midominio.com` tras un proxy TLS). Sin él, otro Host → 421 (TD-002) |
 

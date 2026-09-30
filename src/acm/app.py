@@ -26,6 +26,8 @@ from acm.domain.watchdog import WatchdogService
 from acm.inference.ollama import OllamaClient, OllamaGenerationEngine
 from acm.inference.router import EngineRouter
 from acm.mcp_server import build_mcp_server
+from acm.skills_catalog import SkillCatalog
+from acm.web_api import build_api
 
 
 def build_service(settings: Settings) -> ProjectService:
@@ -71,11 +73,24 @@ async def scheduled_watchdog(watchdog: WatchdogService, settings: Settings) -> N
             logger.exception("ronda periódica del Watchdog fallida")
 
 
+async def prune_events(service: ProjectService, settings: Settings) -> None:
+    """ADR-018: conserva los últimos `ACM_EVENTS_KEEP` eventos; un cliente más atrasado recibe `resync`."""
+    while True:
+        try:
+            await anyio.to_thread.run_sync(service.events.prune, settings.events_keep)
+        except Exception:
+            logger.exception("no se pudieron purgar los eventos antiguos")
+        await anyio.sleep(60)
+
+
 def create_app(settings: Settings) -> FastAPI:
     service = build_service(settings)
     engines = build_engines(service, settings)
     # HTTP: la identidad sale del token Bearer de cada petición (EPIC-20, ADR-017), nunca de la configuración.
-    mcp = build_mcp_server(service, principal=request_principal, engines=engines, token_id=request_token)
+    catalog = SkillCatalog()
+    mcp = build_mcp_server(
+        service, principal=request_principal, catalog=catalog, engines=engines, token_id=request_token
+    )
     mcp_app = BearerAuth(
         mcp.streamable_http_app(streamable_http_path="/", transport_security=transport_security(settings)),
         IdentityService(service),
@@ -90,6 +105,7 @@ def create_app(settings: Settings) -> FastAPI:
         async with mcp.session_manager.run(), anyio.create_task_group() as tg:
             if settings.watchdog_interval_s > 0:
                 tg.start_soon(scheduled_watchdog, watchdog, settings)
+            tg.start_soon(prune_events, service, settings)
             yield
             tg.cancel_scope.cancel()
         engines.registry.close()
@@ -104,6 +120,9 @@ def create_app(settings: Settings) -> FastAPI:
         ok = info["sqlite"]["foreign_keys"] and str(info["sqlite"]["journal_mode"]).lower() == "wal"
         return {"status": "ok" if ok else "degraded", "acm_version": __version__, **info}
 
+    api, ws = build_api(service, engines, catalog)
+    app.include_router(ws)  # WebSocket con autenticación propia (primer mensaje), antes del montaje de /api/v1
+    app.mount("/api/v1", BearerAuth(api, IdentityService(service), AuditService(service)))
     app.mount("/mcp", mcp_app)
     app.state.service = service
     return app

@@ -81,6 +81,13 @@ class IdentityService:
                 "INSERT INTO principals(id, role, kind, created_at) VALUES (?, ?, ?, ?)",
                 (principal_id, role, kind, _now()),
             )
+        self.projects.events.append(
+            "principal.changed",
+            principal=actor,
+            entity_type="principal",
+            entity_id=principal_id,
+            data={"kind": kind, "role": role},
+        )
         return self.get_principal(actor, principal_id)
 
     def get_principal(self, actor: str, principal_id: str) -> dict[str, Any]:
@@ -120,6 +127,9 @@ class IdentityService:
                 if admins == 1:
                     raise FailedPrecondition("no se puede retirar el rol admin al último admin")
             conn.execute("UPDATE principals SET role = ? WHERE id = ?", (role, principal_id))
+        self.projects.events.append(
+            "principal.changed", principal=actor, entity_type="principal", entity_id=principal_id, data={"role": role}
+        )
         return self.get_principal(actor, principal_id)
 
     # ------------------------------------------------------------------ miembros de proyecto (US-20.01, US-20.08)
@@ -139,6 +149,14 @@ class IdentityService:
                 "ON CONFLICT(project_id, principal_id) DO UPDATE SET role = excluded.role",
                 (project_id, principal_id, role, _now()),
             )
+        self.projects.events.append(
+            "member.changed",
+            principal=actor,
+            project_id=project_id,
+            entity_type="member",
+            entity_id=principal_id,
+            data={"role": role},
+        )
         return self.list_members(actor, project_id)
 
     def remove_member(self, actor: str, project_id: str, principal_id: Any) -> dict[str, Any]:
@@ -155,6 +173,14 @@ class IdentityService:
             conn.execute(
                 "DELETE FROM project_members WHERE project_id = ? AND principal_id = ?", (project_id, principal_id)
             )
+        self.projects.events.append(
+            "member.changed",
+            principal=actor,
+            project_id=project_id,
+            entity_type="member",
+            entity_id=principal_id,
+            data={"role": None},
+        )
         return self.list_members(actor, project_id)
 
     @staticmethod

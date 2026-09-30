@@ -178,6 +178,14 @@ class WatchdogService:
                 ),
             )
             run_id = int(cur.lastrowid)
+        self.projects.events.append(
+            "watchdog.run",
+            principal=principal,
+            project_id=project_id,
+            entity_type="project",
+            entity_id=project_id,
+            data={"run_id": run_id, "semaphore": light, "integrity": integrity, "counts": counts},
+        )
         return {
             "project_id": project_id,
             "run_id": run_id,

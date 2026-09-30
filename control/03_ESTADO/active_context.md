@@ -1,14 +1,15 @@
-TASK: none (SPRINT-005 entregado)
+TASK: none (SPRINT-006 entregado; SPRINT-007 a continuación)
 STORY: —
-SPRINT: SPRINT-005
+SPRINT: SPRINT-006
 
 NEXT CANDIDATES:
-Planificar SPRINT-006 (ver 03_ESTADO/pending_work.md)
+SPRINT-007: interfaz web completa (React + TypeScript + Vite; TASK-000-07)
 
 RELEVANT DOCUMENTS:
 02_AGILE/sprint.md
-12_TESTING/sprint_005_evidence.md
-05_CODIGO/modules.md
+06_API/rest_api.md
+09_MENSAJERIA/events.md
+14_DECISIONES/decisions.md (ADR-018)
 
 FILES AFFECTED: —
 

@@ -36,6 +36,8 @@ BACKLOG_TOOLS = {
     "acm_member_set",
     "acm_member_remove",
     "acm_member_list",
+    "acm_story_set_status",
+    "acm_story_history",
     "acm_watchdog_run",
     "acm_watchdog_history",
     "acm_governance_status",

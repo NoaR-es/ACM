@@ -190,5 +190,18 @@ SPRINT-005
 Código → historias: watchdog.py ← US-13.03, 13.05..13.07, 13.10..13.13, US-35.11 · projects.ensure_writable ← US-13.11
 Modelo IA → uso: rules → gate READY, acm_decide, Watchdog (story.quality)
 
+SPRINT-006
+├── US-06.01 → web_api.py (/kanban) → tests/test_realtime.py::test_us0601_*
+├── US-06.02 → domain/backlog.py (STORY_TRANSITIONS, set_status, status_history), schema proyecto v3, acm_story_set_status/_history, POST …/status → tests/test_realtime.py::test_us0602_*
+├── US-06.03 → events.py + web_api.py (WS) ← backlog._emit → tests/test_realtime.py::test_us0603_*
+├── US-21.01 → events.py (EventStore), emisión en projects/backlog/identity/watchdog, mcp_server.activity → tests/test_realtime.py::test_us2101_*
+├── US-21.02 → web_api.py (events_ws, Access) → tests/test_realtime.py::test_us2102_*
+├── US-21.03 → web_api.py (after, resync), EventStore.prune, GET /events → tests/test_realtime.py::test_us2103_*
+├── US-30.01..03 → web_api.py (build_api, ERROR_RESPONSES, validation_error) → tests/test_realtime.py::test_us300*
+├── ADR-018 → events.py, web_api.py; TD-003
+└── 09_MENSAJERIA/{messaging,events,event_schemas}.md, 06_API/rest_api.md
+
+Código → historias: events.py ← US-21.01, ADR-018 · web_api.py ← US-06.01, 06.03, 21.02, 21.03, 30.01..03 · backlog.set_status ← US-06.02
+
 Código → historias: backlog.py ← US-03.03, 04.01..03, 24.01, 24.03 · audit.py ← US-14.10/11, TD-001 · skills_catalog.py ← US-15.01, 15.06, 15.07 · skills/** ← US-15.08..10 · mcp_server.py ← US-14.04..11, US-15.04..07
 ```

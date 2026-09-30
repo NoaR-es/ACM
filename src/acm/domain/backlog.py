@@ -28,6 +28,23 @@ READY_GATE_QUESTIONS: dict[str, Question] = {
     "has_acceptance_criteria": Question("noul", "¿Tiene criterios de aceptación?"),
     "technical_reason_ok": Question("noul", "Si es técnica, ¿declara su razón?"),
 }
+# US-06.02: transiciones permitidas de una historia. PLANNED → READY solo por el gate (`mark_ready`); DONE solo desde
+# VERIFIED (CLAUDE.md: DONE = implementado, probado, verificado y revisado).
+STORY_TRANSITIONS: dict[str, tuple[str, ...]] = {
+    "PLANNED": ("CANCELLED",),
+    "READY": ("IN_PROGRESS", "PLANNED", "CANCELLED"),
+    "IN_PROGRESS": ("IMPLEMENTED", "BLOCKED", "READY", "CANCELLED"),
+    "BLOCKED": ("IN_PROGRESS", "CANCELLED"),
+    "IMPLEMENTED": ("TESTING", "IN_PROGRESS"),
+    "TESTING": ("VERIFIED", "FAILED"),
+    "FAILED": ("IN_PROGRESS",),
+    "VERIFIED": ("DONE", "IN_PROGRESS"),
+    "DONE": ("DEPRECATED",),
+    "CANCELLED": (),
+    "DEPRECATED": (),
+}
+STORY_STATUSES = tuple(STORY_TRANSITIONS)
+
 READY_GATE_GAPS = {
     "has_statement": "falta rol, objetivo o beneficio (as_a, i_want, so_that)",
     "has_requirements": "sin requisito de origen",
@@ -80,6 +97,18 @@ class BacklogService:
         # El gate READY decide a través de la interfaz de decisión común (US-35.11 CA-01), nunca de un motor concreto.
         self.decisions = decisions if decisions is not None else EngineRouter(projects)
 
+    # ---------------------------------------------------------------- eventos (ADR-018)
+    def _emit(
+        self, principal: str, project_id: str, type: str, entity_type: str, entity_id: str, data: dict[str, Any]
+    ) -> None:
+        self.projects.events.append(
+            type, principal=principal, project_id=project_id, entity_type=entity_type, entity_id=entity_id, data=data
+        )
+
+    @staticmethod
+    def _story_data(story: dict[str, Any]) -> dict[str, Any]:
+        return {k: story[k] for k in ("status", "feature_id", "epic_id", "i_want", "kind")}
+
     # ---------------------------------------------------------------- acceso
     def _db(self, principal: str, project_id: str, *, write: bool = False):
         """Cualquier rol del proyecto (admin, owner, member) puede leer y escribir el backlog."""
@@ -124,7 +153,9 @@ class BacklogService:
                 "INSERT INTO requirements(id, title, description, created_at, created_by) VALUES (?, ?, ?, ?, ?)",
                 (rid, title, description, _now(), principal),
             )
-        return self.get_requirement(principal, project_id, rid)
+        result = self.get_requirement(principal, project_id, rid)
+        self._emit(principal, project_id, "requirement.created", "requirement", rid, {"title": result["title"]})
+        return result
 
     def get_requirement(self, principal: str, project_id: str, requirement_id: str) -> dict[str, Any]:
         with self._db(principal, project_id).read() as conn:
@@ -189,7 +220,9 @@ class BacklogService:
             conn.executemany(
                 "INSERT INTO epic_requirements(epic_id, requirement_id) VALUES (?, ?)", [(eid, r) for r in req_ids]
             )
-        return self.get_epic(principal, project_id, eid)
+        result = self.get_epic(principal, project_id, eid)
+        self._emit(principal, project_id, "epic.created", "epic", eid, {"title": result["title"]})
+        return result
 
     def link_epic_requirements(
         self, principal: str, project_id: str, epic_id: str, requirement_ids: Any
@@ -205,7 +238,11 @@ class BacklogService:
                 "INSERT OR IGNORE INTO epic_requirements(epic_id, requirement_id) VALUES (?, ?)",
                 [(epic_id, r) for r in req_ids],
             )
-        return self.get_epic(principal, project_id, epic_id)
+        result = self.get_epic(principal, project_id, epic_id)
+        self._emit(
+            principal, project_id, "epic.updated", "epic", epic_id, {"requirement_ids": result["requirement_ids"]}
+        )
+        return result
 
     def _epic_tree(self, conn: sqlite3.Connection, epic_id: str) -> dict[str, Any]:
         epic = dict(self._must_exist(conn, "epics", epic_id, "epic_id"))
@@ -248,7 +285,9 @@ class BacklogService:
                 "UPDATE epics SET coverage_confirmed_at = ?, coverage_confirmed_by = ? WHERE id = ?",
                 (_now(), principal, epic_id),
             )
-        return self.get_epic(principal, project_id, epic_id)
+        result = self.get_epic(principal, project_id, epic_id)
+        self._emit(principal, project_id, "epic.updated", "epic", epic_id, {"coverage_confirmed": True})
+        return result
 
     # -------------------------------------------------------------- features
     def create_feature(
@@ -261,7 +300,9 @@ class BacklogService:
             fid = self._insert_feature(conn, principal, epic_id, title, description, feature_id)
         with db.read() as conn:
             feature = dict(conn.execute("SELECT * FROM features WHERE id = ?", (fid,)).fetchone())
-        return {"project_id": project_id, **feature, "story_ids": []}
+        result = {"project_id": project_id, **feature, "story_ids": []}
+        self._emit(principal, project_id, "feature.created", "feature", feature["id"], {"epic_id": feature["epic_id"]})
+        return result
 
     def _insert_feature(
         self, conn: sqlite3.Connection, principal: str, epic_id: str, title: str, description: str, feature_id: Any
@@ -332,7 +373,9 @@ class BacklogService:
             conn.execute(
                 "UPDATE features SET status = 'SPLIT', split_into = ? WHERE id = ?", (",".join(new_ids), feature_id)
             )
-        return self.get_epic(principal, project_id, feat["epic_id"]) | {"split_into": new_ids}
+        result = self.get_epic(principal, project_id, feat["epic_id"]) | {"split_into": new_ids}
+        self._emit(principal, project_id, "feature.split", "feature", feature_id, {"split_into": new_ids})
+        return result
 
     # --------------------------------------------------------------- historias
     def create_story(
@@ -393,7 +436,9 @@ class BacklogService:
                 "INSERT INTO story_requirements(story_id, requirement_id) VALUES (?, ?)", [(sid, r) for r in req_ids]
             )
             self._insert_criteria(conn, principal, sid, criteria)
-        return self.get_story(principal, project_id, sid)
+        result = self.get_story(principal, project_id, sid)
+        self._emit(principal, project_id, "story.created", "story", result["id"], self._story_data(result))
+        return result
 
     @staticmethod
     def _criteria_list(value: Any) -> list[str]:
@@ -421,7 +466,9 @@ class BacklogService:
             self._must_exist(conn, "stories", story_id, "story_id")
             self._insert_criteria(conn, principal, story_id, items)
             conn.execute("UPDATE stories SET updated_at = ? WHERE id = ?", (_now(), story_id))
-        return self.get_story(principal, project_id, story_id)
+        result = self.get_story(principal, project_id, story_id)
+        self._emit(principal, project_id, "story.updated", "story", result["id"], self._story_data(result))
+        return result
 
     def _story(self, conn: sqlite3.Connection, story_id: str) -> dict[str, Any]:
         story = dict(self._must_exist(conn, "stories", story_id, "story_id"))
@@ -466,8 +513,79 @@ class BacklogService:
         with db.write() as conn:
             if self._story(conn, story_id) != story:
                 raise FailedPrecondition(f"{story_id} cambió mientras se validaba; vuelve a intentarlo")
-            conn.execute("UPDATE stories SET status = 'READY', updated_at = ? WHERE id = ?", (_now(), story_id))
-        return self.get_story(principal, project_id, story_id)
+            self._change_status(conn, principal, story_id, "PLANNED", "READY", "gate READY superado")
+        result = self.get_story(principal, project_id, story_id)
+        self._emit(
+            principal,
+            project_id,
+            "story.status_changed",
+            "story",
+            result["id"],
+            self._story_data(result) | {"from": "PLANNED"},
+        )
+        return result
+
+    @staticmethod
+    def _change_status(
+        conn: sqlite3.Connection, principal: str, story_id: str, old: str, new: str, reason: str
+    ) -> None:
+        now = _now()
+        conn.execute("UPDATE stories SET status = ?, updated_at = ? WHERE id = ?", (new, now, story_id))
+        conn.execute(
+            "INSERT INTO story_status_history(story_id, from_status, to_status, reason, changed_at, changed_by) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (story_id, old, new, reason, now, principal),
+        )
+
+    def set_status(
+        self, principal: str, project_id: str, story_id: str, status: Any, reason: Any = ""
+    ) -> dict[str, Any]:
+        """US-06.02: mueve una historia a otro estado si la transición está permitida (`STORY_TRANSITIONS`)."""
+        if not isinstance(status, str) or status not in STORY_STATUSES:
+            raise InvalidArgument(f"debe ser uno de {list(STORY_STATUSES)}", field="status")
+        if reason is None:
+            reason = ""
+        if not isinstance(reason, str) or len(reason) > 500:
+            raise InvalidArgument("debe ser texto de hasta 500 caracteres", field="reason")
+        db = self._db(principal, project_id, write=True)
+        with db.write() as conn:
+            current = self._story(conn, story_id)["status"]
+            if status == current:
+                raise FailedPrecondition(f"{story_id} ya está en {status}")
+            if current == "PLANNED" and status == "READY":
+                raise FailedPrecondition("PLANNED → READY solo pasa por el gate: usa acm_story_mark_ready")
+            allowed = STORY_TRANSITIONS[current]
+            if status not in allowed:
+                raise FailedPrecondition(
+                    f"transición no permitida para {story_id}: {current} → {status}; permitidas: {list(allowed)}"
+                )
+            self._change_status(conn, principal, story_id, current, status, reason.strip())
+        result = self.get_story(principal, project_id, story_id)
+        self._emit(
+            principal,
+            project_id,
+            "story.status_changed",
+            "story",
+            result["id"],
+            self._story_data(result) | {"from": current},
+        )
+        return result
+
+    def list_stories(self, principal: str, project_id: str) -> dict[str, Any]:
+        """Todas las historias con sus requisitos y criterios (vista completa para la interfaz y el Kanban)."""
+        with self._db(principal, project_id).read() as conn:
+            ids = [r[0] for r in conn.execute("SELECT id FROM stories ORDER BY id")]
+            return {"project_id": project_id, "stories": [self._story(conn, i) for i in ids]}
+
+    def status_history(self, principal: str, project_id: str, story_id: str) -> dict[str, Any]:
+        with self._db(principal, project_id).read() as conn:
+            self._must_exist(conn, "stories", story_id, "story_id")
+            rows = conn.execute(
+                "SELECT from_status, to_status, reason, changed_at, changed_by FROM story_status_history "
+                "WHERE story_id = ? ORDER BY id",
+                (story_id,),
+            ).fetchall()
+        return {"project_id": project_id, "story_id": story_id, "history": [dict(r) for r in rows]}
 
     # ---------------------------------------------------------------- auditoría
     def audit(self, principal: str, project_id: str) -> dict[str, Any]:

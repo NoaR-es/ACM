@@ -2,7 +2,7 @@
 
 # User Stories (backlog unificado)
 
-Total activas: **473** · Con criterios de aceptación: **161** · Sin criterios: **312** · Posibles solapamientos señalados: **31**
+Total activas: **472** · Con criterios de aceptación: **161** · Sin criterios: **311** · Posibles solapamientos señalados: **30**
 
 > READY exige la cadena completa de la *Regla de aceptación del backlog* (fuente A): precondiciones, flujo,
 > alternativas, errores, reglas, validaciones, casos límite, CA, tareas y pruebas. Se documenta en
@@ -498,7 +498,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-06.01 — Visualizar el tablero Kanban
 
 - **Como** miembro del equipo **quiero** visualizar el trabajo en columnas **para** conocer el estado actual del desarrollo.
-- Origen: A:US-06.01 · Épica: EPIC-06 · Feature: FEAT-06.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-06.01 · Épica: EPIC-06 · Feature: FEAT-06.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-006
+- Refinamiento: `refinements/US-06.01.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Cada historia aparece en exactamente una columna de estado.
   - [ ] CA-02: Se muestran identificador, título y estado.
@@ -508,7 +509,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-06.02 — Cambiar el estado de una historia
 
 - **Como** agente de desarrollo **quiero** cambiar el estado de una historia **para** reflejar su progreso real.
-- Origen: A:US-06.02 · Épica: EPIC-06 · Feature: FEAT-06.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-06.02 · Épica: EPIC-06 · Feature: FEAT-06.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-006
+- Refinamiento: `refinements/US-06.02.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Un cambio permitido actualiza el estado.
   - [ ] CA-02: El cambio queda registrado.
@@ -518,7 +520,9 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-06.03 — Actualizar Kanban en tiempo real
 
 - **Como** usuario del sistema **quiero** recibir cambios del tablero en tiempo real **para** no tener que recargar la aplicación.
-- Origen: A:US-06.03 · Épica: EPIC-06 · Feature: FEAT-06.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-06.03 · Épica: EPIC-06 · Feature: FEAT-06.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-006
+- Absorbe a: US-06.05
+- Refinamiento: `refinements/US-06.03.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Un cambio realizado por un agente genera un evento.
   - [ ] CA-02: Los clientes conectados reciben el cambio.
@@ -537,8 +541,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-06.05
 
 - Enunciado: Como operador quiero ver los cambios provocados por agentes en tiempo real.
-- Origen: B:US-19.02 · Épica: EPIC-06 · Feature: FEAT-06.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- ⚠ Posible solapamiento con US-06.03: revisar si es duplicado, detalle o historia distinta (GAP-006)
+- Origen: B:US-19.02 · Épica: EPIC-06 · Feature: FEAT-06.02 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-06.03 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 #### US-06.06
@@ -1984,7 +1988,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-21.01 — Emitir eventos de dominio
 
 - **Como** sistema **quiero** publicar eventos cuando cambia el estado **para** informar a los componentes interesados.
-- Origen: A:US-21.01 · Épica: EPIC-21 · Feature: FEAT-21.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-21.01 · Épica: EPIC-21 · Feature: FEAT-21.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-006
+- Refinamiento: `refinements/US-21.01.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Un cambio relevante produce el evento definido.
   - [ ] CA-02: El evento contiene identificador y contexto.
@@ -1993,7 +1998,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-21.02 — Suscribirse a eventos
 
 - **Como** cliente **quiero** suscribirme a cambios **para** actualizar mi estado automáticamente.
-- Origen: A:US-21.02 · Épica: EPIC-21 · Feature: FEAT-21.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-21.02 · Épica: EPIC-21 · Feature: FEAT-21.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-006
+- Refinamiento: `refinements/US-21.02.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Una suscripción válida recibe eventos correspondientes.
   - [ ] CA-02: No recibe eventos de proyectos no autorizados.
@@ -2002,7 +2008,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-21.03 — Recuperar estado tras reconexión
 
 - **Como** cliente **quiero** recuperar eventos/estado después de una desconexión **para** volver a sincronizarme.
-- Origen: A:US-21.03 · Épica: EPIC-21 · Feature: FEAT-21.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-21.03 · Épica: EPIC-21 · Feature: FEAT-21.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-006
+- Refinamiento: `refinements/US-21.03.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: La reconexión se detecta.
   - [ ] CA-02: El cliente obtiene el estado necesario.
@@ -2872,7 +2879,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-30.01 — Exponer operaciones del proyecto mediante API
 
 - **Como** cliente de la plataforma **quiero** acceder a operaciones mediante API **para** integrar interfaces y automatizaciones.
-- Origen: A:US-30.01 · Épica: EPIC-30 · Feature: FEAT-30.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-30.01 · Épica: EPIC-30 · Feature: FEAT-30.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-006
+- Refinamiento: `refinements/US-30.01.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Cada endpoint tiene contrato definido.
   - [ ] CA-02: Las entradas inválidas generan respuesta de error adecuada.
@@ -2882,7 +2890,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-30.02 — Documentar endpoints
 
 - **Como** desarrollador **quiero** disponer de documentación de API **para** integrar servicios correctamente.
-- Origen: A:US-30.02 · Épica: EPIC-30 · Feature: FEAT-30.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-30.02 · Épica: EPIC-30 · Feature: FEAT-30.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-006
+- Refinamiento: `refinements/US-30.02.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Cada endpoint documentado indica método y ruta.
   - [ ] CA-02: Indica entrada y salida.
@@ -2892,7 +2901,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-30.03 — Versionar API
 
 - **Como** arquitecto **quiero** versionar cambios incompatibles **para** evitar romper clientes existentes.
-- Origen: A:US-30.03 · Épica: EPIC-30 · Feature: FEAT-30.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-30.03 · Épica: EPIC-30 · Feature: FEAT-30.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-006
+- Refinamiento: `refinements/US-30.03.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Los cambios incompatibles tienen versión.
   - [ ] CA-02: Las versiones activas pueden identificarse.

@@ -12,6 +12,8 @@
 │   ├── config.py                  # Settings del proceso (variables ACM_*)
 │   ├── app.py                     # FastAPI: /api/health + MCP montado en /mcp (ADR-014), con BearerAuth
 │   ├── auth.py                    # Autenticación HTTP por token (ADR-017)
+│   ├── events.py                  # Eventos de dominio persistidos (ADR-018)
+│   ├── web_api.py                 # API REST v1 y WebSocket de eventos
 │   ├── mcp_server.py              # Servidor MCP propio: herramientas, extensión Skills, auditoría
 │   ├── skills_catalog.py          # Catálogo de skills validado (US-15.01)
 │   ├── inference/                 # Puertos, reglas, registro/router y adaptador Ollama (ADR-015/016)

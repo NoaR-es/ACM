@@ -322,3 +322,25 @@ Consecuencias:
 - Sin expiración de tokens todavía.
 - Protección DNS rebinding del SDK configurable con `ACM_ALLOWED_HOSTS` (TD-002).
 Trade-offs: Si hace falta federar identidad (SSO), (a) se puede añadir más adelante sin cambiar los roles.
+
+## ADR-018 — Eventos de dominio persistidos en SQLite y WebSocket por consulta
+Fecha: 2026-09-30
+Estado: ACCEPTED
+Contexto: La interfaz web debe reflejar en tiempo real los cambios de cualquier agente (EPIC-06, EPIC-21). Los agentes pueden conectarse por HTTP (mismo proceso que la interfaz) o por stdio (otro proceso sobre la misma base). Un cliente que se desconecta debe recuperar lo perdido sin duplicados.
+Problema: Cómo llevar a los clientes WebSocket los cambios hechos en cualquier proceso de ACM.
+Alternativas consideradas:
+(a) bus en memoria en el proceso HTTP: no ve los cambios de agentes stdio y pierde eventos al reiniciar;
+(b) broker externo (Redis, NATS): una pieza más de infraestructura para un producto que hoy es un solo proceso y SQLite (ADR-011, ADR-014);
+(c) tabla `events` en la base global, escrita por el dominio tras cada COMMIT desde cualquier proceso, y leída por `seq` por el servidor WebSocket.
+Decisión: (c).
+- `seq` autoincremental: orden total, reanudación (`after`) y deduplicación en el cliente.
+- Cada conexión consulta `events` cada 0,2 s.
+- La visibilidad se decide por principal: miembros de un proyecto para sus eventos; admin para el resto y para `activity`.
+- Se conservan los últimos 10 000 eventos; un cliente más atrasado recibe `resync`.
+- Autenticación del WebSocket con el primer mensaje, porque el navegador no puede enviar cabeceras.
+Motivo: Sin infraestructura nueva y cubre agentes en otros procesos, que es el caso real con clientes MCP locales. SQLite en WAL sirve estas lecturas sin bloquear a los escritores (SPIKE-001).
+Consecuencias:
+- Latencia de hasta unos 0,2 s.
+- El evento no es atómico con la operación (bases distintas): si falla su escritura tras el COMMIT, se pierde (TD-003); la interfaz relee el estado al reconectar.
+- La consulta por conexión escala linealmente con los clientes (sin medir).
+Trade-offs: Si hacen falta muchos clientes o varios servidores, se puede sustituir el lector por un broker sin cambiar el contrato del WebSocket.
