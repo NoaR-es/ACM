@@ -30,5 +30,6 @@
 | 2026-09-30 | Comprobación de Host (TD-002) | PASS | 421 con Host distinto de 127.0.0.1/localhost antes de la corrección; tras ella, el Host configurado pasa y otro sigue en 421 |
 | 2026-09-30 | TEST-PROD-S04 | PASS 198/198 | 27 tests nuevos (`test_auth.py`) contra ACM real por HTTP |
 | 2026-09-30 | Mutación manual SPRINT-004 (8 invariantes) | 8/8 detectadas | token revocado válido; middleware sin token; identidad fija; sin redacción; último admin; member gestiona miembros; secreto completo guardado; `ACM_ALLOWED_HOSTS` ignorado |
+| 2026-09-30 | CI GitHub Actions run #8 | PASS | commit `8f02672` (SPRINT-004) |
 | 2026-09-30 | Ollama real | NO EJECUTADO | Sin acceso a Ollama ni a modelos (IMP-004) |
 | 2026-09-30 | `tools/evidence.py` | PASS | SPRINT-002: 21 historias, solo US-24.03 CA-02 PENDIENTE; SPRINT-001 reproducida (solo US-01.02 CA-03 sin test) |

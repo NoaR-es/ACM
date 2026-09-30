@@ -1,6 +1,6 @@
 # Trabajo pendiente (ordenado)
 
-1. Comprobar la CI en GitHub del commit de SPRINT-004.
+1. ~~Comprobar la CI en GitHub del commit de SPRINT-004~~ → success (run #8, `8f02672`).
 2. **Operador:** ejecutar SPIKE-005 con un Ollama real (IMP-004) → US-22.01/22.03 a VERIFIED y diseño de `OllamaDecisionEngine`.
 3. **Propuesta de SPRINT-005: "Watchdog de calidad del backlog" (EPIC-13).** Primer consumidor autónomo de la interfaz de decisión: revisa historias (INVEST, criterios verificables) con el motor de reglas y marca "revisar" cuando el motor no está calibrado. Cerraría US-35.11 CA-01.
    - Alternativa: interfaz web (TASK-000-07 + EPIC-30), que cerraría US-01.02 CA-03.

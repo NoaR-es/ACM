@@ -12,5 +12,5 @@ LOCK: none
 | ¿Qué se acaba de terminar? | SPRINT-004: US-20.01, 20.02, 20.03, 20.04, 20.05, 20.08 VERIFIED. 198 tests PASS. Evidencia: `12_TESTING/sprint_004_evidence.md` |
 | ¿Qué está bloqueado? | SPIKE-005 (IMP-004): sin Ollama real en el entorno cloud |
 | ¿Qué queda? | `03_ESTADO/pending_work.md` |
-| ¿Siguiente acción? | Operador: revisar y fusionar (cambio incompatible: el HTTP exige token). Agente: comprobar CI y proponer SPRINT-005. |
+| ¿Siguiente acción? | Operador: revisar y fusionar (cambio incompatible: el HTTP exige token). CI en verde (run #8). Agente: proponer SPRINT-005. |
 | ¿Salud? | WARNING — ver `project_health.md` |
