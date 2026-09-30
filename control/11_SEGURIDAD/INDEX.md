@@ -2,17 +2,17 @@
 
 **Responde a:** Cómo se protege
 
-**Salud:** WARNING — sin autenticación hasta EPIC-20 (VULN-001, mitigado con escucha local)
+**Salud:** WARNING — autenticación por token y RBAC implementados (ADR-017, VULN-001 resuelta); sin TLS propio (VULN-002)
 
 | Documento | Estado |
 |-----------|--------|
 | `security.md` | ACTIVE |
-| `authentication.md` | N/A (plantilla) |
-| `authorization.md` | N/A (plantilla) |
-| `secrets.md` | N/A (plantilla) |
-| `permissions.md` | N/A (plantilla) |
+| `authentication.md` | ACTIVE |
+| `authorization.md` | ACTIVE |
+| `secrets.md` | ACTIVE |
+| `permissions.md` | ACTIVE |
 | `vulnerabilities.md` | ACTIVE |
-| `security_decisions.md` | N/A (plantilla) |
+| `security_decisions.md` | ACTIVE |
 
 Documentos históricos: ninguno (ver `99_ARCHIVO/`).
 Relaciones: `../RELATIONSHIPS.md`.

@@ -1,3 +1,4 @@
-# Authentication
+# Autenticación de la API
 
-**Estado del área:** N/A — no existe implementación todavía (2026-09-30). No inventar contenido: rellenar cuando exista código/infraestructura verificable.
+`/mcp` (Streamable HTTP): `Authorization: Bearer acm_…` obligatorio (ADR-017). Detalle, respuestas de error y canales: `11_SEGURIDAD/authentication.md`.
+`/api/health`: público.

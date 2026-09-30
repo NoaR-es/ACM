@@ -86,7 +86,7 @@ Total: **201**
 | FEAT-20.01 | EPIC-20 | Seguridad | A:FEAT-20.01 | MVP | US-20.01, US-20.02, US-20.03 |
 | FEAT-20.02 | EPIC-20 | Identidad | B:FEAT-16.01 | MVP | US-20.04, US-20.05 |
 | FEAT-20.03 | EPIC-20 | RBAC | B:FEAT-16.02 | MVP | US-20.06, US-20.07, US-20.08 |
-| FEAT-20.04 | EPIC-20 | Tokens | B:FEAT-16.03 | MVP | US-20.09, US-20.10, US-20.11 |
+| FEAT-20.04 | EPIC-20 | Tokens | B:FEAT-16.03 | POST-MVP | US-20.09, US-20.10, US-20.11 |
 | FEAT-20.05 | EPIC-20 | Operaciones sensibles | B:FEAT-16.04 | MVP | US-20.12, US-20.13, US-20.14 |
 | FEAT-20.06 | EPIC-20 | Revocación | B:FEAT-28.03 | POST-MVP | US-20.15 |
 | FEAT-21.01 | EPIC-21 | Comunicación reactiva | A:FEAT-21.01 | MVP | US-21.01, US-21.02, US-21.03 |

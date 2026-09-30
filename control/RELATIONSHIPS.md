@@ -164,5 +164,17 @@ SPRINT-003
 Código → historias: inference/** ← US-35.10, 35.11, 47.01, 22.01, 22.03, ADR-015/016 · context.py ← US-35.08/09, PROMPT-001 · backlog.py (gate) ← US-35.11
 Modelo IA → uso: rules → gate READY, acm_decide · ollama:<modelo> → PROMPT-001 (context.compact) · jev → EPIC-50 (pendiente)
 
+SPRINT-004
+├── US-20.01 → domain/identity.py (set_global_role, set_member, remove_member), acm_principal_set_role, acm_member_* → tests/test_auth.py::test_us2001_*
+├── US-20.02 → autorización en dominio (identity.py, projects.py, backlog.py), mcp_audit → tests/test_auth.py::test_us2002_*
+├── US-20.03 → identity.py (create/list/revoke_token, authenticate), audit.py (redact, token_id), __main__.py (acm token create) → tests/test_auth.py::test_us2003_*, test_cli_*
+├── US-20.04 → identity.py (create_principal), schema v4 principals.kind → tests/test_auth.py::test_us2004_*
+├── US-20.05 → auth.py (BearerAuth), app.py → tests/test_auth.py::test_us2005_*, tests/test_app.py
+├── US-20.08 → projects.py (_project_role, list_for) → tests/test_auth.py::test_us2008_*
+├── ADR-017 → auth.py, identity.py; VULN-001 (RESOLVED); VULN-002, VULN-003
+└── TD-002 → app.py (transport_security, ACM_ALLOWED_HOSTS) → tests/test_auth.py::test_td002_*
+
+Código → historias: auth.py ← US-20.05, ADR-017 · identity.py ← US-20.01..04, 20.08 · audit.py (redact, token_id) ← US-20.03
+
 Código → historias: backlog.py ← US-03.03, 04.01..03, 24.01, 24.03 · audit.py ← US-14.10/11, TD-001 · skills_catalog.py ← US-15.01, 15.06, 15.07 · skills/** ← US-15.08..10 · mcp_server.py ← US-14.04..11, US-15.04..07
 ```

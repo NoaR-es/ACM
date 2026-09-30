@@ -62,3 +62,18 @@
 **Acciones**
 - Ejecutar SPIKE-005 en una máquina con Ollama (operador) antes de construir `OllamaDecisionEngine`.
 - Automatizar las mutaciones (sigue pendiente).
+
+## SPRINT-004 (2026-09-30)
+**Bien**
+- Se comprobó con un experimento (8 identidades, 200 llamadas concurrentes, 0 mezclas) que la identidad de la petición llega a la herramienta antes de basar el diseño en ello.
+- Los tests de seguridad van contra ACM real por HTTP, no contra el dominio aislado.
+- Revisando el SDK se encontró TD-002 (421 con otro Host), que habría impedido exponer ACM, el objetivo del sprint. Se verificó con una petición real antes de registrarlo y se corrigió.
+- El secreto del token se redacta en la auditoría: un test lo comprobó y una mutación confirmó que el test lo protege.
+
+**Mal**
+- En SPRINT-002 se añadió al glosario una definición de TD-NNN que ya existía (se corrigió en SPRINT-003).
+- La primera versión del CLI dejaba la base abierta si fallaba la operación; se corrigió antes de los tests.
+
+**Acciones**
+- Buscar en el SDK las suposiciones que dependen del despliegue (host, TLS, proxy) cuando se toque la red.
+- Automatizar las mutaciones (sigue pendiente).

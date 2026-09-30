@@ -55,5 +55,21 @@
   "US-22.05": {
     "into": "US-22.01",
     "reason": "B:US-23.02 'detectar modelos disponibles en Ollama' = A:US-22.01 'Detectar modelos disponibles' (el runtime configurado es Ollama)"
+  },
+  "US-20.06": {
+    "into": "US-20.01",
+    "reason": "B:US-16.03 'asignar roles a usuarios y agentes' = A:US-20.01 'Gestionar roles'"
+  },
+  "US-20.09": {
+    "into": "US-20.03",
+    "reason": "B:US-16.06 'tokens específicos para agentes' = A:US-20.03 CA-01 (cada token tiene identidad)"
+  },
+  "US-20.10": {
+    "into": "US-20.03",
+    "reason": "B:US-16.07 'revocar un token inmediatamente' = A:US-20.03 CA-02"
+  },
+  "US-20.11": {
+    "into": "US-20.03",
+    "reason": "B:US-16.08 'registrar el uso de cada token' = A:US-20.03 CA-04"
   }
 }

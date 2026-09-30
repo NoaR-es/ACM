@@ -17,8 +17,21 @@ RESULT_MAX_CHARS = 4000
 LIST_MAX = 500
 
 
+SECRET_KEYS = frozenset({"token", "secret", "password"})
+REDACTED = "[REDACTED]"
+
+
 def _json(value: Any) -> str:
     return json.dumps(value, ensure_ascii=False, default=str, sort_keys=True)
+
+
+def redact(value: Any) -> Any:
+    """Sustituye el valor de las claves secretas (p. ej. el token recién creado) antes de auditar (ADR-017)."""
+    if isinstance(value, dict):
+        return {k: REDACTED if k in SECRET_KEYS else redact(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [redact(v) for v in value]
+    return value
 
 
 class AuditService:
@@ -35,14 +48,16 @@ class AuditService:
         duration_ms: float,
         result: Any = None,
         error: str = "",
+        token_id: str | None = None,
     ) -> None:
-        result_json = "" if result is None else _json(result)
+        arguments = redact(arguments)
+        result_json = "" if result is None else _json(redact(result))
         truncated = len(result_json) > RESULT_MAX_CHARS
         project_id = arguments.get("project_id") if isinstance(arguments.get("project_id"), str) else None
         with self.projects.global_db.write() as conn:
             conn.execute(
                 "INSERT INTO mcp_audit(ts, principal, operation, project_id, arguments_json, status, error, "
-                "result_json, result_truncated, duration_ms) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "result_json, result_truncated, duration_ms, token_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     datetime.now(UTC).isoformat(),
                     principal,
@@ -54,6 +69,7 @@ class AuditService:
                     result_json[:RESULT_MAX_CHARS],
                     int(truncated),
                     round(duration_ms, 3),
+                    token_id,
                 ),
             )
 

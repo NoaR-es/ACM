@@ -62,12 +62,13 @@ class ProjectService:
         self.global_db.close()
 
     # ---------------------------------------------------------------- principales
-    def ensure_principal(self, principal_id: str, role: str) -> None:
+    def ensure_principal(self, principal_id: str, role: str, kind: str = "user") -> None:
         if role not in GLOBAL_ROLES:
             raise InvalidArgument(f"rol global inválido; válidos: {list(GLOBAL_ROLES)}", field="role")
         with self.global_db.write() as conn:
             conn.execute(
-                "INSERT OR IGNORE INTO principals(id, role, created_at) VALUES (?, ?, ?)", (principal_id, role, _now())
+                "INSERT OR IGNORE INTO principals(id, role, kind, created_at) VALUES (?, ?, ?, ?)",
+                (principal_id, role, kind, _now()),
             )
 
     def _principal_role(self, conn: sqlite3.Connection, principal_id: str) -> str:

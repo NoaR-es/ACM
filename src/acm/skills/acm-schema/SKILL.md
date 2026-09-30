@@ -1,8 +1,8 @@
 ---
 name: acm-schema
 description: Explica qué es ACM, su modelo de datos (proyecto, requisito, épica, feature, historia, criterio de aceptación) y qué herramienta MCP usar en cada paso. Léela antes de operar sobre cualquier proyecto ACM.
-version: 1.1.0
-capabilities: [acm-model, acm-tools, acm-workflow, acm-second-brain]
+version: 1.2.0
+capabilities: [acm-model, acm-tools, acm-workflow, acm-second-brain, acm-identity]
 dependencies: []
 ---
 
@@ -14,9 +14,11 @@ en SQLite: es la fuente de verdad. Úsalo para no tener que recordar el proyecto
 ## Reglas de uso
 1. **No existe "proyecto activo".** Pasa `project_id` en cada herramienta de proyecto; compruébalo en la respuesta.
 2. **Los errores empiezan por un código** (`INVALID_ARGUMENT`, `NOT_FOUND`, `ALREADY_EXISTS`, `FORBIDDEN`,
-   `FAILED_PRECONDITION`, `STORAGE_ERROR`, `ENGINE_UNAVAILABLE`, `ENGINE_ERROR`) seguido del campo y el motivo. Corrige la llamada según el motivo.
-3. **Todo queda auditado** (quién, qué, argumentos, resultado, duración).
+   `FAILED_PRECONDITION`, `STORAGE_ERROR`, `ENGINE_UNAVAILABLE`, `ENGINE_ERROR`, `UNAUTHENTICATED`) seguido del campo y el motivo. Corrige la llamada según el motivo.
+3. **Todo queda auditado** (quién, con qué token, qué, argumentos, resultado, duración). Los secretos se redactan.
 4. **Nada se inventa:** una historia solo pasa a READY con actor, acción, valor, requisito de origen y criterios.
+5. **Identidad:** por HTTP te identifica tu token (`Authorization: Bearer acm_…`); tus permisos son los de tu
+   principal. `acm_whoami` te dice quién eres, tu rol global y en qué proyectos puedes trabajar.
 
 ## Modelo
 ```text
@@ -90,3 +92,13 @@ Proyecto (project_id)
 | `acm_engines_list` | Motores de inferencia, su estado, modelos detectados y reglas disponibles |
 | `acm_engines_refresh` | (admin) Comprueba los motores y detecta modelos |
 | `acm_savings_report` | (admin) Tokens ahorrados por agente y proyecto |
+| `acm_whoami` | Tu identidad, rol global, proyectos y tokens activos |
+| `acm_principal_create` | (admin) Alta de un usuario o agente |
+| `acm_principal_list` | (admin) Principales y roles disponibles |
+| `acm_principal_set_role` | (admin) Cambia el rol global |
+| `acm_member_set` | (admin/owner) Añade un miembro al proyecto o cambia su rol |
+| `acm_member_remove` | (admin/owner) Retira a un miembro del proyecto |
+| `acm_member_list` | Miembros del proyecto |
+| `acm_token_create` | (admin) Crea un token; el secreto solo se muestra una vez |
+| `acm_token_list` | Tokens sin secreto: prefijo, estado y uso |
+| `acm_token_revoke` | Revoca un token al instante |

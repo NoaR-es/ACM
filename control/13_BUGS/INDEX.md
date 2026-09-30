@@ -2,7 +2,7 @@
 
 **Responde a:** Qué problemas existen
 
-**Salud:** WARNING — 4 gaps abiertos (GAP-001, 004, 005, 006), GAP-002 parcial, deuda TD-001; BUG-001 VERIFIED; conflictos resueltos (CONF-001, 002, 004) o aplazados (CONF-003)
+**Salud:** WARNING — 4 gaps abiertos (GAP-001, 004, 005, 006), GAP-002 parcial, deuda TD-001 (TD-002 resuelta); BUG-001 VERIFIED; conflictos resueltos (CONF-001, 002, 004) o aplazados (CONF-003)
 
 | Documento | Estado |
 |-----------|--------|

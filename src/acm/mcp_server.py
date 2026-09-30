@@ -30,6 +30,7 @@ from acm.domain.audit import AuditService
 from acm.domain.backlog import BacklogService
 from acm.domain.context import ContextService
 from acm.domain.errors import AcmError, Forbidden
+from acm.domain.identity import IdentityService
 from acm.domain.projects import ProjectService
 from acm.inference.ports import DecisionRequest
 from acm.inference.router import EngineRouter
@@ -49,7 +50,7 @@ INSTRUCTIONS = (
     "- Ahorra tokens: pide el contexto de una historia con acm_context_compact y delega decisiones tipadas "
     "(sí/no, clasificar, puntuar) con acm_decide.\n"
     "- Los errores empiezan por un código (INVALID_ARGUMENT, NOT_FOUND, ALREADY_EXISTS, FORBIDDEN, "
-    "FAILED_PRECONDITION, STORAGE_ERROR, ENGINE_UNAVAILABLE, ENGINE_ERROR) seguido del motivo; "
+    "FAILED_PRECONDITION, STORAGE_ERROR, ENGINE_UNAVAILABLE, ENGINE_ERROR, UNAUTHENTICATED) seguido del motivo; "
     "corrige la llamada según el motivo."
 )
 
@@ -67,21 +68,24 @@ def build_mcp_server(
     principal: Callable[[], str],
     catalog: SkillCatalog | None = None,
     engines: EngineRouter | None = None,
+    token_id: Callable[[], str | None] = lambda: None,
 ) -> MCPServer:
     """Crea el servidor MCP.
 
     `principal` resuelve la identidad del llamante (SPRINT-001/002: configuración; EPIC-20: token verificado).
     `engines` es el router de inferencia; por defecto, solo el motor de reglas (sin modelos).
+    `token_id` identifica el token de la petición HTTP en curso para la auditoría (US-20.03 CA-04); en stdio, None.
     """
     catalog = catalog if catalog is not None else SkillCatalog()
     engines = engines if engines is not None else EngineRouter(service)
     backlog = BacklogService(service, engines)
     context = ContextService(service, backlog, engines)
     audit = AuditService(service)
+    identity = IdentityService(service)
     bus = InMemorySubscriptionBus()
 
     async def audited(operation: str, arguments: dict[str, Any], fn: Callable[..., T], *args: Any) -> T:
-        who = principal()
+        who, token = principal(), token_id()
         start = time.perf_counter()
         try:
             result = await anyio.to_thread.run_sync(partial(fn, *args))
@@ -90,6 +94,7 @@ def build_mcp_server(
             record = partial(
                 audit.record,
                 principal=who,
+                token_id=token,
                 operation=operation,
                 arguments=arguments,
                 status="error",
@@ -102,6 +107,7 @@ def build_mcp_server(
         record = partial(
             audit.record,
             principal=who,
+            token_id=token,
             operation=operation,
             arguments=arguments,
             status="ok",
@@ -506,6 +512,65 @@ def build_mcp_server(
         args = {"principal_id": principal_id, "project_id": project_id}
         fn = partial(context.savings_report, principal(), filter_principal=principal_id, project_id=project_id)
         return await call("acm_savings_report", args, fn)
+
+    # ------------------------------------------------------------------ identidad, roles y tokens (EPIC-20)
+    @server.tool()
+    async def acm_whoami() -> dict[str, Any]:
+        """Tu identidad: principal, tipo (user/agent), rol global, proyectos con su rol y tokens activos."""
+        return await call("acm_whoami", {}, lambda: identity.get_principal(principal(), principal()))
+
+    @server.tool()
+    async def acm_principal_create(principal_id: str, kind: str, role: str = "user") -> dict[str, Any]:
+        """(admin) Da de alta un usuario o un agente (kind: user | agent; role global: admin | user)."""
+        args = {"principal_id": principal_id, "kind": kind, "role": role}
+        return await call(
+            "acm_principal_create", args, identity.create_principal, principal(), principal_id, kind, role
+        )
+
+    @server.tool()
+    async def acm_principal_list() -> dict[str, Any]:
+        """(admin) Principales con su tipo y rol global, y los roles disponibles."""
+        return await call("acm_principal_list", {}, identity.list_principals, principal())
+
+    @server.tool()
+    async def acm_principal_set_role(principal_id: str, role: str) -> dict[str, Any]:
+        """(admin) Cambia el rol global (admin | user). Nunca deja el sistema sin admin."""
+        args = {"principal_id": principal_id, "role": role}
+        return await call("acm_principal_set_role", args, identity.set_global_role, principal(), principal_id, role)
+
+    @server.tool()
+    async def acm_member_set(project_id: str, principal_id: str, role: str) -> dict[str, Any]:
+        """(admin u owner del proyecto) Añade un miembro o cambia su rol (owner | member)."""
+        args = {"project_id": project_id, "principal_id": principal_id, "role": role}
+        return await call("acm_member_set", args, identity.set_member, principal(), project_id, principal_id, role)
+
+    @server.tool()
+    async def acm_member_remove(project_id: str, principal_id: str) -> dict[str, Any]:
+        """(admin u owner del proyecto) Retira a un miembro. Nunca deja el proyecto sin owner."""
+        args = {"project_id": project_id, "principal_id": principal_id}
+        return await call("acm_member_remove", args, identity.remove_member, principal(), project_id, principal_id)
+
+    @server.tool()
+    async def acm_member_list(project_id: str) -> dict[str, Any]:
+        """Miembros del proyecto con su rol y tipo."""
+        return await call("acm_member_list", {"project_id": project_id}, identity.list_members, principal(), project_id)
+
+    @server.tool()
+    async def acm_token_create(principal_id: str, name: str) -> dict[str, Any]:
+        """(admin) Crea un token para un principal. El token completo se muestra SOLO en esta respuesta: guárdalo."""
+        args = {"principal_id": principal_id, "name": name}
+        return await call("acm_token_create", args, identity.create_token, principal(), principal_id, name)
+
+    @server.tool()
+    async def acm_token_list(principal_id: str | None = None) -> dict[str, Any]:
+        """Tokens (sin el secreto: solo prefijo, estado y uso). Los tuyos, o los de cualquiera si eres admin."""
+        args = {"principal_id": principal_id}
+        return await call("acm_token_list", args, identity.list_tokens, principal(), principal_id)
+
+    @server.tool()
+    async def acm_token_revoke(token_id: str) -> dict[str, Any]:
+        """Revoca un token al instante (los tuyos; los ajenos, solo un admin)."""
+        return await call("acm_token_revoke", {"token_id": token_id}, identity.revoke_token, principal(), token_id)
 
     server.acm_catalog = catalog  # type: ignore[attr-defined]
     server.acm_engines = engines  # type: ignore[attr-defined]

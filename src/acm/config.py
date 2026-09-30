@@ -22,6 +22,9 @@ class Settings:
     sqlite_synchronous: str = "FULL"  # ADR-013: FULL por defecto en la base global
     ollama_url: str | None = None  # EPIC-22: sin URL no se registra ningún motor Ollama
     ollama_model: str | None = None  # modelo de generación (contexto compacto, US-35.08)
+    allowed_hosts: tuple[
+        str, ...
+    ] = ()  # nombres extra aceptados en la cabecera Host (TD-002; p. ej. tras un proxy TLS)
 
     @classmethod
     def from_env(cls, **overrides: object) -> Settings:
@@ -33,6 +36,7 @@ class Settings:
             "sqlite_synchronous": os.environ.get("ACM_SQLITE_SYNCHRONOUS", "FULL"),
             "ollama_url": os.environ.get("ACM_OLLAMA_URL") or None,
             "ollama_model": os.environ.get("ACM_OLLAMA_MODEL") or None,
+            "allowed_hosts": tuple(h.strip() for h in os.environ.get("ACM_ALLOWED_HOSTS", "").split(",") if h.strip()),
         }
         values.update({k: v for k, v in overrides.items() if v is not None})
         values["data_dir"] = Path(values["data_dir"])  # type: ignore[arg-type]

@@ -33,6 +33,9 @@ BACKLOG_TOOLS = {
     "acm_backlog_audit",
     "acm_decide",
     "acm_context_compact",
+    "acm_member_set",
+    "acm_member_remove",
+    "acm_member_list",
 }
 GLOBAL_TOOLS = {
     "acm_project_create",
@@ -45,6 +48,13 @@ GLOBAL_TOOLS = {
     "acm_engines_list",
     "acm_engines_refresh",
     "acm_savings_report",
+    "acm_whoami",
+    "acm_principal_create",
+    "acm_principal_list",
+    "acm_principal_set_role",
+    "acm_token_create",
+    "acm_token_list",
+    "acm_token_revoke",
 }
 
 

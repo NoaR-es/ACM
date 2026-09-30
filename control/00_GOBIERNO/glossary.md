@@ -37,8 +37,9 @@
 | 2026-07-28 | Revisión del protocolo MCP con peticiones autocontenidas (sin handshake ni sesión); impide el estado de "proyecto seleccionado" por sesión (ADR-014). |
 | DecisionEngine / GenerationEngine | Interfaces de inferencia del núcleo (ADR-015). |
 | Spike | Experimento acotado para responder una pregunta técnica; su código vive en `spikes/` y no es producto. |
-| Principal | Identidad que llama a ACM (usuario o agente). Rol global `admin`/`user`. En SPRINT-001 se fija por `ACM_PRINCIPAL`; con EPIC-20, por token. |
-| owner / member | Roles de pertenencia a un proyecto: owner puede modificar la configuración; member solo leer. |
+| Principal | Identidad que llama a ACM, de tipo `user` o `agent`. Rol global `admin`/`user`. Por HTTP la fija su token (ADR-017); en stdio y CLI, `ACM_PRINCIPAL`. |
+| Token de ACM | Credencial `acm_…` de un principal. Se muestra una vez; ACM guarda su hash y un prefijo. Revocable al instante. |
+| owner / member | Roles de pertenencia a un proyecto: owner modifica la configuración y gestiona miembros; member lee y escribe el backlog. |
 | Refinamiento | Documento `01_PRODUCTO/refinements/US-NN.MM.md` con las secciones de la regla READY de la fuente A. |
 | Fusión (dedupe) | Marcar una historia como duplicado de otra (`tools/dedupe.json`): queda CANCELLED y sus CA pasan a la destino. `cross_epic: true` permite fusionar entre épicas. |
 | Skill | Paquete de instrucciones en Markdown (`SKILL.md` con frontmatter) que ACM sirve por MCP para que el agente sepa usarlo. Oficiales en `src/acm/skills/`. |

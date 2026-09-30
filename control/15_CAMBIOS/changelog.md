@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.4.0.dev0] — 2026-09-30 — SPRINT-004 — autenticación y RBAC
+- **Cambio:**
+  - `/mcp` exige token Bearer de ACM (`acm.auth.BearerAuth`, ADR-017).
+  - `IdentityService`: principales user/agent, roles globales y de proyecto, tokens (solo hash; redactados en la auditoría; revocación inmediata).
+  - 10 herramientas MCP de identidad (40 en total); skill acm-schema 1.2.0.
+  - CLI `acm principal create` y `acm token create`.
+  - La auditoría guarda el `token_id`; los 401 se auditan como `http:auth`.
+  - `ACM_ALLOWED_HOSTS` (TD-002).
+  - Esquema global v4.
+  - `control/`:
+    - 6 refinamientos;
+    - 4 fusiones en EPIC-20;
+    - ADR-017;
+    - VULN-001 resuelta; VULN-002 y VULN-003;
+    - 11_SEGURIDAD completo;
+    - SPRINT-003 archivado.
+- **Stories:** VERIFIED: US-20.01, 20.02, 20.03, 20.04, 20.05, 20.08.
+- **Archivos:** `src/acm/{auth.py, domain/identity.py, domain/audit.py, domain/projects.py, domain/errors.py, db/schema.py, mcp_server.py, app.py, config.py, __main__.py, __init__.py, skills/acm-schema/SKILL.md}`, `pyproject.toml`, `README.md`, `tests/{test_auth.py, test_app.py, test_mcp.py}`, `control/**`.
+- **Tests:** 198/198 PASS; 8/8 mutaciones detectadas.
+- **Migración:** la base global sube a v4 al abrirse (aditiva; los principales existentes quedan como `user`).
+- **Breaking change:** **sí**. Los clientes MCP por HTTP deben enviar `Authorization: Bearer <token>`; se crea con `acm token create` (ver `README.md`). stdio no cambia.
+
 ## [0.3.0.dev0] — 2026-09-30 — SPRINT-003 — segundo cerebro
 - **Cambio:**
   - `acm.inference`:

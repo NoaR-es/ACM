@@ -1,9 +1,10 @@
-# Seguridad — estado (2026-09-30)
+# Seguridad — estado (2026-09-30, SPRINT-004)
 
 | Área | Estado | Detalle |
 |------|--------|---------|
-| Autenticación | MISSING | EPIC-20. En SPRINT-001 la identidad es `ACM_PRINCIPAL` (configuración del proceso). |
-| Autorización | IMPLEMENTED (mínima) | Rol global `admin`/`user`; pertenencia `owner`/`member` por proyecto. Crear: admin. Modificar configuración: owner o admin. Proyectos ajenos → NOT_FOUND (no se revela su existencia). |
-| Exposición de red | Mitigado | `acm serve` escucha en 127.0.0.1 por defecto (VULN-001). |
-| Integridad de datos | IMPLEMENTED | `foreign_keys=ON` verificado por conexión; transacciones IMMEDIATE; creación atómica. |
-| Secretos | N/A | No hay secretos todavía. |
+| Autenticación | IMPLEMENTED (VERIFIED) | HTTP: token Bearer de ACM en cada petición (ADR-017, `authentication.md`). stdio: `ACM_PRINCIPAL` (local). |
+| Autorización | IMPLEMENTED (VERIFIED) | Roles globales `admin`/`user` y de proyecto `owner`/`member` (`authorization.md`, `permissions.md`). Proyectos ajenos → NOT_FOUND. |
+| Secretos | IMPLEMENTED | Tokens: solo hash sha256 y prefijo; redactados en la auditoría (`secrets.md`). |
+| Auditoría | IMPLEMENTED | Toda invocación MCP y todo intento rechazado (incluidos los 401) en `mcp_audit`, con `token_id`. Retención: MISSING (EPIC-44). |
+| Exposición de red | WARNING | Escucha en 127.0.0.1 por defecto. Para exponer: proxy TLS + `ACM_ALLOWED_HOSTS` (VULN-002). |
+| Integridad de datos | IMPLEMENTED | `foreign_keys=ON` por conexión; transacciones IMMEDIATE; creación atómica. |

@@ -298,3 +298,27 @@ Decisión: (c). Los adaptadores HTTP (Ollama; JEV en EPIC-50) usan un cliente s�
 Motivo: Un único modelo de concurrencia. El coste de un hilo por llamada es irrelevante frente a la latencia de un modelo, y (b) sería reescribir la capa de datos.
 Consecuencias: Una inferencia larga ocupa un hilo del pool de anyio (40 por defecto). El gate READY no retiene el bloqueo de escritura mientras decide: relee la historia y rechaza si cambió.
 Trade-offs: Si en el futuro hay muchas inferencias concurrentes, habrá que dimensionar el pool o pasar a (a); lo medirá SPIKE-005.
+
+## ADR-017 — Autenticación por tokens opacos de ACM
+Fecha: 2026-09-30
+Estado: ACCEPTED
+Contexto: Hasta SPRINT-003 la identidad salía de `ACM_PRINCIPAL`: cualquiera que alcanzara el puerto actuaba como admin (VULN-001). EPIC-20 pide credenciales por usuario y agente, revocables, y autenticar cada conexión MCP. El protocolo MCP 2026-07-28 no tiene sesión (ADR-014).
+Problema: Cómo autenticar cada petición HTTP y llevar la identidad hasta las herramientas.
+Alternativas consideradas:
+(a) OAuth 2.1 con el soporte del SDK (`AuthSettings` + `TokenVerifier`): exige un servidor de autorización (`issuer_url`) y publica metadatos OAuth que harían a los clientes intentar ese flujo;
+(b) tokens opacos propios en `Authorization: Bearer`, validados en cada petición por un middleware ASGI de ACM;
+(c) JWT firmados por ACM: sin consulta a la base, pero la revocación inmediata exigiría una lista de revocación.
+Decisión: (b).
+- Formato `acm_<256 bits aleatorios>`; se guarda el sha256 y un prefijo visible de 12 caracteres; el secreto se muestra una sola vez.
+- `BearerAuth` valida contra la base en cada petición y deja principal y token en variables de contexto. Verificado: llegan a la herramienta MCP, también dentro del hilo de trabajo, sin mezclarse (0 de 200 llamadas concurrentes).
+- El token autoriza con los roles actuales de su principal (sin ámbitos propios).
+- stdio sigue usando `ACM_PRINCIPAL`: no hay red y el proceso lo lanza su usuario.
+- Arranque: `acm token create` en el servidor; quien accede a los datos ya los controla.
+Motivo: Revocación inmediata y trazabilidad por token sin infraestructura OAuth. Los clientes MCP admiten cabeceras Bearer estáticas.
+Consecuencias:
+- Cambio incompatible: los clientes HTTP necesitan token.
+- Cada petición hace una escritura (`use_count`, `last_used_at`); aceptable con el volumen del MVP.
+- Sin TLS propio (VULN-002).
+- Sin expiración de tokens todavía.
+- Protección DNS rebinding del SDK configurable con `ACM_ALLOWED_HOSTS` (TD-002).
+Trade-offs: Si hace falta federar identidad (SSO), (a) se puede añadir más adelante sin cambiar los roles.

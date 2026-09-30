@@ -10,8 +10,8 @@
 | `api_overview.md` | ACTIVE |
 | `rest_api.md` | N/A (plantilla) |
 | `endpoints.md` | ACTIVE |
-| `authentication.md` | N/A (plantilla) |
-| `authorization.md` | N/A (plantilla) |
+| `authentication.md` | ACTIVE |
+| `authorization.md` | ACTIVE |
 | `schemas.md` | N/A (plantilla) |
 | `errors.md` | N/A (plantilla) |
 | `integrations.md` | N/A (plantilla) |

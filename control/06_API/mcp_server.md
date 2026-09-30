@@ -1,6 +1,6 @@
 # Servidor MCP de ACM
 
-Estado: **IMPLEMENTED (SPRINT-001/002/003)**. `src/acm/mcp_server.py`: herramientas de proyecto (SPRINT-001), backlog, auditoría y extensión Skills con 3 skills oficiales (SPRINT-002). Pendientes: skills US-15.11/15.12 y autenticación (EPIC-20). Topología: ADR-014. Decisiones: ADR-005 (Python) y ADR-008 (servidor propio + skills). Historias (numeración unificada, ADR-010): servidor propio FEAT-14.02..14.04 (US-14.04..US-14.11); registro y versionado de skills FEAT-15.01 (US-15.01, US-15.03); distribución FEAT-15.02 (US-15.04..US-15.07); catálogo FEAT-15.03 (US-15.08..US-15.12). ACM como *cliente* MCP (US-14.01..14.03) es POST-MVP.
+Estado: **IMPLEMENTED (SPRINT-001..004)**. Por HTTP exige token Bearer de ACM (ADR-017). `src/acm/mcp_server.py`: herramientas de proyecto (SPRINT-001), backlog, auditoría y extensión Skills con 3 skills oficiales (SPRINT-002). Pendientes: skills US-15.11/15.12 y autenticación (EPIC-20). Topología: ADR-014. Decisiones: ADR-005 (Python) y ADR-008 (servidor propio + skills). Historias (numeración unificada, ADR-010): servidor propio FEAT-14.02..14.04 (US-14.04..US-14.11); registro y versionado de skills FEAT-15.01 (US-15.01, US-15.03); distribución FEAT-15.02 (US-15.04..US-15.07); catálogo FEAT-15.03 (US-15.08..US-15.12). ACM como *cliente* MCP (US-14.01..14.03) es POST-MVP.
 
 ## Principio
 El servidor MCP **es ACM**: los agentes IA se conectan a él para operar sobre los proyectos. Al conectarse, reciben las instrucciones y las skills necesarias para usar ACM correctamente.
@@ -89,5 +89,19 @@ Todas las de proyecto exigen `project_id` y lo devuelven. Cualquier rol del proy
 | `acm_engines_list` | — | motores (estado, modelos detectados, `registered`) y catálogo de reglas | — | US-47.01, US-22.01 |
 | `acm_engines_refresh` | — | motores tras comprobar su salud | FORBIDDEN (no admin) | US-22.01 |
 | `acm_savings_report` | `principal_id?`, `project_id?` | grupos por agente/proyecto/método y totales | FORBIDDEN (no admin), INVALID_ARGUMENT | US-35.09 |
+
+## Herramientas añadidas en SPRINT-004 (2026-09-30) — identidad
+
+| Herramienta | Argumentos | Quién | Historia |
+|-------------|------------|-------|----------|
+| `acm_whoami` | — | cualquiera | US-20.03 CA-01 |
+| `acm_principal_create` | `principal_id`, `kind` (user/agent), `role?` | admin | US-20.04 |
+| `acm_principal_list` | — | admin | US-20.01 CA-01 |
+| `acm_principal_set_role` | `principal_id`, `role` | admin | US-20.01 |
+| `acm_member_set` / `acm_member_remove` / `acm_member_list` | `project_id`, `principal_id`, `role` | admin/owner (listar: miembros) | US-20.01, US-20.08 |
+| `acm_token_create` | `principal_id`, `name` | admin | US-20.03 (el secreto solo en esta respuesta) |
+| `acm_token_list` / `acm_token_revoke` | `principal_id?` / `token_id` | propios; ajenos, admin | US-20.03 |
+
+Errores nuevos: `UNAUTHENTICATED` (HTTP 401, antes de llegar a MCP). Total: 40 herramientas.
 
 Extensión Skills: `skills/list` y `skills/get` (`-32602` si la skill no existe); archivos en `skill://acm/{skill}/{filename}` (una skill retirada deja de ser legible). Capacidad declarada: `extensions["io.modelcontextprotocol/skills"] = {"directoryRead": false}`.

@@ -2,7 +2,7 @@
 
 # User Stories (backlog unificado)
 
-Total activas: **478** · Con criterios de aceptación: **151** · Sin criterios: **327** · Posibles solapamientos señalados: **34**
+Total activas: **474** · Con criterios de aceptación: **154** · Sin criterios: **320** · Posibles solapamientos señalados: **32**
 
 > READY exige la cadena completa de la *Regla de aceptación del backlog* (fuente A): precondiciones, flujo,
 > alternativas, errores, reglas, validaciones, casos límite, CA, tareas y pruebas. Se documenta en
@@ -1815,7 +1815,9 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-20.01 — Gestionar roles
 
 - **Como** administrador **quiero** asignar roles **para** controlar capacidades.
-- Origen: A:US-20.01 · Épica: EPIC-20 · Feature: FEAT-20.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-20.01 · Épica: EPIC-20 · Feature: FEAT-20.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-004
+- Absorbe a: US-20.06
+- Refinamiento: `refinements/US-20.01.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Los roles disponibles están definidos.
   - [ ] CA-02: Un usuario puede recibir un rol autorizado.
@@ -1825,7 +1827,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-20.02 — Autorizar operaciones
 
 - **Como** sistema **quiero** comprobar permisos antes de ejecutar operaciones **para** impedir accesos no autorizados.
-- Origen: A:US-20.02 · Épica: EPIC-20 · Feature: FEAT-20.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-20.02 · Épica: EPIC-20 · Feature: FEAT-20.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-004
+- Refinamiento: `refinements/US-20.02.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Una operación permitida se ejecuta.
   - [ ] CA-02: Una operación no permitida es rechazada.
@@ -1835,7 +1838,9 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-20.03 — Gestionar tokens
 
 - **Como** administrador **quiero** crear y revocar tokens **para** permitir integraciones seguras.
-- Origen: A:US-20.03 · Épica: EPIC-20 · Feature: FEAT-20.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-20.03 · Épica: EPIC-20 · Feature: FEAT-20.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-004
+- Absorbe a: US-20.09, US-20.10, US-20.11
+- Refinamiento: `refinements/US-20.03.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Cada token tiene identidad y permisos.
   - [ ] CA-02: Un token revocado deja de autorizar operaciones.
@@ -1847,22 +1852,30 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-20.04
 
 - Enunciado: Como operador quiero disponer de credenciales independientes para usuarios y agentes.
-- Origen: B:US-16.01 · Épica: EPIC-20 · Feature: FEAT-20.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-16.01 · Épica: EPIC-20 · Feature: FEAT-20.02 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-004
+- Refinamiento: `refinements/US-20.04.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Cada principal es de tipo `user` o `agent`. (definido en refinamiento)
+  - [ ] CA-02: Cada principal tiene sus propias credenciales; revocar las de uno no afecta a otro. (definido en refinamiento)
+  - [ ] CA-03: La auditoría identifica a qué principal pertenece cada operación. (definido en refinamiento)
 
 #### US-20.05
 
 - Enunciado: Como sistema quiero autenticar cada conexión MCP.
-- Origen: B:US-16.02 · Épica: EPIC-20 · Feature: FEAT-20.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-16.02 · Épica: EPIC-20 · Feature: FEAT-20.02 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-004
+- Refinamiento: `refinements/US-20.05.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Una petición MCP por HTTP sin token válido recibe 401 y no ejecuta nada. (definido en refinamiento)
+  - [ ] CA-02: Un token desconocido se rechaza y el intento queda registrado sin guardar el token completo. (definido en refinamiento)
+  - [ ] CA-03: Cada petición se atiende con la identidad de su propio token, también con varios agentes a la vez. (definido en refinamiento)
 
 ### FEAT-20.03 — RBAC · origen B:FEAT-16.02
 
 #### US-20.06
 
 - Enunciado: Como operador quiero asignar roles a usuarios y agentes.
-- Origen: B:US-16.03 · Épica: EPIC-20 · Feature: FEAT-20.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- ⚠ Posible solapamiento con US-20.01: revisar si es duplicado, detalle o historia distinta (GAP-006)
+- Origen: B:US-16.03 · Épica: EPIC-20 · Feature: FEAT-20.03 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-20.01 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 #### US-20.07
@@ -1874,28 +1887,34 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-20.08
 
 - Enunciado: Como sistema quiero restringir el acceso por proyecto.
-- Origen: B:US-16.05 · Épica: EPIC-20 · Feature: FEAT-20.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-16.05 · Épica: EPIC-20 · Feature: FEAT-20.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-004
+- Refinamiento: `refinements/US-20.08.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Un principal no puede leer ni modificar un proyecto del que no es miembro. (definido en refinamiento)
+  - [ ] CA-02: El listado de proyectos solo incluye aquellos a los que tiene acceso. (definido en refinamiento)
+  - [ ] CA-03: Un admin accede a todos los proyectos. (definido en refinamiento)
 
 ### FEAT-20.04 — Tokens · origen B:FEAT-16.03
 
 #### US-20.09
 
 - Enunciado: Como operador quiero crear tokens específicos para agentes.
-- Origen: B:US-16.06 · Épica: EPIC-20 · Feature: FEAT-20.04 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- ⚠ Posible solapamiento con US-20.03: revisar si es duplicado, detalle o historia distinta (GAP-006)
+- Origen: B:US-16.06 · Épica: EPIC-20 · Feature: FEAT-20.04 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-20.03 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 #### US-20.10
 
 - Enunciado: Como operador quiero revocar un token inmediatamente.
-- Origen: B:US-16.07 · Épica: EPIC-20 · Feature: FEAT-20.04 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-16.07 · Épica: EPIC-20 · Feature: FEAT-20.04 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-20.03 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 #### US-20.11
 
 - Enunciado: Como sistema quiero registrar el uso de cada token.
-- Origen: B:US-16.08 · Épica: EPIC-20 · Feature: FEAT-20.04 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-16.08 · Épica: EPIC-20 · Feature: FEAT-20.04 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-20.03 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 ### FEAT-20.05 — Operaciones sensibles · origen B:FEAT-16.04

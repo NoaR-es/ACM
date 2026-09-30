@@ -10,7 +10,8 @@
 │   ├── __init__.py                # versión
 │   ├── __main__.py                # CLI: `acm serve`, `acm mcp-stdio`
 │   ├── config.py                  # Settings del proceso (variables ACM_*)
-│   ├── app.py                     # FastAPI: /api/health + MCP montado en /mcp (ADR-014)
+│   ├── app.py                     # FastAPI: /api/health + MCP montado en /mcp (ADR-014), con BearerAuth
+│   ├── auth.py                    # Autenticación HTTP por token (ADR-017)
 │   ├── mcp_server.py              # Servidor MCP propio: herramientas, extensión Skills, auditoría
 │   ├── skills_catalog.py          # Catálogo de skills validado (US-15.01)
 │   ├── inference/                 # Puertos, reglas, registro/router y adaptador Ollama (ADR-015/016)
@@ -25,6 +26,7 @@
 │       ├── projects.py            # ProjectService (US-01.01..03, US-01.06)
 │       ├── backlog.py             # BacklogService (EPIC-03/04, US-24.01/03)
 │       ├── audit.py               # AuditService (US-14.10/11)
+│       ├── identity.py            # IdentityService: principales, roles, tokens (EPIC-20)
 │       └── context.py             # ContextService: contexto compacto y ahorro (US-35.08/09)
 ├── tests/                         # pytest: un test por CA (nombres test_usNNNN_caNN_*)
 ├── control/                       # Sistema de control (fuente de verdad del desarrollo)

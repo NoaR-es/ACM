@@ -1,6 +1,7 @@
 """Catálogos de migraciones de ACM (ADR-011: SQLite es la fuente de verdad del producto; ADR-013).
 
-- GLOBAL: base de plataforma `<data_dir>/acm.db` — principales, registro de proyectos, pertenencias, auditoría MCP (v2).
+- GLOBAL: base de plataforma `<data_dir>/acm.db` — principales, proyectos, pertenencias, auditoría MCP, inferencia (v3)
+  y tokens de acceso (v4).
 - PROJECT: base de cada proyecto `<data_dir>/projects/<id>/project.db` — metadatos, configuración y backlog (v2).
 
 Una migración publicada no se modifica: los cambios van en migraciones nuevas (US-18.03).
@@ -105,6 +106,31 @@ GLOBAL: tuple[Migration, ...] = (
             engine TEXT NOT NULL DEFAULT ''
         )""",
             "CREATE INDEX idx_context_deliveries_principal ON context_deliveries(principal, project_id)",
+        ),
+    ),
+    Migration(
+        4,
+        "identity_tokens",
+        (
+            # US-20.04: credenciales independientes para usuarios y agentes
+            "ALTER TABLE principals ADD COLUMN kind TEXT NOT NULL DEFAULT 'user' CHECK (kind IN ('user', 'agent'))",
+            # US-20.03 / ADR-017: tokens opacos; solo se guarda su hash sha256 y un prefijo visible
+            """CREATE TABLE api_tokens (
+            id TEXT PRIMARY KEY,
+            principal_id TEXT NOT NULL REFERENCES principals(id),
+            name TEXT NOT NULL CHECK (length(name) BETWEEN 1 AND 80),
+            prefix TEXT NOT NULL,
+            secret_hash TEXT NOT NULL UNIQUE,
+            created_at TEXT NOT NULL,
+            created_by TEXT NOT NULL,
+            revoked_at TEXT,
+            revoked_by TEXT,
+            last_used_at TEXT,
+            use_count INTEGER NOT NULL DEFAULT 0
+        )""",
+            "CREATE INDEX idx_api_tokens_principal ON api_tokens(principal_id)",
+            # US-20.03 CA-04: cada invocación auditada identifica el token con el que se hizo
+            "ALTER TABLE mcp_audit ADD COLUMN token_id TEXT",
         ),
     ),
 )

@@ -11,9 +11,11 @@ import httpx
 import pytest
 import uvicorn
 from mcp import Client, StdioServerParameters
+from mcp.client.streamable_http import streamable_http_client
 
-from acm.app import create_app
+from acm.app import build_service, create_app
 from acm.config import Settings
+from acm.domain.identity import IdentityService
 
 pytestmark = pytest.mark.anyio
 
@@ -32,6 +34,9 @@ def _free_port() -> int:
 async def test_fastapi_sirve_api_y_mcp_en_un_proceso(tmp_path: Path) -> None:
     port = _free_port()
     settings = Settings.from_env(data_dir=tmp_path / "data", port=port)
+    bootstrap = build_service(settings)
+    token = IdentityService(bootstrap).create_token(settings.principal, settings.principal, "test")["token"]
+    bootstrap.close()
     server = uvicorn.Server(uvicorn.Config(create_app(settings), host="127.0.0.1", port=port, log_level="warning"))
     task = asyncio.create_task(server.serve())
     try:
@@ -42,7 +47,8 @@ async def test_fastapi_sirve_api_y_mcp_en_un_proceso(tmp_path: Path) -> None:
         async with httpx.AsyncClient() as http:
             health = (await http.get(f"http://127.0.0.1:{port}/api/health")).json()
         assert health["status"] == "ok" and health["sqlite"]["foreign_keys"] is True
-        async with Client(f"http://127.0.0.1:{port}/mcp/") as client:
+        http = httpx.AsyncClient(headers={"Authorization": f"Bearer {token}"})
+        async with http, Client(streamable_http_client(f"http://127.0.0.1:{port}/mcp/", http_client=http)) as client:
             assert "project_id" in (client.instructions or "")
             created = await client.call_tool("acm_project_create", {"key": "alpha", "name": "Alpha"})
             assert not created.is_error, created.content

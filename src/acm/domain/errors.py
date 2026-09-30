@@ -50,3 +50,9 @@ class MigrationError(AcmError):
 
 class FailedPrecondition(AcmError):
     code = "FAILED_PRECONDITION"
+
+
+class Unauthenticated(AcmError):
+    """Credencial ausente, desconocida o revocada (EPIC-20)."""
+
+    code = "UNAUTHENTICATED"

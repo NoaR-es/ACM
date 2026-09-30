@@ -23,3 +23,10 @@
 - **Entregado:** US-35.08, 35.09, 35.10, 47.01 VERIFIED; US-35.11, 22.01, 22.03 IMPLEMENTED. TASK-003-01..06. ADR-016.
 - **Evidencia:** 172 tests en PASS (49 nuevos); `12_TESTING/sprint_003_evidence.md`; 8/8 mutaciones detectadas.
 - **No entregado:** verificación con un Ollama real (IMP-004); `OllamaDecisionEngine` (depende de SPIKE-005); Watchdog.
+
+## SPRINT-004 — Autenticación y RBAC (2026-09-30)
+- **Goal:** cumplido. `/mcp` exige un token Bearer de ACM y cada petición actúa con su principal. Tokens por usuario o agente, solo hash en la base, redactados en la auditoría y revocables al instante. Roles globales y de proyecto gestionables por MCP.
+- **Entregado:** US-20.01, 20.02, 20.03, 20.04, 20.05, 20.08 VERIFIED. TASK-004-01..05. ADR-017. VULN-001 resuelta; TD-002 detectada y resuelta (`ACM_ALLOWED_HOSTS`).
+- **Evidencia:** 198 tests en PASS (27 nuevos, contra ACM real por HTTP); `12_TESTING/sprint_004_evidence.md`; 8/8 mutaciones de seguridad detectadas.
+- **Cambio incompatible:** los clientes HTTP necesitan token (ver `README.md`).
+- **No entregado:** TLS propio (VULN-002: se delega en un proxy); US-20.07 y US-20.12..14.

@@ -1,8 +1,8 @@
-# Bases de datos (SPRINT-001; v2 en SPRINT-002; global v3 en SPRINT-003, 2026-09-30)
+# Bases de datos (SPRINT-001; v2 en SPRINT-002; global v3 en SPRINT-003; global v4 en SPRINT-004, 2026-09-30)
 
 | Base | Ruta | Motor | Propósito | Esquema | Migraciones |
 |------|------|-------|-----------|---------|-------------|
-| Global | `<ACM_DATA_DIR>/acm.db` | SQLite 3 (WAL) | Principales, registro de proyectos, pertenencias, auditoría MCP, motores y llamadas de inferencia, entregas de contexto | `acm.db.schema.GLOBAL` v3 | `schema_migrations` |
+| Global | `<ACM_DATA_DIR>/acm.db` | SQLite 3 (WAL) | Principales, registro de proyectos, pertenencias, auditoría MCP, motores y llamadas de inferencia, entregas de contexto, tokens de acceso | `acm.db.schema.GLOBAL` v4 | `schema_migrations` |
 | Proyecto | `<ACM_DATA_DIR>/projects/<project_id>/project.db` | SQLite 3 (WAL) | Metadatos y configuración del proyecto y backlog (y, en el futuro, todo su estado: ADR-011) | `acm.db.schema.PROJECT` v2 | `schema_migrations` |
 
 ## Esquema global v1
@@ -31,6 +31,13 @@
 | `context_deliveries` | Cada entrega de contexto compacto: principal, proyecto, historia, tokens entregados y equivalente completo, método, si se resumió, motor | tokens ≥ 0; índice `(principal, project_id)` |
 
 Retención de `inference_calls` y `context_deliveries`: sin política (MISSING, EPIC-44).
+
+## Esquema global v4 (SPRINT-004)
+| Cambio | Detalle |
+|--------|---------|
+| `principals.kind` | `user` \| `agent` (por defecto `user` para los existentes) |
+| `api_tokens` | `id` (`tok_…`), `principal_id`, `name`, `prefix` (12 caracteres), `secret_hash` (sha256, UNIQUE), `created_at/_by`, `revoked_at/_by`, `last_used_at`, `use_count` |
+| `mcp_audit.token_id` | Token de la invocación (NULL en stdio y CLI) |
 
 ## Esquema de proyecto v2 (SPRINT-002)
 | Tabla | Uso | Restricciones |
