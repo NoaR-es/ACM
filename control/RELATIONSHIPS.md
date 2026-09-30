@@ -146,7 +146,8 @@ SPRINT-002
 ├── US-15.08/09/10 → skills/acm-schema, skills/acm-invest, skills/acm-discovery → tests/test_skills.py::test_us1508_*..test_us1510_*
 ├── US-24.01/03 → backlog.py (_db: acceso por proyecto), una project.db por proyecto → tests/test_isolation.py   [US-24.03 CA-02 → EPIC-21]
 ├── TASK-000-10 → tools/dedupe.json (US-04.04/05 → 04.01; 04.07/08/11/13 → 04.03; US-14.08 → US-01.06)
-└── TASK-002-05 → tools/evidence.py → 12_TESTING/sprint_002_evidence.md
+├── TASK-002-05 → tools/evidence.py → 12_TESTING/sprint_002_evidence.md
+└── BUG-001 → src/acm/db/connection.py (_enable_wal) → tests/test_db.py::test_bug001_apertura_concurrente_de_base_nueva; afecta a US-18.01, US-18.03
 
 Código → historias: backlog.py ← US-03.03, 04.01..03, 24.01, 24.03 · audit.py ← US-14.10/11, TD-001 · skills_catalog.py ← US-15.01, 15.06, 15.07 · skills/** ← US-15.08..10 · mcp_server.py ← US-14.04..11, US-15.04..07
 ```

@@ -40,7 +40,9 @@
 - Un refinamiento (US-14.11) afirmaba que ninguna operación podía quedar sin auditar; no era cierto (bases distintas, sin transacción común). Se corrigió y se registró TD-001.
 - Un mutante estaba mal planteado (dejaba un bucle infinito) y habría contado como detección por timeout; se sustituyó por uno válido.
 - `create_feature` devolvía la épica entera en lugar de la feature; lo detectó un test.
+- No se comprobó la CI del commit `445f09c` (run #2, en rojo por BUG-001) aunque la retrospectiva anterior lo pedía. Se detectó al comprobar la CI de SPRINT-002.
 
 **Acciones**
 - Al redactar un refinamiento, contrastar cada garantía con el diseño real antes de escribirla.
 - Automatizar las mutaciones (sigue pendiente de SPRINT-001) y limitarlas con un timeout que las marque como inválidas, no como detectadas.
+- Comprobar la CI después de cada push, incluidos los commits solo de documentación.

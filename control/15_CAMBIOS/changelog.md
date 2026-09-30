@@ -18,7 +18,8 @@
   - VERIFIED: US-03.03, 04.01..03, 14.04..07, 14.09..11, 15.01, 15.04..10, 24.01;
   - IMPLEMENTED: US-24.03 (CA-02 → EPIC-21).
 - **Archivos:** `src/acm/{db/schema.py, domain/backlog.py, domain/audit.py, domain/errors.py, skills_catalog.py, skills/**, mcp_server.py, __init__.py}`, `pyproject.toml`, `tests/test_{backlog,isolation,audit,skills,mcp}.py`, `control/**`.
-- **Tests:** 122/122 PASS; 6/6 mutaciones detectadas.
+  - BUG-001 corregido: activación de WAL con reintentos en `db/connection.py`.
+- **Tests:** 123/123 PASS (incluye la regresión de BUG-001); 6/6 mutaciones detectadas.
 - **Migración:** las bases existentes suben a v2 al abrirse (migraciones aditivas).
 - **Breaking change:** no.
 

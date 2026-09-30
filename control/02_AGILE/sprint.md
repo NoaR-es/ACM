@@ -26,6 +26,7 @@
 | TASK-002-03 | TASK | Auditoría de invocaciones MCP (`mcp_audit`, esquema global v2, `acm_audit_list`) | US-14.10, US-14.11 | VERIFIED (TD-001 registrada) |
 | TASK-002-04 | TASK | Catálogo de skills, extensión MCP Skills (`skills/list`, `skills/get`, `skill://`), herramientas de respaldo, recarga con notificación y las 3 skills oficiales | US-15.01, US-15.04..10 | VERIFIED |
 | TASK-002-05 | TEST | Tests por CA (72 nuevos) y matriz de evidencia generada (`tools/evidence.py`) | todas | VERIFIED (122 tests; 6/6 mutaciones detectadas) |
+| BUG-001 | BUG | `database is locked` al abrir una base nueva desde varios procesos (CI run #2 en rojo) | US-18.01, US-18.03 | VERIFIED (test de regresión) |
 | TASK-000-07 | DECISION | Decidir tooling del frontend React (GAP-002) | — | PLANNED (arrastrada) |
 
 SPRINT-001 cerrado y archivado en `99_ARCHIVO/historical/sprint_001.md`.

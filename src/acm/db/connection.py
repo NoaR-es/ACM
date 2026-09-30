@@ -71,7 +71,7 @@ class Database:
                 self.path, timeout=self._busy_timeout_ms / 1000, isolation_level=None, check_same_thread=False
             )
             conn.row_factory = sqlite3.Row
-            mode = conn.execute("PRAGMA journal_mode=WAL").fetchone()[0]
+            mode = self._enable_wal(conn)
             conn.execute(f"PRAGMA synchronous={self.synchronous}")
             conn.execute("PRAGMA foreign_keys=ON")
             conn.execute(f"PRAGMA busy_timeout={int(self._busy_timeout_ms)}")
@@ -81,6 +81,23 @@ class Database:
             conn.close()
             raise StorageError(f"la base {self.path} no aceptó WAL/foreign_keys (ADR-013)")
         return conn
+
+    def _enable_wal(self, conn: sqlite3.Connection) -> str:
+        """Activa WAL reintentando mientras la base esté bloqueada (BUG-001).
+
+        Pasar una base nueva a WAL exige un lock exclusivo y SQLite puede devolver SQLITE_BUSY sin invocar el
+        busy handler cuando varios procesos la abren a la vez; se reintenta hasta agotar `busy_timeout`.
+        """
+        deadline = time.monotonic() + self._busy_timeout_ms / 1000
+        delay = 0.005
+        while True:
+            try:
+                return conn.execute("PRAGMA journal_mode=WAL").fetchone()[0]
+            except sqlite3.OperationalError as exc:
+                if ("locked" not in str(exc) and "busy" not in str(exc)) or time.monotonic() >= deadline:
+                    raise
+                time.sleep(delay)
+                delay = min(delay * 2, 0.1)
 
     def pragmas(self) -> dict[str, object]:
         conn = self.connection()

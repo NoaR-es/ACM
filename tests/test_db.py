@@ -191,3 +191,25 @@ def test_us1802_reintento_ante_bloqueo_transitorio(tmp_path: Path) -> None:
             pass
     holder2.join()
     db.close()
+
+
+def _open_worker(args: tuple[str, object]) -> str:
+    path, barrier = args
+    barrier.wait()
+    db = Database(path)
+    try:
+        return db.pragmas()["journal_mode"]
+    except StorageError as exc:
+        return str(exc)
+    finally:
+        db.close()
+
+
+def test_bug001_apertura_concurrente_de_base_nueva(tmp_path: Path) -> None:
+    """BUG-001: varios procesos que abren a la vez una base nueva no reciben `database is locked`."""
+    ctx = mp.get_context("spawn")
+    with ctx.Manager() as manager, ctx.Pool(12) as pool:
+        for round_ in range(10):
+            barrier = manager.Barrier(12)
+            path = str(tmp_path / f"r{round_}.db")
+            assert pool.map(_open_worker, [(path, barrier)] * 12) == ["wal"] * 12

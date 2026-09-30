@@ -20,8 +20,8 @@ Proyecto: **Agile Context Manager (ACM)** · Constitución: `/CLAUDE.md` · Actu
 | `09_MENSAJERIA/` | Cómo se comunican los componentes | N/A — WebSockets previstos (EPIC-21) |
 | `10_IA/` | Qué IA utilizamos | OK — JEV definido (ADR-006); nada integrado |
 | `11_SEGURIDAD/` | Cómo se protege | WARNING — sin autenticación (VULN-001) |
-| `12_TESTING/` | Cómo se prueba | OK — 122 tests de producto en PASS |
-| `13_BUGS/` | Qué problemas existen | WARNING — 4 gaps abiertos, TD-001; conflictos resueltos o aplazados (CONF-003) |
+| `12_TESTING/` | Cómo se prueba | OK — 123 tests de producto en PASS |
+| `13_BUGS/` | Qué problemas existen | WARNING — 4 gaps abiertos, TD-001, BUG-001 corregido; conflictos resueltos o aplazados (CONF-003) |
 | `14_DECISIONES/` | Por qué se tomaron decisiones | OK |
 | `15_CAMBIOS/` | Qué ha cambiado | OK |
 | `16_DOCUMENTACION/` | Cómo está documentado | N/A |

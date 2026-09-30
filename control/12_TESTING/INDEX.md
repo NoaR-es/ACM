@@ -2,7 +2,7 @@
 
 **Responde a:** Cómo se prueba
 
-**Salud:** OK — 122 tests de producto (SPRINT-001/002) + integridad del backlog + spikes
+**Salud:** OK — 123 tests de producto (SPRINT-001/002) + integridad del backlog + spikes
 
 | Documento | Estado |
 |-----------|--------|
