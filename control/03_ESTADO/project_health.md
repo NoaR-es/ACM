@@ -5,7 +5,7 @@
 | Área | Estado | Motivo |
 |------|--------|--------|
 | Control | OK | Estructura completa, índices y relaciones creados |
-| Producto | WARNING | Backlog unificado (ADR-010): 351/488 historias sin criterios, ninguna READY (GAP-001); 37 solapamientos (GAP-006); 3 conflictos abiertos (CONF-001..003) |
+| Producto | WARNING | Backlog unificado (ADR-010/012): 351/492 historias sin criterios, ninguna READY (GAP-001); 37 solapamientos (GAP-006); conflictos resueltos, CONF-003 aplazado |
 | Arquitectura | WARNING | Backend Python decidido (ADR-005); framework y topología de procesos pendientes de SPIKE-001/002 |
 | IA | OK | JEV definido (ADR-006); nada integrado |
 | Código | N/A | No existe código de producto |

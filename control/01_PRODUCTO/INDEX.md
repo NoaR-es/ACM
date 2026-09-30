@@ -2,12 +2,12 @@
 
 **Responde a:** Qué debemos hacer
 
-**Salud:** WARNING — backlog unificado (ADR-010): 351/488 historias sin criterios, ninguna READY (GAP-001); 37 solapamientos por revisar (GAP-006)
+**Salud:** WARNING — backlog unificado (ADR-010/012): 351/492 historias sin criterios, ninguna READY (GAP-001); 37 solapamientos por revisar (GAP-006)
 
 | Documento | Estado |
 |-----------|--------|
 | `backlog_completo_v1.md` | ACTIVE — **fuente A** del backlog (columna vertebral, ADR-010) |
-| `product_definition_v2.md` | ACTIVE — **fuente B**: visión, actores, reglas, TECH, SPIKE y épicas integradas (v1.1; v1.0 en `99_ARCHIVO/superseded/`) |
+| `product_definition_v3.md` | ACTIVE — **fuente B**: visión, actores, reglas, TECH, SPIKE y épicas integradas (v1.2; v1.0 y v1.1 en `99_ARCHIVO/superseded/`) |
 | `id_mapping.md` | ACTIVE (generado) — IDs de B → IDs unificados |
 | `roadmap.md` | ACTIVE |
 | `releases.md` | ACTIVE |

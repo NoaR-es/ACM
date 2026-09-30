@@ -15,7 +15,8 @@ SPRINT-000
 ├── TASK-000-08 → product_definition_v2.md, ADR-008, ADR-009, 06_API/mcp_server.md
 ├── TASK-000-09 → backlog_completo_v1.md, ADR-010, id_mapping.md, tools/derive_backlog.py
 ├── TASK-000-10 → GAP-006
-└── TASK-000-11 → IMP-003, CONF-001, CONF-002
+├── TASK-000-11 → IMP-003, CONF-001 → ADR-012, CONF-002 → ADR-011
+└── TASK-000-12 → product_definition_v3.md, ADR-012, US-35.08..US-35.11, US-47.01
 ```
 
 ## Código → origen
@@ -28,7 +29,7 @@ control/tools/derive_backlog.py
 ```
 
 ## Producto
-- Backlog unificado (ADR-010) = fuente A `01_PRODUCTO/backlog_completo_v1.md` + fuente B `01_PRODUCTO/product_definition_v2.md` (v1.1, que supersede `99_ARCHIVO/superseded/product_definition_v1.md`). Traducción de IDs de B: `01_PRODUCTO/id_mapping.md`.
+- Backlog unificado (ADR-010) = fuente A `01_PRODUCTO/backlog_completo_v1.md` + fuente B `01_PRODUCTO/product_definition_v3.md` (v1.2, que supersede a v1.1 y v1.0 en `99_ARCHIVO/superseded/`). Traducción de IDs de B: `01_PRODUCTO/id_mapping.md`.
 - Épica → Feature → Historia: generado en `01_PRODUCTO/features.md` y `01_PRODUCTO/user_stories.md` (bidireccional por ID).
 - Requisito funcional → Épica: `01_PRODUCTO/requirements.md` (REQ-F-01..40).
 - Épica → Componente arquitectónico: `04_ARQUITECTURA/architecture.md`.
@@ -79,7 +80,7 @@ ADR-009 (MVP v2)
 ```
 ADR-010 (backlog unificado + MVP v3)
 ├── supersede ADR-009
-├── fuentes: backlog_completo_v1.md (A), product_definition_v2.md (B)
+├── fuentes: backlog_completo_v1.md (A), product_definition_v3.md (B, antes v2)
 ├── genera: epics.md, features.md, user_stories.md, backlog.md, technical_stories.md, id_mapping.md
 ├── nuevas épicas: EPIC-49 (deuda), EPIC-50 (JEV ← ADR-006), EPIC-51 (sandbox), EPIC-52 (CLI), EPIC-53 (extensiones)
 └── conflictos: CONF-001 (EPIC-47 ↔ EPIC-50), CONF-002 (EPIC-02 ↔ EPIC-18), CONF-003 (EPIC-07/08/09/46), CONF-004 (EPIC-14)
@@ -88,4 +89,17 @@ Servidor MCP propio (ADR-008) en numeración unificada
 ├── FEAT-14.02..14.04 (US-14.04..US-14.11) ← B:FEAT-15.01..15.03
 ├── FEAT-15.02 (US-15.04..US-15.07) ← B:FEAT-15.04
 └── FEAT-15.03 (US-15.08..US-15.12) ← B:FEAT-22.01 → catálogo skill://acm/*
+```
+
+```
+ADR-011 (fuente de verdad por nivel)
+├── desarrollo → control/ (00_GOBIERNO/agent_operating_rules.md regla 6)
+└── producto → SQLite: EPIC-18, EPIC-02 (memoria de proyecto), 07_DATOS/data_architecture.md
+
+ADR-012 (JEV preparado + segundo cerebro)
+├── interfaz de decisión: US-35.11 (← B:US-43.09), US-47.01 → adaptador EPIC-50 / TECH-020 (ADR-006)
+├── contexto compacto + tokens ahorrados: FEAT-35.05 (US-35.08, US-35.09) ← B:FEAT-43.04
+├── decisiones delegadas: FEAT-35.06 (US-35.10, US-35.11) ← B:FEAT-43.05
+├── REQ-F-41, REQ-F-42
+└── CONF-003 aplazado → EPIC-07/08/09/46
 ```

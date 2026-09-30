@@ -17,14 +17,14 @@ Humanos ──(Web React / CLI / MCP)──► ACM Core (Governance + State)
                                   Watchdog (gates)
                                         │
                                   Estado verificado
-                  * JEV: modelos de decisión servidos por Ollaya; POST-MVP (ADR-006)
+                  * JEV: modelos de decisión servidos por Ollaya; se conectan a la interfaz de decisión del núcleo (ADR-006, ADR-012)
 ```
 
 ## Componentes previstos
 | Componente | Épicas | Estado |
 |-----------|--------|--------|
-| Núcleo de estado (SQLite por proyecto) | EPIC-01, 18, 24, TECH-003..009 | PLANNED |
-| Memoria `control/` por proyecto (proyección documental, CONF-002) | EPIC-02 | PLANNED |
+| Núcleo de estado (SQLite por proyecto; fuente de verdad del producto, ADR-011) | EPIC-01, 18, 24, TECH-003..009 | PLANNED |
+| Memoria de proyecto (estructura "control/" persistida en SQLite; exportación a archivos no autoritativa, ADR-011) | EPIC-02 | PLANNED |
 | Servidor MCP propio multi-proyecto + distribución de skills | EPIC-14 (FEAT-14.02..04), EPIC-15 (FEAT-15.01..03), TECH-010/011, ADR-008 | PLANNED |
 | Cliente MCP para agentes internos | EPIC-14 (US-14.01..03) | PLANNED (POST-MVP) |
 | Orquestador interno, instancias e hilos, roles IA | EPIC-07, 08, 09, 41, 46 | PLANNED (POST-MVP, CONF-003) |
@@ -33,7 +33,9 @@ Humanos ──(Web React / CLI / MCP)──► ACM Core (Governance + State)
 | Watchdog | EPIC-13, 19, 27, 48 | PLANNED |
 | RAG / Vector store | EPIC-16, TECH-015..017, SPIKE-003/004 | PLANNED |
 | Adaptador Ollama + router de modelos | EPIC-22, 38, 39, TECH-018/019 | PLANNED |
-| Adaptador de decisión JEV (Ollaya/TypeSafe) | EPIC-50, TECH-020, ADR-006 | PLANNED (POST-MVP) |
+| Interfaz de decisión (reglas · Ollama · JEV) | US-35.11, US-47.01, ADR-012 | PLANNED (MVP: reglas + Ollama) |
+| Servicio de contexto compacto + medición de tokens ahorrados (segundo cerebro) | FEAT-35.05, EPIC-16, EPIC-22 | PLANNED (MVP) |
+| Adaptador de decisión JEV (Ollaya/TypeSafe) | EPIC-50, TECH-020, ADR-006 | PLANNED (tras el MVP; la interfaz ya existe) |
 | Snapshot engine (SQLite+Git) | EPIC-12, TECH-021/022 | PLANNED |
 | Auth/RBAC/tokens | EPIC-20, 44, TECH-012/013 | PLANNED |
 | Auditoría/telemetría | EPIC-26, 44, TECH-014/027 | PLANNED |

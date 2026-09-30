@@ -53,3 +53,10 @@ La fuente A no enumera requisitos formales: sus historias se trazan a estos REQ-
 
 ## Requisitos no funcionales
 MISSING — la definición no fija latencias, volúmenes, concurrencia objetivo ni plataformas soportadas. Se abordan en SPIKE-001, SPIKE-005, SPIKE-010.
+
+## Requisitos añadidos
+
+| ID | Requisito | Épicas que lo cubren | Estado |
+|----|-----------|----------------------|--------|
+| REQ-F-41 | Actuar como segundo cerebro del agente IA: contexto compacto y decisiones tipadas con modelos locales (Ollama, JEV) para reducir los tokens que consume el agente (definición v1.2 §1.2, 2026-09-30). | EPIC-35, EPIC-47, EPIC-50, EPIC-22 | PLANNED |
+| REQ-F-42 | Preparar la arquitectura para integrar JEV sin rediseño: interfaz de decisión común desde el MVP (ADR-012). | EPIC-35, EPIC-47, EPIC-50 | PLANNED |

@@ -11,7 +11,10 @@
 | MCP | Model Context Protocol: interfaz por la que los agentes invocan herramientas de ACM. |
 | RAG | Retrieval-Augmented Generation: recuperación semántica de contexto. |
 | Ollama | Motor de inferencia de modelos locales. |
-| JEV / Jev | Modelos de decisión "System One" (TypeSafe): estado + preguntas tipadas → respuestas con probabilidades calibradas, sin generar texto. POST-MVP (ADR-006). |
+| JEV / Jev | Modelos de decisión "System One" (TypeSafe) servidos en local por Ollaya: estado + preguntas tipadas → respuestas con probabilidades calibradas, sin generar texto. Se integrarán (EPIC-50); la interfaz de decisión existe desde el MVP (ADR-006, ADR-012). |
+| Interfaz de decisión | Puerto único del núcleo por el que Watchdog, gates y router piden decisiones tipadas; implementaciones: reglas, Ollama y JEV (US-35.11, ADR-012). |
+| Segundo cerebro | Papel de ACM respecto al agente IA: contexto compacto y decisiones resueltas con modelos locales para que el agente gaste menos tokens (definición §1.2, ADR-012). |
+| Preparado para JEV | Diseño en el que conectar el adaptador JEV no requiere cambiar a los consumidores (US-47.01). |
 | Ollaya | Runtime local tipo Ollama para modelos de decisión estilo Jev (puerto 11435). |
 | choice / score / noul | Tipos de pregunta de un modelo de decisión: categoría, puntuación, sí/no. |
 | Walkthrough | Secuencia de pasos (algunos ejecutables) que evidencia que una funcionalidad funciona (EPIC-28). |
@@ -22,7 +25,7 @@
 | TD-NNN | Deuda técnica registrada. |
 | GAP-NNN | Hueco/inconsistencia detectado en el sistema de control o backlog. |
 | MVP / POST-MVP | Clasificación de alcance (ADR-010). |
-| Fuente A / Fuente B | A = `backlog_completo_v1.md` (columna vertebral del backlog); B = `product_definition_v2.md` (definición v1.1). ADR-010. |
+| Fuente A / Fuente B | A = `backlog_completo_v1.md` (columna vertebral del backlog); B = `product_definition_v3.md` (definición v1.2). ADR-010. |
 | Backlog unificado | Backlog generado a partir de A y B con IDs sin colisiones; traducción de IDs de B en `id_mapping.md`. |
 | CA-NN | Criterio de aceptación binario PASS/FAIL de una historia. |
 | CONF-NNN | Conflicto de requisitos entre fuentes que requiere decisión del operador. |

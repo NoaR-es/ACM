@@ -1,4 +1,4 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v2.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v3.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
 
 # Correspondencia de IDs: definición v1.1 (B) → backlog unificado
 
@@ -198,6 +198,8 @@ usan la numeración de B: tradúcelos con esta tabla (notación `B:US-15.09`).
 | FEAT-43.01 | FEAT-35.02 |
 | FEAT-43.02 | FEAT-35.03 |
 | FEAT-43.03 | FEAT-35.04 |
+| FEAT-43.04 | FEAT-35.05 |
+| FEAT-43.05 | FEAT-35.06 |
 | FEAT-44.01 | FEAT-07.02 |
 | FEAT-44.02 | FEAT-07.03 |
 | FEAT-44.03 | FEAT-07.04 |
@@ -548,6 +550,10 @@ usan la numeración de B: tradúcelos con esta tabla (notación `B:US-15.09`).
 | US-43.03 | US-35.05 |
 | US-43.04 | US-35.06 |
 | US-43.05 | US-35.07 |
+| US-43.06 | US-35.08 |
+| US-43.07 | US-35.09 |
+| US-43.08 | US-35.10 |
+| US-43.09 | US-35.11 |
 | US-44.01 | US-07.04 |
 | US-44.02 | US-07.05 |
 | US-44.03 | US-07.06 |

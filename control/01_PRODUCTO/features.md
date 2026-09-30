@@ -1,8 +1,8 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v2.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v3.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
 
 # Features (backlog unificado)
 
-Total: **199**
+Total: **201**
 
 | ID | Épica | Título | Origen | Alcance | Historias |
 |----|-------|--------|--------|---------|-----------|
@@ -145,6 +145,8 @@ Total: **199**
 | FEAT-35.02 | EPIC-35 | Context Loader | B:FEAT-43.01 | MVP | US-35.03, US-35.04 |
 | FEAT-35.03 | EPIC-35 | Contexto estructurado | B:FEAT-43.02 | MVP | US-35.05, US-35.06 |
 | FEAT-35.04 | EPIC-35 | Contexto semántico | B:FEAT-43.03 | MVP | US-35.07 |
+| FEAT-35.05 | EPIC-35 | Contexto compacto y ahorro de tokens **[v1.2]** | B:FEAT-43.04 | MVP | US-35.08, US-35.09 |
+| FEAT-35.06 | EPIC-35 | Decisiones delegadas al motor de decisión **[v1.2]** | B:FEAT-43.05 | MVP | US-35.10, US-35.11 |
 | FEAT-36.01 | EPIC-36 | Lessons learned | A:FEAT-36.01 | POST-MVP | US-36.01, US-36.02 |
 | FEAT-37.01 | EPIC-37 | Change management | A:FEAT-37.01 | POST-MVP | US-37.01, US-37.02, US-37.03 |
 | FEAT-38.01 | EPIC-38 | Model Registry | A:FEAT-38.01 | POST-MVP | US-38.01, US-38.02 |
@@ -179,7 +181,7 @@ Total: **199**
 | FEAT-46.03 | EPIC-46 | Aprobación | B:FEAT-29.02 | POST-MVP | US-46.05, US-46.06 |
 | FEAT-46.04 | EPIC-46 | Chat | B:FEAT-29.03 | POST-MVP | US-46.07, US-46.08 |
 | FEAT-46.05 | EPIC-46 | Intervención | B:FEAT-40.03 | POST-MVP | US-46.09, US-46.10 |
-| FEAT-47.01 | EPIC-47 | Entorno virtual futuro | A:FEAT-47.01 | POST-MVP | US-47.01, US-47.02 |
+| FEAT-47.01 | EPIC-47 | Entorno virtual futuro | A:FEAT-47.01 | MVP | US-47.01, US-47.02 |
 | FEAT-48.01 | EPIC-48 | Estado global | A:FEAT-48.01 | POST-MVP | US-48.01, US-48.02, US-48.03 |
 | FEAT-48.02 | EPIC-48 | Integridad referencial | B:FEAT-42.01 | POST-MVP | US-48.04, US-48.05 |
 | FEAT-48.03 | EPIC-48 | Integridad global | B:FEAT-42.02 | POST-MVP | US-48.06, US-48.07 |

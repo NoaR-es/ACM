@@ -134,7 +134,7 @@ Trade-offs: El MVP crece con 5 skills y 4 historias de distribución.
 
 ## ADR-010 — Backlog unificado de dos fuentes y alcance MVP v3 (supersede a ADR-009)
 Fecha: 2026-09-30
-Estado: ACCEPTED
+Estado: ACCEPTED (el punto 7, alcance MVP, está enmendado por ADR-012)
 Contexto: El operador aporta el "prompt inicial del proyecto" (`01_PRODUCTO/backlog_completo_v1.md`, **fuente A**): 48 épicas, 48 features, 132 historias y 515 criterios CA-NN. Indica que la definición anterior estaba incompleta. El análisis muestra que A **no contiene** a la definición v1.1 (`product_definition_v2.md`, **fuente B**: 48 épicas, 151 features, 356 historias), y que ambas usan los mismos IDs con significados distintos (p. ej. EPIC-15 es Skills en A y el servidor MCP en B).
 Problema: Obtener un único backlog sin perder contenido de ninguna fuente y sin colisiones de IDs.
 Alternativas consideradas:
@@ -159,3 +159,52 @@ Consecuencias:
 - MVP: 29 épicas, 83 features, 228 historias.
 - Tres conflictos de requisitos quedan abiertos para el operador (CONF-001..003 en `13_BUGS/known_issues.md`).
 Trade-offs: Backlog más grande y con solapamientos pendientes de depurar. Se acepta a cambio de no perder alcance.
+
+## ADR-011 — Dos fuentes de verdad según el nivel: `control/` para el desarrollo, SQLite para el producto ACM
+Fecha: 2026-09-30
+Estado: ACCEPTED
+Contexto: CONF-002. La fuente A (EPIC-02) define `control/` como "memoria y fuente de verdad"; la definición (B) y ADR-001 fijan SQLite como núcleo de persistencia. El operador aclara que son dos niveles distintos.
+Problema: Qué es autoritativo en cada nivel.
+Alternativas consideradas: (a) `control/` autoritativo también dentro del producto; (b) SQLite autoritativo y `control/` como proyección documental generada; (c) cada nivel con su propia fuente, según indica el operador.
+Decisión (del operador):
+1. **Desarrollo de ACM (proceso del agente):** la fuente de verdad es `control/` de este repositorio. El agente debe mantenerlo siempre actualizado (CLAUDE.md §2–3; regla 6 de `00_GOBIERNO/agent_operating_rules.md`).
+2. **Producto ACM:** la fuente de verdad es **SQLite**, y **todo** debe estar alojado ahí, incluida la memoria de proyecto que describe EPIC-02.
+Consecuencias:
+- EPIC-02 se interpreta para el producto así: la "estructura `control/`" es la **estructura lógica de la memoria del proyecto** (índices, áreas, documentos, historial), persistida en SQLite. Cualquier exportación a archivos (Markdown, Git) es una proyección **no autoritativa**; en la importación manda SQLite (EPIC-40).
+- El texto de la fuente A no se modifica; esta interpretación rige su implementación.
+- GAP-005 (modelo de datos) debe incluir las entidades de memoria de proyecto de EPIC-02.
+Trade-offs: El modelo de datos crece, pero se evita tener dos fuentes de verdad en el producto.
+
+## ADR-012 — ACM preparado para JEV desde el inicio y "segundo cerebro" del agente (resuelve CONF-001, aplaza CONF-003, enmienda el MVP de ADR-010)
+Fecha: 2026-09-30
+Estado: ACCEPTED
+Contexto: El operador aclara tres cosas:
+- JEV sigue siendo lo definido en ADR-006 (modelos de decisión servidos por Ollaya) y **no es "futuro": se va a integrar**. No hace falta que esté desde el principio, pero todo debe construirse facilitando esa integración.
+- El orquestador interno (CONF-003) puede esperar.
+- ACM, con modelos locales de Ollama y JEV, debe ser más inteligente y actuar como **segundo cerebro** del agente IA que lo usa, **ahorrándole tokens**.
+
+Se incorpora como definición v1.2 (`product_definition_v3.md`: §1.2, FEAT-43.04, FEAT-43.05 y MVP §12 punto 28).
+Problema: Cómo reflejarlo en la arquitectura y el alcance sin adelantar el adaptador JEV.
+Decisión:
+1. **Interfaz de decisión común** (puerto) en el núcleo **desde el MVP** (US-35.11 ← B:US-43.09), con implementaciones intercambiables:
+   - reglas deterministas (siempre disponibles);
+   - Ollama con salida restringida (MVP);
+   - Ollaya/TypeSafe = adaptador JEV (EPIC-50, TECH-020), que se conecta después sin cambiar a los consumidores.
+   Watchdog, gates y router consumen solo esta interfaz.
+2. **Segundo cerebro en el MVP:**
+   - contexto compacto resumido con modelo local y medición de tokens ahorrados (FEAT-35.05: US-35.08, US-35.09);
+   - decisiones delegadas por el agente vía MCP (FEAT-35.06: US-35.10, US-35.11).
+   El ahorro de tokens pasa a ser una métrica de valor del producto.
+3. **EPIC-47** ("Preparación para JEV") se interpreta como la abstracción de recursos de inferencia y ejecución que hace posible el punto 1:
+   - US-47.01 entra en el MVP;
+   - US-47.02 (entornos de ejecución) sigue POST-MVP.
+4. **CONF-003 queda aplazado.** El orquestador interno (EPIC-07/08/09/46) sigue POST-MVP. Cuando llegue, usará los mismos motores locales (Ollama + JEV) a través de las mismas interfaces.
+5. **Enmienda del MVP de ADR-010:**
+   - se añaden EPIC-47 (US-47.01) y FEAT-35.05/35.06;
+   - el resultado es 30 épicas, 86 features y 233 historias MVP (de 492).
+Motivo: Conectar JEV debe costar un adaptador, no un rediseño. El segundo cerebro es el diferencial de valor de ACM frente a un simple almacén de estado.
+Consecuencias:
+- El adaptador JEV (EPIC-50) sigue POST-MVP como implementación, pero su contrato (ADR-006) guía desde ya el diseño de la interfaz de decisión.
+- SPIKE-005 (Ollama con varios agentes) y SPIKE-006 (Ollaya) ganan prioridad dentro de Fase 0–2.
+- Hacen falta estimaciones de tokens fiables: el método se documenta en la implementación de US-35.09.
+Trade-offs: El MVP crece en 5 historias. A cambio, ACM aporta valor propio desde la primera versión.

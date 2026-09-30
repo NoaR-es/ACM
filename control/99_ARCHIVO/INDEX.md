@@ -6,6 +6,7 @@
 
 | Documento | Estado | Sustituido por | Fecha |
 |-----------|--------|----------------|-------|
-| `superseded/product_definition_v1.md` | SUPERSEDED | `01_PRODUCTO/product_definition_v2.md` | 2026-09-30 |
+| `superseded/product_definition_v1.md` | SUPERSEDED | `superseded/product_definition_v2.md` (v1.1) | 2026-09-30 |
+| `superseded/product_definition_v2.md` | SUPERSEDED | `01_PRODUCTO/product_definition_v3.md` (v1.2) | 2026-09-30 |
 | `deprecated/` | vacío | — | — |
 | `historical/` | vacío | — | — |

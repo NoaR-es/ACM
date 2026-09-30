@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.6] — 2026-09-30 — SPRINT-000
+- **Cambio:**
+  - Definición v1.2 (`product_definition_v3.md`; v1.1 archivada): JEV a integrar con la arquitectura preparada desde el inicio; ACM como segundo cerebro del agente (4 historias nuevas con CA: US-35.08..US-35.11).
+  - ADR-011: `control/` es la fuente de verdad del desarrollo y SQLite la del producto.
+  - ADR-012: interfaz de decisión común desde el MVP; US-47.01 al MVP; CONF-003 aplazado. MVP = 233 historias.
+  - REQ-F-41/42. IMP-003 cerrado.
+  - Retirado `control/tools/__pycache__` (subido por error en c0d9482) y añadido `.gitignore`.
+- **Motivo:** Respuesta del operador a CONF-001..003.
+- **Archivos:** `control/01_PRODUCTO/`, `99_ARCHIVO/`, `14_DECISIONES/`, `13_BUGS/`, `02_AGILE/`, `03_ESTADO/`, `00_GOBIERNO/`, `04_ARQUITECTURA/`, `07_DATOS/`, `10_IA/`, `05_CODIGO/`, `12_TESTING/`, `tools/derive_backlog.py`, `RELATIONSHIPS.md`, `INDEX.md`, `/.gitignore`.
+- **Impacto:** MVP +5 historias; sin código de producto.
+- **Tests:** TEST-CTRL-001 PASS.
+- **Breaking change:** no.
+
 ## [0.0.5] — 2026-09-30 — SPRINT-000
 - **Cambio:** Registro íntegro del backlog completo del operador (fuente A). Unificación con la definición v1.1 (fuente B) en un backlog de 53 épicas, 199 features, 488 historias y 531 criterios, con `id_mapping.md`. ADR-010 (supersede a ADR-009; MVP v3 = 228 historias). Nuevas épicas EPIC-49..53. Conflictos CONF-001..004, GAP-006 e IMP-003. Documentos activos traducidos a la numeración unificada.
 - **Motivo:** El operador aporta el prompt inicial completo.

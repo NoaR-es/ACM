@@ -1,10 +1,10 @@
-# Agile Context Manager (ACM) — Definición de Producto v1.1
+# Agile Context Manager (ACM) — Definición de Producto v1.2
 
 > **Fuente:** v1.0 aportada por el operador humano (NoaR-es) el 2026-09-30 + enmiendas del operador.
 > **Autoridad:** documento de producto de referencia (nivel 6 — planificación, §52 CLAUDE.md).
-> **Estado:** ACTIVE. Supersede a `99_ARCHIVO/superseded/product_definition_v1.md`.
+> **Estado:** ACTIVE. Supersede a `99_ARCHIVO/superseded/product_definition_v2.md` (v1.1), que a su vez supersedió a `product_definition_v1.md` (v1.0).
 > Los cambios de alcance se registran como nueva versión y la anterior pasa a `99_ARCHIVO/superseded/`.
-> Las enmiendas se marcan en el texto con **[v1.1]**.
+> Las enmiendas se marcan en el texto con **[v1.1]** y **[v1.2]**.
 >
 > **Desde ADR-010 (2026-09-30):** esta definición es la **fuente B** del backlog unificado. Sus épicas (§7) se integran, renumeradas, en el backlog cuya columna vertebral es `backlog_completo_v1.md` (fuente A). Correspondencia de IDs: `id_mapping.md`.
 >
@@ -13,6 +13,7 @@
 > |---------|-------|--------|--------|
 > | 1.0 | 2026-09-30 | Definición inicial | Operador |
 > | 1.1 | 2026-09-30 | ACM implementa y gestiona su propio servidor MCP y distribuye por él sus skills (FEAT-15.04, objetivo de EPIC-15 y EPIC-22, MVP §12 punto 27) | Operador; redacción del agente (ADR-008) |
+> | 1.2 | 2026-09-30 | JEV deja de ser "futuro": se integrará y todo se diseña preparado para ello desde el inicio. ACM como "segundo cerebro" del agente IA que ahorra tokens con modelos locales (Ollama + JEV): §1.2, FEAT-43.04, FEAT-43.05, MVP §12 punto 28 | Operador; redacción del agente (ADR-012) |
 > Los inventarios `epics.md`, `features.md`, `user_stories.md`, `backlog.md` y `technical_stories.md`
 > se **derivan** de este documento con `control/tools/derive_backlog.py`.
 
@@ -20,13 +21,13 @@
 
 ## Sistema Autónomo de Gobernanza, Memoria, Ejecución y Trazabilidad Agile para Agentes IA
 
-**Versión conceptual:** 1.1
+**Versión conceptual:** 1.2
 **Fecha de definición:** 30 de septiembre de 2026
 **Naturaleza:** Plataforma de desarrollo software asistido y autónomo por agentes IA
 **Núcleo de persistencia:** SQLite
 **Memoria semántica:** Base vectorial + RAG
 **Inferencia local:** Ollama
-**Inferencia decisional futura:** JEV
+**Inferencia decisional:** JEV — **[v1.2]** modelos de decisión servidos por Ollaya; integración prevista, con la arquitectura preparada desde el inicio (no tiene por qué estar en la primera entrega)
 **Interfaz:** Aplicación web React
 **Comunicación reactiva:** WebSockets
 **Interfaz agente:** Model Context Protocol (MCP) — **[v1.1]** servidor MCP propio, implementado y gestionado por ACM, que entrega a cada agente conectado las skills necesarias para usar ACM
@@ -91,6 +92,16 @@ Documentación
 ```
 
 El sistema debe poder recorrer esta cadena tanto hacia delante como hacia atrás.
+
+## 1.2. ACM como segundo cerebro del agente IA **[v1.2]**
+
+ACM no es solo un almacén pasivo de estado. Con modelos locales —**Ollama** para tareas generativas y **JEV** (modelos de decisión en Ollaya) para decisiones tipadas— ACM actúa como **segundo cerebro** del agente IA que lo utiliza:
+
+* le entrega el contexto ya seleccionado, resumido y reducido a lo imprescindible;
+* resuelve por él decisiones tipadas (clasificar, puntuar, sí/no) sin que el agente gaste razonamiento propio;
+* mide cuántos tokens ahorra al agente.
+
+El objetivo es que el agente IA consuma **menos tokens** y trabaje con **mejor contexto**, delegando en ACM el trabajo que puede hacerse de forma local y barata.
 
 ---
 
@@ -2196,6 +2207,50 @@ Criterios:
 
 **Como agente quiero recibir fragmentos RAG relevantes junto al contexto estructurado.**
 
+### FEAT-43.04 — Contexto compacto y ahorro de tokens **[v1.2]**
+
+#### US-43.06
+
+**Como agente IA quiero pedir a ACM un contexto compacto de una tarea, resumido con un modelo local, para gastar menos tokens propios.**
+
+Criterios:
+
+* La respuesta indica el tamaño estimado en tokens del contexto entregado y del contexto completo equivalente.
+* Cada fragmento resumido identifica sus fuentes.
+* Si no hay modelo local disponible, ACM devuelve el contexto estructurado sin resumir e indica que no se ha resumido.
+
+#### US-43.07
+
+**Como operador quiero conocer cuántos tokens ha ahorrado ACM a cada agente para medir el valor del segundo cerebro.**
+
+Criterios:
+
+* Cada entrega de contexto registra el tamaño entregado y la estimación del contexto completo equivalente.
+* El ahorro puede consultarse agregado por agente y por proyecto.
+* La estimación indica el método de cálculo utilizado.
+
+### FEAT-43.05 — Decisiones delegadas al motor de decisión **[v1.2]**
+
+#### US-43.08
+
+**Como agente IA quiero delegar en ACM decisiones tipadas (clasificar, puntuar, sí/no) para no consumir mis tokens en ellas.**
+
+Criterios:
+
+* La respuesta es tipada e incluye la probabilidad o confianza de cada opción.
+* Queda registrado qué motor produjo la decisión.
+* Si el motor de decisión no está disponible, ACM devuelve un error explícito o usa el mecanismo alternativo configurado, indicándolo.
+
+#### US-43.09
+
+**Como arquitecto quiero que todos los componentes de ACM que toman decisiones lo hagan a través de una interfaz de decisión común para poder conectar JEV sin rediseñar el sistema.**
+
+Criterios:
+
+* Watchdog, gates y router consumen la misma interfaz de decisión.
+* Existe una implementación sin modelo (reglas deterministas) que funciona sin JEV.
+* Conectar el adaptador JEV no requiere cambiar a los consumidores de la interfaz.
+
 ---
 
 # EPIC-44 — Control de Ejecución y Ciclo Autónomo
@@ -2661,6 +2716,7 @@ El núcleo mínimo funcional debería permitir:
 25. RAG básico.
 26. Trazabilidad E2E.
 27. **[v1.1]** Skills ACM distribuidas por el servidor MCP propio.
+28. **[v1.2]** Segundo cerebro: contexto compacto con modelo local, medición de tokens ahorrados e interfaz de decisión común preparada para JEV.
 
 ---
 
@@ -2668,7 +2724,7 @@ El núcleo mínimo funcional debería permitir:
 
 Posteriormente:
 
-* JEV;
+* JEV (integración del adaptador Ollaya; la interfaz de decisión existe desde el MVP) **[v1.2]**;
 * sandbox avanzado;
 * gemelos sintéticos;
 * chaos testing;

@@ -1,8 +1,8 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v2.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v3.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
 
 # Épicas (backlog unificado)
 
-Total: **53** · Fuentes: A=`01_PRODUCTO/backlog_completo_v1.md`, B=`01_PRODUCTO/product_definition_v2.md` · Regla: ADR-010
+Total: **53** · Fuentes: A=`01_PRODUCTO/backlog_completo_v1.md`, B=`01_PRODUCTO/product_definition_v3.md` · Regla: ADR-010
 
 | ID | Título | Origen | Alcance | Estado | Features | Historias | CA |
 |----|--------|--------|---------|--------|----------|-----------|----|
@@ -40,7 +40,7 @@ Total: **53** · Fuentes: A=`01_PRODUCTO/backlog_completo_v1.md`, B=`01_PRODUCTO
 | EPIC-32 | NOTIFICACIONES Y EVENTOS DE NEGOCIO | A+B | POST-MVP | PLANNED | 5 | 10 | 6 |
 | EPIC-33 | CONFIGURACIÓN DEL SISTEMA | A | POST-MVP | PLANNED | 1 | 2 | 7 |
 | EPIC-34 | GESTIÓN DE RECURSOS DEL AGENTE | A | POST-MVP | PLANNED | 1 | 3 | 10 |
-| EPIC-35 | CONTEXTO DE EJECUCIÓN Y PROMPTS | A+B | MVP | PLANNED | 4 | 7 | 8 |
+| EPIC-35 | CONTEXTO DE EJECUCIÓN Y PROMPTS | A+B | MVP | PLANNED | 6 | 11 | 20 |
 | EPIC-36 | AGENT MEMORY Y APRENDIZAJE | A | POST-MVP | PLANNED | 1 | 2 | 7 |
 | EPIC-37 | GOBERNANZA DE CAMBIOS | A | POST-MVP | PLANNED | 1 | 3 | 11 |
 | EPIC-38 | GESTIÓN DE CONFIGURACIÓN DE MODELOS | A | POST-MVP | PLANNED | 1 | 2 | 7 |
@@ -52,7 +52,7 @@ Total: **53** · Fuentes: A=`01_PRODUCTO/backlog_completo_v1.md`, B=`01_PRODUCTO
 | EPIC-44 | SEGURIDAD OPERATIVA | A+B | MVP | PLANNED | 4 | 8 | 7 |
 | EPIC-45 | EXPERIENCIA DE SUPERVISIÓN | A+B | POST-MVP | PLANNED | 2 | 3 | 8 |
 | EPIC-46 | AUTOMATIZACIÓN DEL CICLO DE DESARROLLO | A+B | POST-MVP | PLANNED | 5 | 10 | 9 |
-| EPIC-47 | PREPARACIÓN PARA JEV / EVOLUCIÓN DEL ENTORNO DE EJECUCIÓN | A | POST-MVP | PLANNED | 1 | 2 | 7 |
+| EPIC-47 | PREPARACIÓN PARA JEV / EVOLUCIÓN DEL ENTORNO DE EJECUCIÓN | A | MVP | PLANNED | 1 | 2 | 7 |
 | EPIC-48 | CONTROL Y GOBERNANZA FINAL DEL SISTEMA | A+B | POST-MVP | PLANNED | 4 | 9 | 15 |
 | EPIC-49 | GESTIÓN DE DEUDA TÉCNICA | B (nueva, ADR-010) | POST-MVP | PLANNED | 3 | 7 | 0 |
 | EPIC-50 | MODELOS DE DECISIÓN JEV (OLLAYA) | B (nueva, ADR-010) | POST-MVP | PLANNED | 4 | 8 | 0 |

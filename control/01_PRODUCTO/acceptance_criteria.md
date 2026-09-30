@@ -5,8 +5,8 @@ Los criterios viven junto a cada historia en `user_stories.md` (generado).
 | Origen | Historias | Con criterios | Criterios |
 |--------|-----------|---------------|-----------|
 | A (`backlog_completo_v1.md`) | 132 | 132 | 515 (formato `CA-NN`, PASS/FAIL) |
-| B (`product_definition_v2.md`) | 356 | 5 (B:US-01.01, B:US-15.09..12) | 16 |
-| **Total** | **488** | **137** | **531** |
+| B (`product_definition_v3.md`) | 360 | 9 (B:US-01.01, B:US-15.09..12, B:US-43.06..09) | 28 |
+| **Total** | **492** | **141** | **543** |
 
 ## Definición de READY (fuente A, *Regla de aceptación del backlog*)
 Requisito → épica → feature → historia → actor → valor → precondiciones → flujo → alternativas → errores → reglas → validaciones → casos límite → criterios de aceptación → tareas → pruebas.

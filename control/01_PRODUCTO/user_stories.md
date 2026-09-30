@@ -1,8 +1,8 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v2.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v3.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
 
 # User Stories (backlog unificado)
 
-Total: **488** · Con criterios de aceptación: **137** · Sin criterios: **351** · Posibles solapamientos señalados: **37**
+Total: **492** · Con criterios de aceptación: **141** · Sin criterios: **351** · Posibles solapamientos señalados: **37**
 
 > READY exige la cadena completa de la *Regla de aceptación del backlog* (fuente A): precondiciones, flujo,
 > alternativas, errores, reglas, validaciones, casos límite, CA, tareas y pruebas. Ninguna historia la cumple
@@ -3000,6 +3000,46 @@ Total: **488** · Con criterios de aceptación: **137** · Sin criterios: **351*
 - Origen: B:US-43.05 · Épica: EPIC-35 · Feature: FEAT-35.04 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
 - Criterios de aceptación: MISSING
 
+### FEAT-35.05 — Contexto compacto y ahorro de tokens **[v1.2]** · origen B:FEAT-43.04
+
+#### US-35.08
+
+- Enunciado: Como agente IA quiero pedir a ACM un contexto compacto de una tarea, resumido con un modelo local, para gastar menos tokens propios.
+- Origen: B:US-43.06 · Épica: EPIC-35 · Feature: FEAT-35.05 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Criterios de aceptación:
+  - [ ] CA-01: La respuesta indica el tamaño estimado en tokens del contexto entregado y del contexto completo equivalente.
+  - [ ] CA-02: Cada fragmento resumido identifica sus fuentes.
+  - [ ] CA-03: Si no hay modelo local disponible, ACM devuelve el contexto estructurado sin resumir e indica que no se ha resumido.
+
+#### US-35.09
+
+- Enunciado: Como operador quiero conocer cuántos tokens ha ahorrado ACM a cada agente para medir el valor del segundo cerebro.
+- Origen: B:US-43.07 · Épica: EPIC-35 · Feature: FEAT-35.05 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Criterios de aceptación:
+  - [ ] CA-01: Cada entrega de contexto registra el tamaño entregado y la estimación del contexto completo equivalente.
+  - [ ] CA-02: El ahorro puede consultarse agregado por agente y por proyecto.
+  - [ ] CA-03: La estimación indica el método de cálculo utilizado.
+
+### FEAT-35.06 — Decisiones delegadas al motor de decisión **[v1.2]** · origen B:FEAT-43.05
+
+#### US-35.10
+
+- Enunciado: Como agente IA quiero delegar en ACM decisiones tipadas (clasificar, puntuar, sí/no) para no consumir mis tokens en ellas.
+- Origen: B:US-43.08 · Épica: EPIC-35 · Feature: FEAT-35.06 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Criterios de aceptación:
+  - [ ] CA-01: La respuesta es tipada e incluye la probabilidad o confianza de cada opción.
+  - [ ] CA-02: Queda registrado qué motor produjo la decisión.
+  - [ ] CA-03: Si el motor de decisión no está disponible, ACM devuelve un error explícito o usa el mecanismo alternativo configurado, indicándolo.
+
+#### US-35.11
+
+- Enunciado: Como arquitecto quiero que todos los componentes de ACM que toman decisiones lo hagan a través de una interfaz de decisión común para poder conectar JEV sin rediseñar el sistema.
+- Origen: B:US-43.09 · Épica: EPIC-35 · Feature: FEAT-35.06 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Criterios de aceptación:
+  - [ ] CA-01: Watchdog, gates y router consumen la misma interfaz de decisión.
+  - [ ] CA-02: Existe una implementación sin modelo (reglas deterministas) que funciona sin JEV.
+  - [ ] CA-03: Conectar el adaptador JEV no requiere cambiar a los consumidores de la interfaz.
+
 ## EPIC-36 — AGENT MEMORY Y APRENDIZAJE
 
 ### FEAT-36.01 — Lessons learned · origen A:FEAT-36.01
@@ -3615,7 +3655,7 @@ Total: **488** · Con criterios de aceptación: **137** · Sin criterios: **351*
 #### US-47.01 — Modelar recursos de ejecución abstractos
 
 - **Como** arquitectura **quiero** abstraer recursos de ejecución **para** poder evolucionar hacia un entorno JEV sin rediseñar todo el sistema.
-- Origen: A:US-47.01 · Épica: EPIC-47 · Feature: FEAT-47.01 · Alcance: POST-MVP · Prioridad: P3 · Estado: PLANNED
+- Origen: A:US-47.01 · Épica: EPIC-47 · Feature: FEAT-47.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
 - Criterios de aceptación:
   - [ ] CA-01: Las tareas no dependen innecesariamente de una implementación concreta.
   - [ ] CA-02: Los recursos de ejecución tienen interfaz abstracta.

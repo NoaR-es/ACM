@@ -21,7 +21,7 @@ Proyecto: **Agile Context Manager (ACM)** · Constitución: `/CLAUDE.md` · Actu
 | `10_IA/` | Qué IA utilizamos | OK — JEV definido (ADR-006); nada integrado |
 | `11_SEGURIDAD/` | Cómo se protege | N/A |
 | `12_TESTING/` | Cómo se prueba | OK — solo test de integridad del backlog |
-| `13_BUGS/` | Qué problemas existen | WARNING — 4 gaps abiertos, 3 conflictos de requisitos (CONF-001..003) |
+| `13_BUGS/` | Qué problemas existen | WARNING — 4 gaps abiertos; conflictos resueltos o aplazados (CONF-003) |
 | `14_DECISIONES/` | Por qué se tomaron decisiones | OK |
 | `15_CAMBIOS/` | Qué ha cambiado | OK |
 | `16_DOCUMENTACION/` | Cómo está documentado | N/A |
@@ -30,7 +30,7 @@ Proyecto: **Agile Context Manager (ACM)** · Constitución: `/CLAUDE.md` · Actu
 | `19_OBSERVABILIDAD/` | Cómo se observa | N/A |
 | `20_PERFORMANCE/` | Cómo rinde | N/A |
 | `21_COMPLIANCE/` | Cumple normativa | N/A |
-| `99_ARCHIVO/` | Documentación histórica, deprecada y supersedida | OK — 1 documento supersedido |
+| `99_ARCHIVO/` | Documentación histórica, deprecada y supersedida | OK — 2 documentos supersedidos |
 
 ## Transversales
 - `RELATIONSHIPS.md` — grafo de relaciones entre elementos.

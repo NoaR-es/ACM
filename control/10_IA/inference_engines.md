@@ -7,7 +7,7 @@ Modelos locales generativos. Detalle pendiente de SPIKE-005.
 
 ## Ollaya (decisional, "JEV") — EPIC-50, TECH-020, ADR-006
 
-> CONF-001: la fuente A (EPIC-47) usa "JEV" como entorno de ejecución futuro. Pendiente de confirmación del operador.
+> CONF-001 resuelto (ADR-012): JEV = estos modelos de decisión; se integrarán y el núcleo expone desde el MVP una interfaz de decisión común (US-35.11) en la que el adaptador Ollaya/TypeSafe se enchufa sin cambiar a los consumidores.
 
 | Campo | Valor |
 |-------|-------|
@@ -37,7 +37,8 @@ Respuesta: `answers`, `usage` (`output_tokens` siempre 0); en `/api/decide` adem
 Límites: 1–256 preguntas; 2–255 opciones por `choice`; 2–10 niveles por `score`; estado ≤ 65 536 tokens; cuerpo ≤ 8 MiB.
 Errores: `INVALID_REQUEST`/`INPUT_TOO_LONG`/`STATE_TRUNCATED`/`TOO_MANY_OPTIONS` (422), `MODEL_NOT_FOUND` (404), `QUEUE_FULL` (503 + `Retry-After`), `MODEL_LOAD_FAILED` (500).
 
-### Usos previstos en ACM (POST-MVP)
+### Usos previstos en ACM (segundo cerebro, ADR-012)
+- Decisiones delegadas por el agente externo vía MCP (US-35.10), para ahorrarle tokens.
 - Watchdog: ¿historia INVEST? (`noul` por criterio), ¿criterio verificable? (US-04.15), severidad de bug (`score`), ¿cambio viola ADR? (US-50.07).
 - Router: tarea generativa → Ollama, decisión → Ollaya (US-50.03).
 

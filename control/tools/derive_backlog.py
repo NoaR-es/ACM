@@ -7,7 +7,7 @@ Uso:
 
 Fuentes (no se editan a mano; ver ADR-004 y ADR-010):
     A: control/01_PRODUCTO/backlog_completo_v1.md   — columna vertebral (48 épicas con criterios CA-NN)
-    B: control/01_PRODUCTO/product_definition_v2.md — definición v1.1 (visión, 48 épicas propias, TECH, SPIKE)
+    B: control/01_PRODUCTO/product_definition_v3.md — definición v1.2 (visión, 48 épicas propias, TECH, SPIKE)
 
 Regla de unificación:
     - Épicas, features e historias de A conservan su ID.
@@ -31,7 +31,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = ROOT / "01_PRODUCTO"
 SRC_A_REL = "01_PRODUCTO/backlog_completo_v1.md"
-SRC_B_REL = "01_PRODUCTO/product_definition_v2.md"
+SRC_B_REL = "01_PRODUCTO/product_definition_v3.md"
 SRC_A = ROOT / SRC_A_REL
 SRC_B = ROOT / SRC_B_REL
 
@@ -94,7 +94,7 @@ FEATURE_MAP = {
     "FEAT-40.01": 15, "FEAT-40.02": 15, "FEAT-40.03": 46,
     "FEAT-41.01": 40, "FEAT-41.02": 40, "FEAT-41.03": 40,
     "FEAT-42.01": 48, "FEAT-42.02": 48, "FEAT-42.03": 48,
-    "FEAT-43.01": 35, "FEAT-43.02": 35, "FEAT-43.03": 35,
+    "FEAT-43.01": 35, "FEAT-43.02": 35, "FEAT-43.03": 35, "FEAT-43.04": 35, "FEAT-43.05": 35,
     "FEAT-44.01": 7, "FEAT-44.02": 7, "FEAT-44.03": 7,
     "FEAT-45.01": 32, "FEAT-45.02": 32,
     "FEAT-46.01": 17, "FEAT-46.02": 17, "FEAT-46.03": 17, "FEAT-46.04": 17,
@@ -103,10 +103,10 @@ FEATURE_MAP = {
 }
 
 # ---------------------------------------------------------------------------
-# Alcance MVP (ADR-010, supersede a ADR-009).
+# Alcance MVP (ADR-010, enmendado por ADR-012: EPIC-47/US-47.01 al MVP; FEAT-43.04/05 de B v1.2 en MVP).
 # Historias de A: MVP si su épica está en MVP_EPICS y no está en POST_MVP_A_STORIES.
 MVP_EPICS = {1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
-             24, 25, 26, 27, 28, 29, 30, 31, 35, 44}
+             24, 25, 26, 27, 28, 29, 30, 31, 35, 44, 47}
 POST_MVP_A_STORIES = {
     "US-12.03",  # recuperación automática tras fallo de agente (requiere orquestador interno)
     "US-13.01", "US-13.02",  # ejecuciones bloqueadas del orquestador interno
@@ -117,6 +117,7 @@ POST_MVP_A_STORIES = {
     "US-25.01", "US-25.03",  # generación/detección documental automática
     "US-28.03",  # informe de calidad
     "US-31.03",  # inspección de agentes internos
+    "US-47.02",  # entornos de ejecución (US-47.01, abstracción preparada para JEV, sí es MVP)
 }
 # Historias de B: conservan su clasificación de ADR-009.
 B_MVP_EPICS = {1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 13, 15, 16, 18, 19, 20, 21, 22, 23, 27, 43}

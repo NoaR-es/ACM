@@ -9,8 +9,8 @@ LOCK: none
 | ¿Sprint activo? | SPRINT-000 — Inception (`02_AGILE/sprint.md`) |
 | ¿Story activa? | Ninguna (trabajo de control) |
 | ¿Task activa? | Ninguna en curso. Siguiente: SPIKE-001 / SPIKE-002 (READY) |
-| ¿Qué se acaba de terminar? | TASK-000-09: backlog completo (fuente A) registrado y unificado con la definición v1.1 (53 épicas, 488 historias, 531 CA; MVP 228). Antes: TASK-000-01..08 |
-| ¿Qué está bloqueado? | TASK-000-11: conflictos CONF-001 (JEV en EPIC-47) y CONF-002 (fuente de verdad), IMP-003 — no bloquean los spikes |
+| ¿Qué se acaba de terminar? | TASK-000-11/12: conflictos resueltos (ADR-011: fuente de verdad; ADR-012: JEV preparado desde el inicio + segundo cerebro). Backlog: 53 épicas, 492 historias, 543 CA; MVP 233. |
+| ¿Qué está bloqueado? | Nada |
 | ¿Qué queda? | `03_ESTADO/pending_work.md` |
-| ¿Siguiente acción? | Agente: SPIKE-001 (SQLite/WAL en Python) + SPIKE-002 (servidor MCP propio multi-proyecto + extensión Skills con SDK Python, ver `06_API/mcp_server.md`) ; en paralelo TASK-000-10 (solapamientos) y refinar a READY EPIC-01/02/18 (GAP-001). Operador: CONF-001..003. |
+| ¿Siguiente acción? | Agente: SPIKE-001 (SQLite/WAL en Python) + SPIKE-002 (servidor MCP propio + extensión Skills, ver `06_API/mcp_server.md`); diseñar la interfaz de decisión (US-35.11) con el contrato de ADR-006; TASK-000-10 (solapamientos) y READY de EPIC-01/02/18. |
 | ¿Salud? | WARNING — ver `project_health.md` |
