@@ -2,11 +2,13 @@
 
 # User Stories (backlog unificado)
 
-Total: **492** · Con criterios de aceptación: **141** · Sin criterios: **351** · Posibles solapamientos señalados: **37**
+Total activas: **486** · Con criterios de aceptación: **141** · Sin criterios: **345** · Posibles solapamientos señalados: **35**
 
 > READY exige la cadena completa de la *Regla de aceptación del backlog* (fuente A): precondiciones, flujo,
-> alternativas, errores, reglas, validaciones, casos límite, CA, tareas y pruebas. Ninguna historia la cumple
-> todavía; todas permanecen en PLANNED (GAP-001).
+> alternativas, errores, reglas, validaciones, casos límite, CA, tareas y pruebas. Se documenta en
+> `refinements/US-NN.MM.md`; el script calcula READY cuando están todas las secciones y hay CA.
+
+READY: **0** · Fusionadas (CANCELLED): **0**
 
 ## EPIC-01 — GESTIÓN DEL PROYECTO Y CICLO DE VIDA
 
@@ -15,7 +17,9 @@ Total: **492** · Con criterios de aceptación: **141** · Sin criterios: **351*
 #### US-01.01 — Crear un proyecto
 
 - **Como** administrador del sistema **quiero** crear un nuevo proyecto **para** disponer de un espacio independiente de desarrollo autónomo.
-- Origen: A:US-01.01 · Épica: EPIC-01 · Feature: FEAT-01.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-01.01 · Épica: EPIC-01 · Feature: FEAT-01.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-001
+- Absorbe a: US-01.04
+- Refinamiento: `refinements/US-01.01.md` — completo (regla READY de A)
 - Precondiciones:
   - El usuario está autenticado.
   - Tiene permiso para crear proyectos.
@@ -41,11 +45,17 @@ Total: **492** · Con criterios de aceptación: **141** · Sin criterios: **351*
   - [ ] CA-03: Si ya existe un proyecto con el identificador correspondiente, entonces no se crea un duplicado.
   - [ ] CA-04: Si falla el almacenamiento, entonces el proyecto no queda registrado parcialmente y se muestra un error recuperable.
   - [ ] CA-05: Tras una creación correcta, el proyecto puede abrirse desde el listado.
+  - [ ] CA-01.04-01: El sistema permite introducir nombre e identificador. (de B:US-01.01, fusionada)
+  - [ ] CA-01.04-02: Se crea el contexto físico del proyecto. (de B:US-01.01, fusionada)
+  - [ ] CA-01.04-03: Se crea su base SQLite. (de B:US-01.01, fusionada)
+  - [ ] CA-01.04-04: El proyecto queda disponible para consulta. (de B:US-01.01, fusionada)
 
 #### US-01.02 — Abrir y seleccionar un proyecto
 
 - **Como** usuario autorizado **quiero** seleccionar un proyecto existente **para** trabajar sobre su contexto, memoria y backlog.
-- Origen: A:US-01.02 · Épica: EPIC-01 · Feature: FEAT-01.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-01.02 · Épica: EPIC-01 · Feature: FEAT-01.01 · Alcance: MVP · Prioridad: P1 · Estado: IMPLEMENTED · Sprint: SPRINT-001
+- Absorbe a: US-01.05
+- Refinamiento: `refinements/US-01.02.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Solo aparecen proyectos a los que el usuario tiene acceso.
   - [ ] CA-02: Al seleccionar un proyecto se carga su contexto.
@@ -56,7 +66,9 @@ Total: **492** · Con criterios de aceptación: **141** · Sin criterios: **351*
 #### US-01.03 — Configurar un proyecto
 
 - **Como** administrador del proyecto **quiero** modificar su configuración **para** adaptar el comportamiento del sistema.
-- Origen: A:US-01.03 · Épica: EPIC-01 · Feature: FEAT-01.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-01.03 · Épica: EPIC-01 · Feature: FEAT-01.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-001
+- Absorbe a: US-01.07, US-01.08
+- Refinamiento: `refinements/US-01.03.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Los parámetros modificables se muestran con su valor actual.
   - [ ] CA-02: Los valores inválidos son rechazados antes de guardar.
@@ -69,8 +81,8 @@ Total: **492** · Con criterios de aceptación: **141** · Sin criterios: **351*
 #### US-01.04
 
 - Enunciado: Como operador quiero crear un proyecto ACM para disponer de un espacio independiente de gestión.
-- Origen: B:US-01.01 · Épica: EPIC-01 · Feature: FEAT-01.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- ⚠ Posible solapamiento con US-01.01: revisar si es duplicado, detalle o historia distinta (GAP-006)
+- Origen: B:US-01.01 · Épica: EPIC-01 · Feature: FEAT-01.02 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-01.01 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación:
   - [ ] CA-01: El sistema permite introducir nombre e identificador.
   - [ ] CA-02: Se crea el contexto físico del proyecto.
@@ -80,28 +92,35 @@ Total: **492** · Con criterios de aceptación: **141** · Sin criterios: **351*
 #### US-01.05
 
 - Enunciado: Como operador quiero cambiar el proyecto activo para trabajar sobre distintos proyectos sin mezclar sus contextos.
-- Origen: B:US-01.02 · Épica: EPIC-01 · Feature: FEAT-01.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-01.02 · Épica: EPIC-01 · Feature: FEAT-01.02 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-01.02 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 #### US-01.06
 
 - Enunciado: Como agente quiero conocer el proyecto activo antes de ejecutar una herramienta para evitar modificar otro proyecto.
-- Origen: B:US-01.03 · Épica: EPIC-01 · Feature: FEAT-01.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-01.03 · Épica: EPIC-01 · Feature: FEAT-01.02 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-001
+- Refinamiento: `refinements/US-01.06.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Toda herramienta MCP que opera sobre un proyecto exige el parámetro `project_id`; sin él, la llamada se rechaza antes de ejecutar nada. (definido en refinamiento)
+  - [ ] CA-02: Toda respuesta de una herramienta de proyecto incluye el `project_id` sobre el que actuó. (definido en refinamiento)
+  - [ ] CA-03: Un `project_id` inexistente o no accesible produce un error explícito (`NOT_FOUND`) con el motivo legible por el agente, y no modifica ningún proyecto. (definido en refinamiento)
+  - [ ] CA-04: Las `instructions` del servidor MCP indican al agente que debe pasar `project_id` en cada llamada y cómo obtenerlo (`acm_project_list`). (definido en refinamiento)
 
 ### FEAT-01.03 — Configuración · origen B:FEAT-01.02
 
 #### US-01.07
 
 - Enunciado: Como operador quiero consultar la configuración actual del proyecto para conocer sus reglas operativas.
-- Origen: B:US-01.04 · Épica: EPIC-01 · Feature: FEAT-01.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-01.04 · Épica: EPIC-01 · Feature: FEAT-01.03 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-01.03 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 #### US-01.08
 
 - Enunciado: Como operador quiero modificar parámetros configurables para adaptar ACM al proyecto.
-- Origen: B:US-01.05 · Épica: EPIC-01 · Feature: FEAT-01.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- ⚠ Posible solapamiento con US-01.03: revisar si es duplicado, detalle o historia distinta (GAP-006)
+- Origen: B:US-01.05 · Épica: EPIC-01 · Feature: FEAT-01.03 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-01.03 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 #### US-01.09
@@ -1589,7 +1608,8 @@ Total: **492** · Con criterios de aceptación: **141** · Sin criterios: **351*
 #### US-18.01 — Persistir estado operativo
 
 - **Como** sistema **quiero** almacenar el estado estructurado del proyecto **para** poder recuperarlo después de reinicios.
-- Origen: A:US-18.01 · Épica: EPIC-18 · Feature: FEAT-18.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-18.01 · Épica: EPIC-18 · Feature: FEAT-18.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-001
+- Refinamiento: `refinements/US-18.01.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: El estado relevante queda almacenado.
   - [ ] CA-02: Un reinicio no elimina información persistente.
@@ -1599,7 +1619,8 @@ Total: **492** · Con criterios de aceptación: **141** · Sin criterios: **351*
 #### US-18.02 — Mantener transacciones consistentes
 
 - **Como** sistema **quiero** realizar operaciones relacionadas de forma transaccional **para** evitar estados parciales.
-- Origen: A:US-18.02 · Épica: EPIC-18 · Feature: FEAT-18.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-18.02 · Épica: EPIC-18 · Feature: FEAT-18.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-001
+- Refinamiento: `refinements/US-18.02.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Una operación completamente válida se confirma.
   - [ ] CA-02: Un fallo durante la transacción revierte los cambios afectados.
@@ -1608,7 +1629,8 @@ Total: **492** · Con criterios de aceptación: **141** · Sin criterios: **351*
 #### US-18.03 — Gestionar migraciones
 
 - **Como** desarrollador **quiero** versionar el esquema SQLite **para** actualizar la estructura sin perder datos.
-- Origen: A:US-18.03 · Épica: EPIC-18 · Feature: FEAT-18.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-18.03 · Épica: EPIC-18 · Feature: FEAT-18.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-001
+- Refinamiento: `refinements/US-18.03.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Cada migración tiene versión.
   - [ ] CA-02: Las migraciones se ejecutan en orden.
@@ -2102,6 +2124,7 @@ Total: **492** · Con criterios de aceptación: **141** · Sin criterios: **351*
 
 - **Como** sistema **quiero** aislar contexto, memoria y eventos **para** garantizar separación.
 - Origen: A:US-24.03 · Épica: EPIC-24 · Feature: FEAT-24.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Absorbe a: US-24.04, US-24.05
 - Criterios de aceptación:
   - [ ] CA-01: Un agente del proyecto A no recupera memoria privada del proyecto B.
   - [ ] CA-02: Los eventos de B no actualizan el cliente de A.
@@ -2112,13 +2135,15 @@ Total: **492** · Con criterios de aceptación: **141** · Sin criterios: **351*
 #### US-24.04
 
 - Enunciado: Como sistema quiero aislar los datos de cada proyecto.
-- Origen: B:US-26.01 · Épica: EPIC-24 · Feature: FEAT-24.02 · Alcance: POST-MVP · Prioridad: P3 · Estado: PLANNED
+- Origen: B:US-26.01 · Épica: EPIC-24 · Feature: FEAT-24.02 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-24.03 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 #### US-24.05
 
 - Enunciado: Como sistema quiero impedir que un agente consulte memoria de otro proyecto sin autorización.
-- Origen: B:US-26.02 · Épica: EPIC-24 · Feature: FEAT-24.02 · Alcance: POST-MVP · Prioridad: P3 · Estado: PLANNED
+- Origen: B:US-26.02 · Épica: EPIC-24 · Feature: FEAT-24.02 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-24.03 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 ## EPIC-25 — DOCUMENTACIÓN VIVA

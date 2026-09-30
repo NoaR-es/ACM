@@ -1,6 +1,6 @@
 # Dependencias
 
-Estado: versiones **validadas en spikes** (2026-09-30); aún no hay `pyproject.toml` de producto. Se fijarán al crear el esqueleto.
+Estado: versiones fijadas en `/pyproject.toml` (SPRINT-001, 2026-09-30).
 
 | Dependencia | Versión probada | Uso | Decisión | Validada en |
 |-------------|-----------------|-----|----------|-------------|
@@ -13,6 +13,8 @@ Estado: versiones **validadas en spikes** (2026-09-30); aún no hay `pyproject.t
 | websockets | 17.1 | Soporte WebSocket de uvicorn y cliente de tests | ADR-014 | SPIKE-002 |
 | pydantic | 2.13.5 | Modelos (dependencia del SDK) | — | SPIKE-002 |
 | anyio | 4.15.1 | Concurrencia (dependencia del SDK; `to_thread` para SQLite) | ADR-013 | SPIKE-002 (sin medir con SQLite) |
-| FastAPI | — (no probada) | API HTTP con OpenAPI | ADR-014 | Pendiente (esqueleto) |
+| FastAPI | 0.142.2 | API HTTP con OpenAPI; monta el MCP en `/mcp` | ADR-014 | SPRINT-001 (`test_app.py`) |
+| pytest | 9.1.1 | Tests | — | SPRINT-001 |
+| ruff | 0.16.9 | Lint y formato | — | SPRINT-001 |
 
 Frontend: pendiente (TASK-000-07, GAP-002).

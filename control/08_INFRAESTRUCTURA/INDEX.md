@@ -2,7 +2,7 @@
 
 **Responde a:** Cómo se ejecuta
 
-**Salud:** N/A
+**Salud:** OK — ejecución local documentada; sin despliegue ni contenedores
 
 | Documento | Estado |
 |-----------|--------|

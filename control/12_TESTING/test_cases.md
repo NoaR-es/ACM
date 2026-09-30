@@ -7,3 +7,4 @@
 | TEST-SPIKE-002a | Integración (SDK en proceso + stdio) | Instructions, extensión Skills, `skills/list`/`get`, digests, error -32602, herramientas de respaldo, stdio | `spikes/.venv/bin/python spikes/spike_002_mcp/test_proto.py` | SPIKE-002, ADR-008, ADR-014 |
 | TEST-SPIKE-002b | Integración (HTTP real) | MCP + API + WebSocket en un proceso; evento MCP → WebSocket | `spikes/.venv/bin/python spikes/spike_002_mcp/test_asgi_topology.py` | SPIKE-002, ADR-014 |
 | TEST-SPIKE-002c | Integración (HTTP real) | Aislamiento: estado de sesión frente a `project_id` explícito | `spikes/.venv/bin/python spikes/spike_002_mcp/test_session_isolation.py` | SPIKE-002, ADR-014 |
+| TEST-PROD-S01 | Unit/Integración/Proceso | Suite de producto de SPRINT-001: 50 tests, un test por CA de US-01.01..03, 01.06, 18.01..03 | `.venv/bin/pytest -q` | SPRINT-001 (matriz en `sprint_001_evidence.md`) |

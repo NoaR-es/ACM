@@ -10,14 +10,14 @@
 |----|--------|-------------|--------|
 | TECH-001 | Motor de eventos interno | Implementar un sistema centralizado de eventos para propagar cambios ACM. | PLANNED |
 | TECH-002 | Bus WebSocket | Implementar distribución de eventos a clientes conectados. | PLANNED |
-| TECH-003 | Gestión WAL SQLite | Configurar y validar el modo de concurrencia apropiado. | PLANNED |
-| TECH-004 | Sistema de transacciones | Implementar transacciones seguras para operaciones ACM. | PLANNED |
+| TECH-003 | Gestión WAL SQLite | Configurar y validar el modo de concurrencia apropiado. | VERIFIED |
+| TECH-004 | Sistema de transacciones | Implementar transacciones seguras para operaciones ACM. | VERIFIED |
 | TECH-005 | Sistema de locking | Implementar control optimista de recursos. | PLANNED |
 | TECH-006 | Índices SQLite | Diseñar índices sobre las relaciones críticas. | PLANNED |
-| TECH-007 | Migraciones de esquema | Implementar evolución versionada del esquema. | PLANNED |
-| TECH-008 | Integridad referencial | Activar y verificar claves foráneas. | PLANNED |
+| TECH-007 | Migraciones de esquema | Implementar evolución versionada del esquema. | VERIFIED |
+| TECH-008 | Integridad referencial | Activar y verificar claves foráneas. | VERIFIED |
 | TECH-009 | Triggers ACM | Implementar los triggers necesarios para automatización de estados. | PLANNED |
-| TECH-010 | API MCP | Implementar exposición de herramientas. | PLANNED |
+| TECH-010 | API MCP | Implementar exposición de herramientas. | IN_PROGRESS |
 | TECH-011 | Registro de herramientas | Implementar descubrimiento y metadatos de herramientas. | PLANNED |
 | TECH-012 | Sistema de autenticación | Implementar validación de credenciales. | PLANNED |
 | TECH-013 | RBAC | Implementar autorización por roles. | PLANNED |
@@ -36,7 +36,7 @@
 | TECH-026 | Graph engine | Implementar representación de dependencias. | PLANNED |
 | TECH-027 | Telemetry engine | Implementar métricas y eventos. | PLANNED |
 | TECH-028 | Notification engine | Implementar Webhooks y alertas. | PLANNED |
-| TECH-029 | CLI | Implementar interfaz administrativa. | PLANNED |
+| TECH-029 | CLI | Implementar interfaz administrativa. | IN_PROGRESS |
 | TECH-030 | Plugin system | Implementar extensión segura del servidor. | PLANNED |
 
 ## Spikes

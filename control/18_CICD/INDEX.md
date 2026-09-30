@@ -2,7 +2,7 @@
 
 **Responde a:** Cómo se despliega
 
-**Salud:** MISSING — no existe pipeline
+**Salud:** WARNING — CI definida; primera ejecución remota pendiente de comprobar; sin CD
 
 | Documento | Estado |
 |-----------|--------|

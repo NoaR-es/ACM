@@ -2,14 +2,14 @@
 
 **Responde a:** Cómo funcionan las APIs
 
-**Salud:** OK — servidor MCP diseñado y prototipado (SPIKE-002, ADR-014); nada implementado en producto
+**Salud:** OK — servidor MCP con herramientas de proyecto implementado (SPRINT-001); Skills pendiente
 
 | Documento | Estado |
 |-----------|--------|
 | `mcp_server.md` | ACTIVE (PLANNED; prototipo validado) |
 | `api_overview.md` | ACTIVE |
 | `rest_api.md` | N/A (plantilla) |
-| `endpoints.md` | N/A (plantilla) |
+| `endpoints.md` | ACTIVE |
 | `authentication.md` | N/A (plantilla) |
 | `authorization.md` | N/A (plantilla) |
 | `schemas.md` | N/A (plantilla) |

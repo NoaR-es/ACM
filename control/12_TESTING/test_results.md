@@ -13,3 +13,6 @@
 | 2026-09-30 | TEST-SPIKE-002b | PASS 4/4 | — |
 | 2026-09-30 | TEST-SPIKE-002c | PASS 3/3 | D1 sin estado entre llamadas; D2 aísla |
 | 2026-09-30 | TEST-CTRL-001 (con `item_status.json`) | PASS | Prueba negativa: estado `FINISHED` e ID inexistente → exit 2 |
+| 2026-09-30 | TEST-PROD-S01 | PASS 50/50 | `pytest -q` en 4,9 s; `ruff check` limpio |
+| 2026-09-30 | Mutación manual (6 invariantes) | 6/6 detectadas | BEGIN DEFERRED, foreign_keys=OFF, sin limpieza atómica, sin validar rango, error no traducido a ToolError, migración sin re-comprobar |
+| 2026-09-30 | TEST-CTRL-001 (refs a tests) | PASS | 41 referencias válidas; prueba negativa con un test inventado → exit 2 |

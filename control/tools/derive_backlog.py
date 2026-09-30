@@ -40,6 +40,12 @@ STATUS_FILE = Path(__file__).resolve().parent / "item_status.json"
 ALLOWED_STATUS = {"PLANNED", "READY", "IN_PROGRESS", "BLOCKED", "IMPLEMENTED", "TESTING", "VERIFIED", "FAILED",
                   "DEPRECATED", "CANCELLED", "DONE"}
 STATUS: dict[str, str] = {}
+# Fusión de historias duplicadas (GAP-006): {"US-B": {"into": "US-A", "reason": "..."}}.
+DEDUPE_FILE = Path(__file__).resolve().parent / "dedupe.json"
+# Refinamientos por historia: control/01_PRODUCTO/refinements/US-NN.MM.md (regla READY de la fuente A).
+REFINEMENTS_DIR = OUT_DIR / "refinements"
+READY_SECTIONS = ("Precondiciones", "Flujo", "Alternativas", "Errores", "Reglas", "Validaciones",
+                  "Casos límite", "Tareas", "Pruebas")
 
 # ---------------------------------------------------------------------------
 # Épicas nuevas creadas por la unificación (ADR-010): contenido de B sin equivalente en A.
@@ -149,6 +155,11 @@ class Story:
     origin: str = ""
     scope: str = ""
     dup: str = ""
+    merged_into: str = ""                                   # fusionada en otra historia (dedupe.json)
+    merged_from: list[str] = field(default_factory=list)
+    refinement: dict[str, list[str]] = field(default_factory=dict)
+    refinement_file: str = ""
+    sprint: str = ""
 
 
 @dataclass
@@ -374,6 +385,95 @@ def unify(a_epics: list[Epic], b_epics: list[Epic]):
     return ordered, mapping, errors
 
 
+# ------------------------------ Fusión y refinamiento ----------------------
+def apply_dedupe(epics: list[Epic], errors: list[str]) -> None:
+    by_id = {s.id: s for e in epics for s in stories_of(e)}
+    for src_id, spec in json.loads(DEDUPE_FILE.read_text(encoding="utf-8")).items():
+        target_id = spec.get("into", "")
+        src, dst = by_id.get(src_id), by_id.get(target_id)
+        if src is None or dst is None:
+            errors.append(f"dedupe.json: {src_id} → {target_id}: historia inexistente")
+            continue
+        if src_id[:5] != target_id[:5]:
+            errors.append(f"dedupe.json: {src_id} y {target_id} deben pertenecer a la misma épica")
+        if dst.merged_into or src is dst:
+            errors.append(f"dedupe.json: destino inválido para {src_id}")
+            continue
+        if not spec.get("reason"):
+            errors.append(f"dedupe.json: {src_id} sin 'reason'")
+        src.merged_into, src.dup = target_id, ""
+        src.scope = "CANCELLED"
+        dst.merged_from.append(src_id)
+        for i, c in enumerate(src.criteria, 1):
+            dst.criteria.append(f"CA-{src_id[3:]}-{i:02d}: {c.split(': ', 1)[-1]} (de {src.origin}, fusionada)")
+        if dst.dup == src_id:
+            dst.dup = ""
+
+
+def load_refinements(epics: list[Epic], errors: list[str]) -> None:
+    by_id = {s.id: s for e in epics for s in stories_of(e)}
+    for path in sorted(REFINEMENTS_DIR.glob("US-*.md")) if REFINEMENTS_DIR.exists() else []:
+        s = by_id.get(path.stem)
+        if s is None or s.merged_into:
+            errors.append(f"refinements/{path.name}: historia inexistente o fusionada")
+            continue
+        current = ""
+        for raw in path.read_text(encoding="utf-8").splitlines():
+            if raw.startswith("## "):
+                current = raw[3:].strip()
+                s.refinement.setdefault(current, [])
+            elif raw.startswith("Sprint:"):
+                s.sprint = raw.split(":", 1)[1].strip()
+            elif current and raw.strip():
+                s.refinement[current].append(raw.rstrip())
+        s.refinement_file = f"refinements/{path.name}"
+        extra_ca = s.refinement.pop("Criterios de aceptación", [])
+        if extra_ca:
+            if s.criteria:
+                errors.append(f"refinements/{path.name}: la historia ya tiene criterios en su fuente; no se pueden redefinir")
+            for ln in extra_ca:
+                m = re.match(r"^- (CA-\d{2}): (.+)$", ln)
+                if not m:
+                    errors.append(f"refinements/{path.name}: criterio mal formado: {ln!r}")
+                    continue
+                s.criteria.append(f"{m.group(1)}: {m.group(2)} (definido en refinamiento)")
+        unknown = set(s.refinement) - set(READY_SECTIONS)
+        if unknown:
+            errors.append(f"refinements/{path.name}: secciones desconocidas {sorted(unknown)}")
+
+
+REPO_ROOT = ROOT.parent
+TEST_REF = re.compile(r"`(tests/[\w/]+\.py)::(\w+)`")
+
+
+def check_test_refs(epics: list[Epic], errors: list[str]) -> int:
+    """Trazabilidad historia → test: cada test citado en "Pruebas" debe existir en el repositorio."""
+    count = 0
+    for s in (s for e in epics for s in stories_of(e) if s.refinement_file):
+        for ln in s.refinement.get("Pruebas", []):
+            for rel, fn in TEST_REF.findall(ln):
+                path = REPO_ROOT / rel
+                count += 1
+                if not path.is_file() or not re.search(rf"^(async )?def {fn}\(", path.read_text(encoding="utf-8"), re.M):
+                    errors.append(f"{s.refinement_file}: test inexistente {rel}::{fn}")
+    return count
+
+
+def missing_sections(s: Story) -> list[str]:
+    return [sec for sec in READY_SECTIONS if not s.refinement.get(sec)]
+
+
+def status_of(s: Story) -> str:
+    """Estado efectivo: explícito en item_status.json > fusionada (CANCELLED) > READY calculado > PLANNED."""
+    if s.id in STATUS:
+        return STATUS[s.id]
+    if s.merged_into:
+        return "CANCELLED"
+    if s.refinement_file and s.criteria and not missing_sections(s):
+        return "READY"
+    return "PLANNED"
+
+
 # ------------------------------ Render -------------------------------------
 HEADER = (f"<!-- GENERADO por control/tools/derive_backlog.py desde {SRC_A_REL} (A) y {SRC_B_REL} (B). "
           "No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->\n\n")
@@ -381,6 +481,11 @@ HEADER = (f"<!-- GENERADO por control/tools/derive_backlog.py desde {SRC_A_REL} 
 
 def stories_of(e: Epic) -> list[Story]:
     return [s for f in e.features for s in f.stories]
+
+
+def active(stories: list[Story]) -> list[Story]:
+    """Historias vivas: excluye las fusionadas por duplicado (sus criterios ya están en la historia destino)."""
+    return [s for s in stories if not s.merged_into]
 
 
 def epic_scope(e: Epic) -> str:
@@ -403,7 +508,7 @@ def render_epics(epics: list[Epic]) -> str:
            "| ID | Título | Origen | Alcance | Estado | Features | Historias | CA |\n",
            "|----|--------|--------|---------|--------|----------|-----------|----|\n"]
     for e in epics:
-        st = stories_of(e)
+        st = active(stories_of(e))
         out.append(f"| {e.id} | {e.title} | {origin_label(e)} | {epic_scope(e)} | PLANNED | {len(e.features)} | "
                    f"{len(st)} | {sum(len(s.criteria) for s in st)} |\n")
     out.append("\n## Objetivos declarados\n\n")
@@ -428,14 +533,16 @@ def render_features(epics: list[Epic]) -> str:
 
 
 def render_stories(epics: list[Epic]) -> str:
-    st = [s for e in epics for s in stories_of(e)]
+    st = active([s for e in epics for s in stories_of(e)])
     with_ca = sum(1 for s in st if s.criteria)
     out = [HEADER, "# User Stories (backlog unificado)\n\n",
-           f"Total: **{len(st)}** · Con criterios de aceptación: **{with_ca}** · Sin criterios: **{len(st) - with_ca}** · "
+           f"Total activas: **{len(st)}** · Con criterios de aceptación: **{with_ca}** · Sin criterios: **{len(st) - with_ca}** · "
            f"Posibles solapamientos señalados: **{sum(1 for s in st if s.dup)}**\n\n",
            "> READY exige la cadena completa de la *Regla de aceptación del backlog* (fuente A): precondiciones, flujo,\n"
-           "> alternativas, errores, reglas, validaciones, casos límite, CA, tareas y pruebas. Ninguna historia la cumple\n"
-           "> todavía; todas permanecen en PLANNED (GAP-001).\n\n"]
+           "> alternativas, errores, reglas, validaciones, casos límite, CA, tareas y pruebas. Se documenta en\n"
+           "> `refinements/US-NN.MM.md`; el script calcula READY cuando están todas las secciones y hay CA.\n\n"
+           f"READY: **{sum(1 for s in st if status_of(s) == 'READY')}** · Fusionadas (CANCELLED): "
+           f"**{sum(1 for s in st if s.merged_into)}**\n\n"]
     for e in epics:
         out.append(f"## {e.id} — {e.title}\n\n")
         for f in e.features:
@@ -447,7 +554,16 @@ def render_stories(epics: list[Epic]) -> str:
                 else:
                     out.append(f"- Enunciado: {s.text}\n")
                 out.append(f"- Origen: {s.origin} · Épica: {e.id} · Feature: {f.id} · Alcance: {s.scope} · "
-                           f"Prioridad: {'P1' if s.scope == 'MVP' else 'P3'} · Estado: {STATUS.get(s.id, 'PLANNED')}\n")
+                           f"Prioridad: {'P1' if s.scope == 'MVP' else ('P3' if s.scope == 'POST-MVP' else '—')} · "
+                           f"Estado: {status_of(s)}{' · Sprint: ' + s.sprint if s.sprint else ''}\n")
+                if s.merged_into:
+                    out.append(f"- Fusionada en {s.merged_into} (duplicado; sus criterios se añadieron allí, GAP-006)\n")
+                if s.merged_from:
+                    out.append(f"- Absorbe a: {', '.join(s.merged_from)}\n")
+                if s.refinement_file:
+                    miss = missing_sections(s)
+                    out.append(f"- Refinamiento: `{s.refinement_file}` — "
+                               + ("completo (regla READY de A)" if not miss else f"faltan: {', '.join(miss)}") + "\n")
                 if s.dup:
                     out.append(f"- ⚠ Posible solapamiento con {s.dup}: revisar si es duplicado, detalle o historia distinta (GAP-006)\n")
                 for name, lines in s.sections.items():
@@ -463,7 +579,8 @@ def render_stories(epics: list[Epic]) -> str:
 
 
 def render_backlog(epics: list[Epic], techs: list[Item], spikes: list[Item]) -> str:
-    st = [s for e in epics for s in stories_of(e)]
+    all_st = [s for e in epics for s in stories_of(e)]
+    st = active(all_st)
     feats = [f for e in epics for f in e.features]
 
     def cnt(items, pred):
@@ -477,14 +594,17 @@ def render_backlog(epics: list[Epic], techs: list[Item], spikes: list[Item]) -> 
            f"| FEATURE | {len(feats)} | {cnt(feats, lambda f: feat_scope(f) == 'MVP')} | "
            f"{cnt(feats, lambda f: feat_scope(f) != 'MVP')} | {cnt(feats, lambda f: f.origin.startswith('A:'))} | "
            f"{cnt(feats, lambda f: f.origin.startswith('B:'))} |\n",
-           f"| USER_STORY | {len(st)} | {cnt(st, lambda s: s.scope == 'MVP')} | {cnt(st, lambda s: s.scope != 'MVP')} | "
+           f"| USER_STORY (activas) | {len(st)} | {cnt(st, lambda s: s.scope == 'MVP')} | "
+           f"{cnt(st, lambda s: s.scope == 'POST-MVP')} | "
            f"{cnt(st, lambda s: s.origin.startswith('A:'))} | {cnt(st, lambda s: s.origin.startswith('B:'))} |\n",
            f"| Criterios de aceptación | {sum(len(s.criteria) for s in st)} | — | — | "
            f"{sum(len(s.criteria) for s in st if s.origin.startswith('A:'))} | "
            f"{sum(len(s.criteria) for s in st if s.origin.startswith('B:'))} |\n",
            f"| TECH (historia técnica, B) | {len(techs)} | — | — | — | {len(techs)} |\n",
            f"| SPIKE (B) | {len(spikes)} | — | — | — | {len(spikes)} |\n\n",
-           f"Posibles solapamientos B↔A señalados (heurística Jaccard ≥ {DUP_THRESHOLD}, GAP-006): **{cnt(st, lambda s: bool(s.dup))}**.\n",
+           f"Posibles solapamientos B↔A pendientes (heurística Jaccard ≥ {DUP_THRESHOLD}, GAP-006): **{cnt(st, lambda s: bool(s.dup))}** · "
+           f"Historias fusionadas por duplicado (`tools/dedupe.json`): **{cnt(all_st, lambda s: bool(s.merged_into))}** · "
+           f"READY: **{cnt(st, lambda s: status_of(s) == 'READY')}**.\n",
            "Correspondencia de IDs de la definición v1.1: `id_mapping.md`. Alcance MVP: ADR-010.\n\n",
            "## Historias MVP por épica\n\n"]
     for e in epics:
@@ -525,6 +645,9 @@ def main() -> int:
     a_epics = parse_a(SRC_A.read_text(encoding="utf-8"))
     b_epics, techs, spikes = parse_b(SRC_B.read_text(encoding="utf-8"))
     epics, mapping, errors = unify(a_epics, b_epics)
+    apply_dedupe(epics, errors)
+    load_refinements(epics, errors)
+    test_refs = check_test_refs(epics, errors)
     STATUS.update(json.loads(STATUS_FILE.read_text(encoding="utf-8")))
     known = {s.id for e in epics for s in stories_of(e)} | {t.id for t in techs} | {s.id for s in spikes}
     for ident, st in STATUS.items():
@@ -553,11 +676,14 @@ def main() -> int:
                 stale.append(name)
         else:
             path.write_text(content, encoding="utf-8")
-    st = [s for e in epics for s in stories_of(e)]
+    all_st = [s for e in epics for s in stories_of(e)]
+    st = active(all_st)
     print(f"epics={len(epics)} features={sum(len(e.features) for e in epics)} stories={len(st)} "
           f"(A={sum(1 for s in st if s.origin.startswith('A:'))} B={sum(1 for s in st if s.origin.startswith('B:'))}) "
           f"criteria={sum(len(s.criteria) for s in st)} mvp={sum(1 for s in st if s.scope == 'MVP')} "
-          f"overlaps={sum(1 for s in st if s.dup)} tech={len(techs)} spikes={len(spikes)}")
+          f"overlaps={sum(1 for s in st if s.dup)} merged={sum(1 for s in all_st if s.merged_into)} "
+          f"ready={sum(1 for s in st if status_of(s) == 'READY')} test_refs={test_refs} tech={len(techs)} "
+          f"spikes={len(spikes)}")
     if stale:
         print("DESINCRONIZADOS: " + ", ".join(stale), file=sys.stderr)
         return 1

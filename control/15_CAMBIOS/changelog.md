@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.1.0.dev0] — 2026-09-30 — SPRINT-001 — primer código de producto
+- **Cambio:**
+  - Paquete `acm`:
+    - SQLite según ADR-013 (`db/`);
+    - `ProjectService` para crear, listar, abrir y configurar proyectos;
+    - servidor MCP con 6 herramientas y errores explícitos;
+    - FastAPI con `/api/health` y `/mcp`;
+    - CLI `serve`/`mcp-stdio`.
+  - 50 tests y CI de GitHub Actions.
+  - En `control/`:
+    - refinamientos READY de 7 historias;
+    - 6 fusiones de duplicados;
+    - el script calcula READY y verifica que existen los tests citados;
+    - SPRINT-000 cerrado y SPRINT-001 abierto;
+    - VULN-001 registrada y GAP-007 resuelto en ACM.
+- **Stories:**
+  - VERIFIED: US-01.01, US-01.03, US-01.06, US-18.01, US-18.02, US-18.03;
+  - IMPLEMENTED: US-01.02 (falta la UI).
+- **Archivos:** `pyproject.toml`, `README.md`, `src/acm/**`, `tests/**`, `.github/workflows/ci.yml`, `.gitignore`, `control/**`.
+- **Tests:** 50/50 PASS; 6/6 mutaciones detectadas.
+- **Breaking change:** no.
+
 ## [0.0.7] — 2026-09-30 — SPRINT-000
 - **Cambio:**
   - SPIKE-001: banco de concurrencia SQLite y resultados.

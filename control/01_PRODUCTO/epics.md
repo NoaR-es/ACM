@@ -6,7 +6,7 @@ Total: **53** · Fuentes: A=`01_PRODUCTO/backlog_completo_v1.md`, B=`01_PRODUCTO
 
 | ID | Título | Origen | Alcance | Estado | Features | Historias | CA |
 |----|--------|--------|---------|--------|----------|-----------|----|
-| EPIC-01 | GESTIÓN DEL PROYECTO Y CICLO DE VIDA | A+B | MVP | PLANNED | 4 | 11 | 19 |
+| EPIC-01 | GESTIÓN DEL PROYECTO Y CICLO DE VIDA | A+B | MVP | PLANNED | 4 | 7 | 23 |
 | EPIC-02 | MEMORIA `CONTROL/` Y FUENTE DE VERDAD | A | MVP | PLANNED | 1 | 3 | 13 |
 | EPIC-03 | PRODUCT OWNER Y DESCUBRIMIENTO DE REQUISITOS | A+B | MVP | PLANNED | 3 | 10 | 14 |
 | EPIC-04 | PRODUCT BACKLOG Y ÉPICAS | A+B | MVP | PLANNED | 5 | 16 | 14 |
@@ -29,7 +29,7 @@ Total: **53** · Fuentes: A=`01_PRODUCTO/backlog_completo_v1.md`, B=`01_PRODUCTO
 | EPIC-21 | WEBSOCKETS Y EVENT BUS | A+B | MVP | PLANNED | 4 | 11 | 10 |
 | EPIC-22 | MODELOS IA LOCALES Y OLLAMA | A+B | MVP | PLANNED | 4 | 9 | 11 |
 | EPIC-23 | GOBERNANZA DE INFERENCIA | A+B | POST-MVP | PLANNED | 3 | 8 | 11 |
-| EPIC-24 | GESTIÓN MULTIPROYECTO | A+B | MVP | PLANNED | 2 | 5 | 10 |
+| EPIC-24 | GESTIÓN MULTIPROYECTO | A+B | MVP | PLANNED | 2 | 3 | 10 |
 | EPIC-25 | DOCUMENTACIÓN VIVA | A+B | MVP | PLANNED | 9 | 24 | 9 |
 | EPIC-26 | TELEMETRÍA Y OBSERVABILIDAD | A+B | MVP | PLANNED | 3 | 10 | 13 |
 | EPIC-27 | TRAZABILIDAD END-TO-END | A+B | MVP | PLANNED | 6 | 17 | 11 |

@@ -15,3 +15,4 @@
 | 2026-09-30 | SPIKE-001 | Concurrencia SQLite medida (E1–E5) | `20_PERFORMANCE/benchmarks.md`, ADR-013 | VERIFIED |
 | 2026-09-30 | SPIKE-002 | Servidor MCP propio prototipado: extensión Skills, topología de un proceso, aislamiento por `project_id` | `06_API/mcp_server.md`, ADR-014, 18/18 pruebas PASS | VERIFIED |
 | 2026-09-30 | TASK-000-13 | Interfaces de inferencia DecisionEngine/GenerationEngine, preparadas para JEV | `04_ARQUITECTURA/inference_ports.md`, ADR-015 | VERIFIED |
+| 2026-09-30 | SPRINT-001 | Esqueleto Python de ACM y núcleo de proyectos: US-01.01, 01.03, 01.06, 18.01, 18.02, 18.03 (VERIFIED), US-01.02 (IMPLEMENTED) | 50 tests PASS, `12_TESTING/sprint_001_evidence.md` | VERIFIED |

@@ -6,17 +6,17 @@
 |------|-------|-----|----------|----------|----------|
 | EPIC | 53 | 30 | 23 | 48 | 5 nuevas |
 | FEATURE | 201 | 86 | 115 | 48 | 153 |
-| USER_STORY | 492 | 233 | 259 | 132 | 360 |
-| Criterios de aceptación | 543 | — | — | 515 | 28 |
+| USER_STORY (activas) | 486 | 229 | 257 | 132 | 354 |
+| Criterios de aceptación | 547 | — | — | 519 | 28 |
 | TECH (historia técnica, B) | 30 | — | — | — | 30 |
 | SPIKE (B) | 12 | — | — | — | 12 |
 
-Posibles solapamientos B↔A señalados (heurística Jaccard ≥ 0.2, GAP-006): **37**.
+Posibles solapamientos B↔A pendientes (heurística Jaccard ≥ 0.2, GAP-006): **35** · Historias fusionadas por duplicado (`tools/dedupe.json`): **6** · READY: **0**.
 Correspondencia de IDs de la definición v1.1: `id_mapping.md`. Alcance MVP: ADR-010.
 
 ## Historias MVP por épica
 
-- **EPIC-01** (11): US-01.01, US-01.02, US-01.03, US-01.04, US-01.05, US-01.06, US-01.07, US-01.08, US-01.09, US-01.10, US-01.11
+- **EPIC-01** (7): US-01.01, US-01.02, US-01.03, US-01.06, US-01.09, US-01.10, US-01.11
 - **EPIC-02** (3): US-02.01, US-02.02, US-02.03
 - **EPIC-03** (3): US-03.01, US-03.02, US-03.03
 - **EPIC-04** (13): US-04.01, US-04.02, US-04.03, US-04.04, US-04.05, US-04.06, US-04.07, US-04.08, US-04.09, US-04.10, US-04.11, US-04.12, US-04.13

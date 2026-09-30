@@ -2,12 +2,12 @@
 
 **Responde a:** Cómo se almacenan los datos
 
-**Salud:** N/A — modelo conceptual en data_architecture.md
+**Salud:** OK — bases global y de proyecto v1 implementadas (`databases.md`); resto del modelo pendiente (GAP-005)
 
 | Documento | Estado |
 |-----------|--------|
 | `data_architecture.md` | ACTIVE |
-| `databases.md` | N/A (plantilla) |
+| `databases.md` | ACTIVE |
 | `data_flows.md` | N/A (plantilla) |
 | `relational/` | directorio vacío |
 | `nosql/` | directorio vacío |

@@ -1,37 +1,46 @@
 # Sprint activo
 
-## SPRINT-000 — Inception
+## SPRINT-001 — Esqueleto del backend y núcleo de proyecto
 
 | Campo | Valor |
 |-------|-------|
-| Sprint ID | SPRINT-000 |
-| Objetivo | Establecer el sistema de control y la línea base del backlog de ACM |
+| Sprint ID | SPRINT-001 |
+| Objetivo | Primer código de producto: esqueleto Python de ACM y núcleo de proyectos sobre SQLite, accesible por MCP |
 | Inicio | 2026-09-30 |
-| Fin | Al completar sus tareas (sprint de arranque, sin timebox) |
-| Sprint Goal | Que cualquier agente pueda reconstruir qué es ACM, qué hay que hacer y qué decisiones faltan leyendo `control/` |
-| Historias | Ninguna de producto (trabajo de tipo DOCUMENTATION/INFRASTRUCTURE) |
-| Riesgos | Decisiones de stack no tomadas; historias sin criterios |
-| Impedimentos | Ninguno abierto (IMP-001, 002, 003 cerrados) |
+| Fin | Al cumplir el Sprint Goal (sin timebox; desarrollo por agente) |
+| Sprint Goal | **Un agente IA puede crear, listar, abrir y configurar proyectos ACM, cada uno con su propia base SQLite, a través del servidor MCP de ACM, con cada criterio de aceptación verificado por tests automáticos.** |
+| Historias | US-01.01, US-01.02, US-01.03, US-01.06, US-18.01, US-18.02, US-18.03 (READY; refinamientos en `01_PRODUCTO/refinements/`) |
+| Dependencias | ADR-011, ADR-013, ADR-014 |
+| Riesgos | Sin autenticación hasta EPIC-20 (HTTP ligado a 127.0.0.1 por defecto); FastAPI aún no probado con el montaje MCP (ADR-014); el SDK MCP es muy reciente |
+| Impedimentos | Ninguno |
+| Fuera de alcance | Interfaz web (US-01.02 CA-03), autenticación (EPIC-20), skills en producto (FEAT-15.02/03), WebSocket/eventos (EPIC-21), API REST de proyectos (EPIC-30), interfaces de inferencia (ADR-015) |
 | Velocidad | No se mide |
 
 ### Tasks
 
-| ID | Tipo | Título | Estado |
-|----|------|--------|--------|
-| TASK-000-01 | DOCUMENTATION | Crear estructura `control/` e índices | VERIFIED |
-| TASK-000-02 | DOCUMENTATION | Registrar definición de producto v1 y derivar backlog con script verificable | VERIFIED |
-| TASK-000-03 | DOCUMENTATION | Registrar ADRs iniciales (001–004) | VERIFIED |
-| TASK-000-04 | DECISION | Decidir runtime/lenguaje backend | VERIFIED (Python, ADR-005) |
-| TASK-000-07 | DECISION | Decidir tooling del frontend React (GAP-002) | PLANNED |
-| TASK-000-08 | DOCUMENTATION | Incorporar el cambio de alcance "servidor MCP propio + skills" (definición v1.1, ADR-008, ADR-009) | VERIFIED |
-| TASK-000-09 | DOCUMENTATION | Registrar el backlog completo (fuente A) y unificarlo con la definición v1.1 (ADR-010) | VERIFIED |
-| TASK-000-10 | DOCUMENTATION | Revisar los 37 solapamientos A↔B y fusionar o descartar duplicados (GAP-006) | PLANNED |
-| TASK-000-11 | DECISION | Resolver CONF-001 (JEV en EPIC-47) y CONF-002 (fuente de verdad) con el operador | VERIFIED (ADR-011, ADR-012) |
-| TASK-000-12 | DOCUMENTATION | Incorporar definición v1.2: JEV preparado desde el inicio y ACM como segundo cerebro (ADR-012) | VERIFIED |
-| SPIKE-001 | SPIKE | Concurrencia SQLite en Python: WAL, locking, reintentos, límites reales | VERIFIED (ADR-013, `20_PERFORMANCE/benchmarks.md`) |
-| SPIKE-002 | SPIKE | Servidor MCP propio con SDK Python: extensión Skills, instructions, transporte, multi-proyecto | VERIFIED (ADR-014; 18/18 pruebas; pregunta 4 UNKNOWN) |
-| TASK-000-13 | DESIGN | Diseño de las interfaces de inferencia del núcleo (decisión y generación), preparadas para JEV (US-35.11, US-47.01) | VERIFIED (ADR-015, `04_ARQUITECTURA/inference_ports.md`) |
-| TASK-000-05 | RESEARCH | Aclarar qué es JEV (GAP-003) | VERIFIED (ADR-006) |
-| TASK-000-06 | DECISION | Cerrar alcance MVP (delegado por el operador) | VERIFIED (ADR-007) |
+| ID | Tipo | Título | Historias | Estado |
+|----|------|--------|-----------|--------|
+| TASK-000-10 | DOCUMENTATION | Depurar solapamientos de EPIC-01/18/24 (6 fusiones en `tools/dedupe.json`); resto de épicas pendiente | GAP-006 | VERIFIED (parcial: 35 solapamientos siguen pendientes en otras épicas) |
+| TASK-001-01 | INFRASTRUCTURE | Esqueleto: `pyproject.toml`, paquete `src/acm`, CLI, configuración, CI | todas | VERIFIED (CI definida y ejecutada en local; primera ejecución en GitHub pendiente de comprobar) |
+| TASK-001-02 | TASK | Capa de datos: conexión (ADR-013), transacciones, migrador y catálogos v1 | US-18.01..03 | VERIFIED |
+| TASK-001-03 | TASK | `ProjectService`: crear, listar, abrir, configurar; principales y pertenencias | US-01.01..03 | VERIFIED |
+| TASK-001-04 | TASK | Servidor MCP: herramientas de proyecto, `instructions`, errores explícitos (GAP-007) | US-01.01..03, US-01.06 | VERIFIED |
+| TASK-001-05 | TASK | App ASGI: FastAPI + `/mcp` + `/api/health` y modo stdio (verifica ADR-014 con FastAPI) | US-01.06, US-18.01 | VERIFIED (ADR-014 comprobado con FastAPI) |
+| TASK-001-06 | TEST | Tests automáticos que verifican cada CA | todas | VERIFIED (50 tests; 6 mutaciones detectadas) |
+| TASK-000-07 | DECISION | Decidir tooling del frontend React (GAP-002) | — | PLANNED (arrastrada de SPRINT-000) |
 
-VERIFIED = comprobado en sistema de archivos y con `derive_backlog.py --check`. No se marcan DONE hasta la revisión del operador (merge).
+SPRINT-000 cerrado y archivado en `99_ARCHIVO/historical/sprint_000.md`.
+
+### Estado de las historias (2026-09-30)
+
+| Historia | Estado | Evidencia |
+|----------|--------|-----------|
+| US-01.01 | VERIFIED | `12_TESTING/sprint_001_evidence.md` |
+| US-01.02 | IMPLEMENTED | CA-03 y la parte de cliente de CA-04 requieren la interfaz web |
+| US-01.03 | VERIFIED | idem |
+| US-01.06 | VERIFIED | idem |
+| US-18.01 | VERIFIED | idem |
+| US-18.02 | VERIFIED | idem |
+| US-18.03 | VERIFIED | idem |
+
+VERIFIED = todos los CA con test automático en PASS. DONE requiere además la revisión del operador (merge del PR).

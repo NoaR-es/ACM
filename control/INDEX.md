@@ -9,24 +9,24 @@ Proyecto: **Agile Context Manager (ACM)** · Constitución: `/CLAUDE.md` · Actu
 | Área | Responde a | Salud |
 |------|-----------|-------|
 | `00_GOBIERNO/` | Qué estamos construyendo y con qué reglas | OK |
-| `01_PRODUCTO/` | Qué debemos hacer | WARNING — 351/356 historias sin criterios de aceptación (GAP-001) |
+| `01_PRODUCTO/` | Qué debemos hacer | WARNING — backlog unificado; solo las historias de SPRINT-001 refinadas (GAP-001); 35 solapamientos pendientes (GAP-006) |
 | `02_AGILE/` | Sprint, Kanban e impedimentos | OK |
 | `03_ESTADO/` | Dónde estamos | OK |
 | `04_ARQUITECTURA/` | Cómo está diseñado | OK — topología, SQLite e interfaces de inferencia decididas (ADR-013..015); nada implementado |
-| `05_CODIGO/` | Dónde está implementado | OK — solo existe tooling de control |
-| `06_API/` | Cómo funcionan las APIs | OK — servidor MCP prototipado (SPIKE-002, ADR-014) |
-| `07_DATOS/` | Cómo se almacenan los datos | N/A — modelo conceptual en data_architecture.md |
-| `08_INFRAESTRUCTURA/` | Cómo se ejecuta | N/A |
+| `05_CODIGO/` | Dónde está implementado | OK — `src/acm` (SPRINT-001) |
+| `06_API/` | Cómo funcionan las APIs | OK — MCP de proyectos implementado (SPRINT-001) |
+| `07_DATOS/` | Cómo se almacenan los datos | OK — SQLite global + por proyecto v1 (SPRINT-001) |
+| `08_INFRAESTRUCTURA/` | Cómo se ejecuta | OK — ejecución local (`acm serve`/`mcp-stdio`) |
 | `09_MENSAJERIA/` | Cómo se comunican los componentes | N/A — WebSockets previstos (EPIC-21) |
 | `10_IA/` | Qué IA utilizamos | OK — JEV definido (ADR-006); nada integrado |
-| `11_SEGURIDAD/` | Cómo se protege | N/A |
-| `12_TESTING/` | Cómo se prueba | OK — integridad del backlog + tests de spikes; sin tests de producto |
+| `11_SEGURIDAD/` | Cómo se protege | WARNING — sin autenticación (VULN-001) |
+| `12_TESTING/` | Cómo se prueba | OK — 50 tests de producto en PASS |
 | `13_BUGS/` | Qué problemas existen | WARNING — 4 gaps abiertos; conflictos resueltos o aplazados (CONF-003) |
 | `14_DECISIONES/` | Por qué se tomaron decisiones | OK |
 | `15_CAMBIOS/` | Qué ha cambiado | OK |
 | `16_DOCUMENTACION/` | Cómo está documentado | N/A |
 | `17_GIT/` | Cómo se versiona el código | OK |
-| `18_CICD/` | Cómo se despliega | MISSING — no existe pipeline |
+| `18_CICD/` | Cómo se despliega | WARNING — CI definida, sin CD |
 | `19_OBSERVABILIDAD/` | Cómo se observa | N/A |
 | `20_PERFORMANCE/` | Cómo rinde | OK — SPIKE-001 medido |
 | `21_COMPLIANCE/` | Cumple normativa | N/A |

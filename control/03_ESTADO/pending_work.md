@@ -1,20 +1,14 @@
 # Trabajo pendiente (ordenado)
 
-1. **Preparar SPRINT-001 — "Esqueleto del backend y núcleo de proyecto"** (propuesta):
-   a. TASK-000-10: depurar los solapamientos A↔B de EPIC-01, 18 y 24 (GAP-006).
-   b. Refinar a READY las historias de EPIC-01 (proyecto), EPIC-18 (SQLite) y EPIC-24 (multiproyecto) con la regla de A (GAP-001).
-   c. Implementar el esqueleto:
-      - `pyproject.toml` con dependencias fijadas;
-      - paquete `acm/` con capa de datos según ADR-013;
-      - proceso ASGI según ADR-014 (FastAPI + MCP `/mcp` + `/ws` + stdio);
-      - interfaces de ADR-015 con `RulesDecisionEngine`;
-      - pytest y CI mínima.
-2. Configurar CI que ejecute `derive_backlog.py --check` y los tests (18_CICD MISSING).
-3. Completar el modelo de datos en SQLite (GAP-005).
-4. Redactar las 5 skills oficiales (FEAT-15.03) sobre el esqueleto.
-5. GAP-007: errores de herramienta explícitos en el servidor MCP.
-6. Decidir el tooling del frontend React (TASK-000-07, GAP-002).
-7. SPIKE-005 (Ollama: concurrencia, log-probabilidades y salida estructurada) y SPIKE-006 (Ollaya en hardware real).
-8. Más adelante: orquestador interno (CONF-003, aplazado).
-
-Histórico: runtime → ADR-005; JEV → ADR-006 → ADR-012; MCP + skills → ADR-008 → ADR-014; MVP → ADR-007 → 009 → 010 → 012; backlog → ADR-010; fuente de verdad → ADR-011; SQLite → ADR-013; inferencia → ADR-015.
+1. **Comprobar la primera ejecución de la CI en GitHub** (`.github/workflows/ci.yml`).
+2. **Propuesta de SPRINT-002: "Skills y backlog por MCP"**
+   - Servidor MCP: extensión Skills en producto (FEAT-15.02, US-15.04..07) con las 5 skills oficiales (FEAT-15.03, US-15.08..12).
+   - Núcleo de backlog en SQLite del proyecto: épicas, features, historias y CA (EPIC-04 y US-24.01/24.03, para verificar backlog y memoria independientes por proyecto).
+   - Antes: refinamiento a READY y depuración de solapamientos de EPIC-04, 15 y 24.
+3. Autenticación con tokens y RBAC (EPIC-20): sustituye al principal por configuración. Necesaria antes de exponer HTTP fuera de 127.0.0.1 (VULN-001).
+4. Tooling del frontend React (TASK-000-07) → interfaz web; cerraría US-01.02 CA-03.
+5. Interfaces de inferencia (ADR-015) con `RulesDecisionEngine` y Ollama (US-35.11, US-47.01, EPIC-22).
+6. Resto de solapamientos A↔B (35, GAP-006) y refinamientos (GAP-001).
+7. Automatizar las pruebas de mutación de invariantes críticas (retrospectiva SPRINT-001).
+8. SPIKE-005 (Ollama) y SPIKE-006 (Ollaya).
+9. Más adelante: orquestador interno (CONF-003).

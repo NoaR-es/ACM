@@ -2,4 +2,4 @@
 
 | BACKLOG | READY | IN_PROGRESS | CODE_REVIEW | TESTING | VERIFICATION | DONE | BLOCKED |
 |---------|-------|-------------|-------------|---------|--------------|------|---------|
-| 492 US (backlog unificado), 30 TECH, 10 SPIKE (ver 01_PRODUCTO/backlog.md), TASK-000-07, TASK-000-10 | — | — | TASK-000-01..06, 08, 09, 11, 12, 13, SPIKE-001, SPIKE-002 (pendientes de revisión del operador) | — | — | — | — |
+| Resto del backlog (01_PRODUCTO/backlog.md), TASK-000-07 | — | — | US-01.01, US-01.03, US-01.06, US-18.01, US-18.02, US-18.03 (VERIFIED); US-01.02 (IMPLEMENTED, falta UI); SPRINT-000 entregado | — | — | — | — |

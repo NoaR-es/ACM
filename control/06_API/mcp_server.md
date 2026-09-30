@@ -1,6 +1,6 @@
 # Servidor MCP de ACM
 
-Estado: **PLANNED** — nada implementado en producto; **prototipo validado en SPIKE-002** (`spikes/spike_002_mcp/`). Decisión de topología: ADR-014. Decisiones: ADR-005 (Python) y ADR-008 (servidor propio + skills). Historias (numeración unificada, ADR-010): servidor propio FEAT-14.02..14.04 (US-14.04..US-14.11); registro y versionado de skills FEAT-15.01 (US-15.01, US-15.03); distribución FEAT-15.02 (US-15.04..US-15.07); catálogo FEAT-15.03 (US-15.08..US-15.12). ACM como *cliente* MCP (US-14.01..14.03) es POST-MVP.
+Estado: **IMPLEMENTED parcialmente (SPRINT-001)**. Herramientas de proyecto en `src/acm/mcp_server.py`; la extensión Skills solo existe en el prototipo de SPIKE-002 y llegará en SPRINT-002. Topología: ADR-014. Decisiones: ADR-005 (Python) y ADR-008 (servidor propio + skills). Historias (numeración unificada, ADR-010): servidor propio FEAT-14.02..14.04 (US-14.04..US-14.11); registro y versionado de skills FEAT-15.01 (US-15.01, US-15.03); distribución FEAT-15.02 (US-15.04..US-15.07); catálogo FEAT-15.03 (US-15.08..US-15.12). ACM como *cliente* MCP (US-14.01..14.03) es POST-MVP.
 
 ## Principio
 El servidor MCP **es ACM**: los agentes IA se conectan a él para operar sobre los proyectos. Al conectarse, reciben las instrucciones y las skills necesarias para usar ACM correctamente.
@@ -49,3 +49,17 @@ Hallazgo adicional: el SDK devuelve al agente "Error executing tool …" ante ex
 - https://github.com/modelcontextprotocol/ext-skills (especificación estable `skills.mdx`)
 - https://modelcontextprotocol.io/seps/2640-skills-extension
 - https://devblogs.microsoft.com/agent-framework/discover-agent-skills-from-mcp-servers-in-net/
+
+## Herramientas implementadas (SPRINT-001, 2026-09-30)
+
+| Herramienta | Argumentos | Devuelve | Errores (`CODE: motivo`) | Historia |
+|-------------|------------|----------|--------------------------|----------|
+| `acm_project_create` | `key`, `name`, `description?` | resumen con `project_id` | INVALID_ARGUMENT (`key`/`name`), ALREADY_EXISTS, FORBIDDEN, STORAGE_ERROR | US-01.01 |
+| `acm_project_list` | — | lista de proyectos accesibles | FORBIDDEN (principal desconocido) | US-01.02 |
+| `acm_project_open` | `project_id` | metadatos, `role`, `schema_version`, `config` | INVALID_ARGUMENT, NOT_FOUND | US-01.02, US-01.06 |
+| `acm_project_config_get` | `project_id` | `parameters` con valor, defecto, permitido, recarga | NOT_FOUND | US-01.03 |
+| `acm_project_config_set` | `project_id`, `changes` | `parameters`, `changed`, `requires_reload` | INVALID_ARGUMENT (parámetro), FORBIDDEN, NOT_FOUND | US-01.03 |
+| `acm_system_info` | — | versión, versión de esquema global, nº de proyectos, PRAGMAs | STORAGE_ERROR | US-18.03 CA-04 |
+
+Transportes: Streamable HTTP en `/mcp/` (`acm serve`) y stdio (`acm mcp-stdio`). Identidad: `ACM_PRINCIPAL` hasta EPIC-20.
+GAP-007 mitigado: los errores de dominio se convierten en `ToolError` y el agente recibe `Error executing tool <x>: CODE: motivo`.

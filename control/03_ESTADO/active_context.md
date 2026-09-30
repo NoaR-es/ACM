@@ -1,14 +1,15 @@
-TASK: none (SPRINT-000: spikes y diseño completados)
+TASK: none (SPRINT-001 entregado)
 STORY: —
-SPRINT: SPRINT-000
+SPRINT: SPRINT-001
 
 NEXT CANDIDATES:
-TASK-000-10 — depurar solapamientos A↔B (GAP-006)
-Refinamiento a READY de EPIC-01, 18, 24 (GAP-001) → SPRINT-001
+Verificar la primera ejecución de la CI en GitHub
+Planificar SPRINT-002 (ver 03_ESTADO/pending_work.md)
 
 RELEVANT DOCUMENTS:
-14_DECISIONES/decisions.md (ADR-013, 014, 015)
-04_ARQUITECTURA/architecture.md, inference_ports.md, dependencies.md
+02_AGILE/sprint.md
+12_TESTING/sprint_001_evidence.md
+05_CODIGO/modules.md
 
 FILES AFFECTED: —
 

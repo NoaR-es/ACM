@@ -115,3 +115,19 @@ SPIKE-002 → spikes/spike_002_mcp/{acm_mcp_proto.py, test_proto.py, test_asgi_t
 TASK-000-13 → 04_ARQUITECTURA/inference_ports.md → ADR-015
         ADR-015 → US-35.08..US-35.11, US-47.01, EPIC-22, EPIC-50, TECH-018..020, 10_IA/inference_engines.md
 ```
+
+```
+SPRINT-001
+├── US-01.01 → src/acm/domain/projects.py (create), mcp_server.py (acm_project_create) → tests/test_projects.py::test_us0101_*, tests/test_mcp.py::test_us0101_*
+├── US-01.02 → projects.py (list_for, open), mcp_server.py (acm_project_list/open) → tests/test_projects.py::test_us0102_*   [CA-03: pendiente UI]
+├── US-01.03 → domain/config_schema.py, projects.py (get_config/set_config), mcp_server.py (acm_project_config_*) → tests/test_projects.py::test_us0103_*
+├── US-01.06 → mcp_server.py (project_id obligatorio, instructions, ToolError) → tests/test_mcp.py::test_us0106_*
+├── US-18.01 → db/connection.py, db/schema.py → tests/test_db.py::test_us1801_*
+├── US-18.02 → db/connection.py (write/read, reintentos) → tests/test_db.py::test_us1802_*
+├── US-18.03 → db/migrations.py, db/schema.py → tests/test_migrations.py::test_us1803_*
+├── ADR-013 → db/connection.py ; ADR-014 → app.py, mcp_server.py, __main__.py → tests/test_app.py
+├── GAP-007 (RESOLVED en ACM) → mcp_server.py call() → tests/test_mcp.py
+└── VULN-001 → config.py (DEFAULT_HOST=127.0.0.1)
+
+Código → historias: projects.py ← US-01.01/02/03, US-18.01 · connection.py ← US-18.01/02, ADR-013 · migrations.py ← US-18.03 · mcp_server.py ← US-01.06, ADR-014, GAP-007
+```

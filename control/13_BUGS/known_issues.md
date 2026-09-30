@@ -7,7 +7,7 @@
 | GAP-003 | 2026-09-30 | "JEV" no está definido (naturaleza, contrato, proveedor). | Resuelto 2026-09-30: aclaración del operador + investigación (ADR-006). | MEDIA | RESOLVED |
 | GAP-004 | 2026-09-30 | 47 de 53 épicas unificadas no declaran objetivo explícito (sí EPIC-01 y EPIC-49..53); lista en `01_PRODUCTO/epics.md`. | Priorización por valor limitada. | BAJA | OPEN |
 | GAP-005 | 2026-09-30 | El modelo de datos conceptual (§6) no cubre auditoría, tokens, snapshots, sesiones ni locks exigidos por el MVP. | Diseño de datos incompleto. | MEDIA | OPEN |
-| GAP-006 | 2026-09-30 | Solapamientos entre historias de A y B tras la unificación: 37 marcados por heurística (Jaccard ≥ 0,20), con falsos positivos y omisiones conocidas (p. ej. B:US-04.01 ↔ US-04.01 no se marca). | Backlog con historias redundantes; riesgo de implementar dos veces. | MEDIA | OPEN (TASK-000-10) |
+| GAP-006 | 2026-09-30 | Solapamientos entre historias de A y B tras la unificación: 37 marcados por heurística (Jaccard ≥ 0,20), con falsos positivos y omisiones conocidas. | Backlog con historias redundantes; riesgo de implementar dos veces. | MEDIA | IN_PROGRESS — 2026-09-30: 6 fusionadas en EPIC-01/24 (`tools/dedupe.json`); 35 señales pendientes en otras épicas |
 
 ## Conflictos de requisitos (CLAUDE.md §35 — requieren decisión del operador)
 
@@ -22,4 +22,4 @@
 
 | ID | Fecha | Descripción | Impacto | Severidad | Estado |
 |----|-------|-------------|---------|-----------|--------|
-| GAP-007 | 2026-09-30 | SDK `mcp` 2.2.0: una excepción genérica en una herramienta llega al agente como "Error executing tool …", sin el motivo (visto en TEST-SPIKE-002c). | El agente no sabe por qué se rechazó la operación (p. ej. falta de permiso sobre un proyecto). | MEDIA | OPEN — mitigar en el esqueleto con errores de herramienta explícitos (tipo de error del SDK por verificar) |
+| GAP-007 | 2026-09-30 | SDK `mcp` 2.2.0: una excepción genérica en una herramienta llega al agente como "Error executing tool …", sin el motivo (visto en TEST-SPIKE-002c). | El agente no sabía por qué se rechazaba la operación. | MEDIA | RESOLVED en ACM (2026-09-30): errores de dominio → `ToolError` con `CODE: motivo` (`test_mcp.py`) |

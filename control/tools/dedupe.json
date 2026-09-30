@@ -1,0 +1,8 @@
+{
+  "US-01.04": {"into": "US-01.01", "reason": "B:US-01.01 'crear un proyecto ACM' = A:US-01.01 'Crear un proyecto'; sus 4 criterios se conservan en US-01.01"},
+  "US-01.05": {"into": "US-01.02", "reason": "B:US-01.02 'cambiar el proyecto activo sin mezclar contextos' = A:US-01.02 (seleccionar; CA-05 no mezcla datos)"},
+  "US-01.07": {"into": "US-01.03", "reason": "B:US-01.04 'consultar la configuración' está cubierta por A:US-01.03 CA-01 (parámetros con su valor actual)"},
+  "US-01.08": {"into": "US-01.03", "reason": "B:US-01.05 'modificar parámetros configurables' = A:US-01.03 'Configurar un proyecto'"},
+  "US-24.04": {"into": "US-24.03", "reason": "B:US-26.01 'aislar los datos de cada proyecto' = A:US-24.03 'Evitar contaminación entre proyectos'"},
+  "US-24.05": {"into": "US-24.03", "reason": "B:US-26.02 'impedir consultar memoria de otro proyecto' = A:US-24.03 CA-01"}
+}

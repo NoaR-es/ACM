@@ -10,3 +10,13 @@
 | Entorno de spikes | `spikes/.venv` (ignorado por Git; ver `spikes/README.md`) |
 
 Producción / despliegue: MISSING (sin definir; EPIC-18/CI-CD).
+
+## Ejecución local del producto (2026-09-30)
+| Variable | Por defecto | Uso |
+|----------|-------------|-----|
+| `ACM_DATA_DIR` | `./.acm-data` | Directorio de las bases SQLite |
+| `ACM_PRINCIPAL` | `local-admin` | Identidad del llamante hasta EPIC-20 (se da de alta como admin) |
+| `ACM_HOST` / `ACM_PORT` | `127.0.0.1` / `8765` | Escucha de `acm serve` |
+| `ACM_SQLITE_SYNCHRONOUS` | `FULL` | Durabilidad de la base global (ADR-013) |
+
+Comandos: `acm serve`, `acm mcp-stdio` (ver `/README.md`).

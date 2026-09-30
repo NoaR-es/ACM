@@ -2,7 +2,7 @@
 
 **Responde a:** Cómo se prueba
 
-**Salud:** OK — test de integridad del backlog y tests de spikes; sin tests de producto
+**Salud:** OK — 50 tests de producto (SPRINT-001) + integridad del backlog + spikes
 
 | Documento | Estado |
 |-----------|--------|
@@ -14,7 +14,8 @@
 | `regression_tests.md` | N/A (plantilla) |
 | `performance_tests.md` | N/A (plantilla) |
 | `test_results.md` | ACTIVE |
-| `coverage.md` | N/A (plantilla) |
+| `coverage.md` | ACTIVE |
+| `sprint_001_evidence.md` | ACTIVE (evidencia CA ↔ test) |
 
 Documentos históricos: ninguno (ver `99_ARCHIVO/`).
 Relaciones: `../RELATIONSHIPS.md`.
