@@ -1,6 +1,6 @@
 # Trabajo pendiente (ordenado)
 
-1. Comprobar la CI en GitHub del commit de SPRINT-002.
+1. ~~Comprobar la CI en GitHub del commit de SPRINT-002~~ → success (runs #3 y #4).
 2. **Propuesta de SPRINT-003: "Segundo cerebro: contexto compacto y decisiones delegadas"**
    - Interfaces de inferencia (ADR-015) con `RulesDecisionEngine` determinista (US-35.11, US-47.01).
    - Contexto compacto del proyecto para el agente con presupuesto de tokens (FEAT-35.05: US-35.08, US-35.09).

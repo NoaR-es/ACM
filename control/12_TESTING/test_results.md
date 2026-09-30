@@ -18,6 +18,7 @@
 | 2026-09-30 | TEST-CTRL-001 (refs a tests) | PASS | 41 referencias válidas; prueba negativa con un test inventado → exit 2 |
 | 2026-09-30 | CI GitHub Actions (ruff + pytest + derive_backlog --check) | PASS | [run #1](https://github.com/NoaR-es/ACM/actions/runs/36758248042), commit `04f32c3` |
 | 2026-09-30 | CI GitHub Actions run #2 | **FAIL** | [run #2](https://github.com/NoaR-es/ACM/actions/runs/36758383579), commit `445f09c`: `test_us1803_migracion_concurrente_una_sola_vez` → `database is locked` (BUG-001) |
+| 2026-09-30 | CI GitHub Actions runs #3 y #4 | PASS | [run #3](https://github.com/NoaR-es/ACM/actions) commit `7f12a6d` (SPRINT-002); run #4 commit `2cb7de7` (BUG-001) |
 | 2026-09-30 | BUG-001 regresión | PASS | `test_bug001_apertura_concurrente_de_base_nueva`: 3/3 FAIL sin la corrección y 3/3 PASS con ella; estrés local 0/480 fallos (antes 13/480) |
 | 2026-09-30 | TEST-PROD-S02 | PASS 122/122 (123 con BUG-001) | `pytest -q` en 9,5 s; `ruff check` limpio; 72 tests nuevos (backlog, aislamiento, auditoría, skills, frontera MCP) |
 | 2026-09-30 | Mutación manual SPRINT-002 (6 invariantes) | 6/6 detectadas | auditoría solo admin, truncado del resultado, aislamiento de backlog por proyecto, READY solo desde PLANNED, rechazo en cascada por dependencias, recarga solo admin. Un primer mutante inválido (bucle infinito) se descartó |
