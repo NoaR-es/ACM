@@ -33,7 +33,7 @@ control/tools/derive_backlog.py
 - Épica → Feature → Historia: generado en `01_PRODUCTO/features.md` y `01_PRODUCTO/user_stories.md` (bidireccional por ID).
 - Requisito funcional → Épica: `01_PRODUCTO/requirements.md` (REQ-F-01..40).
 - Épica → Componente arquitectónico: `04_ARQUITECTURA/architecture.md`.
-- Historia → Código / Test / API: **ninguna todavía** (no hay implementación).
+- Historia → Código / Test / API: bloques SPRINT-001 y SPRINT-002 al final de este documento; matrices CA ↔ test en `12_TESTING/sprint_00N_evidence.md`.
 
 ## Gaps → afectados
 ```
@@ -130,4 +130,23 @@ SPRINT-001
 └── VULN-001 → config.py (DEFAULT_HOST=127.0.0.1)
 
 Código → historias: projects.py ← US-01.01/02/03, US-18.01 · connection.py ← US-18.01/02, ADR-013 · migrations.py ← US-18.03 · mcp_server.py ← US-01.06, ADR-014, GAP-007
+```
+
+```
+SPRINT-002
+├── US-03.03 → domain/backlog.py (trace_requirement, audit), mcp_server.py (acm_requirement_*, acm_backlog_audit) → tests/test_backlog.py::test_us0303_*
+├── US-04.01 → backlog.py (create_epic, link_epic_requirements), acm_epic_* → tests/test_backlog.py::test_us0401_*
+├── US-04.02 → backlog.py (create_feature, split_feature, confirm_epic_coverage), acm_feature_* → tests/test_backlog.py::test_us0402_*
+├── US-04.03 → backlog.py (create_story, add_criteria, mark_ready), acm_story_* → tests/test_backlog.py::test_us0403_*
+├── US-14.04 → app.py, __main__.py → tests/test_app.py
+├── US-14.05/06/07/09 → mcp_server.py → tests/test_mcp.py::test_us1405_*, test_us1406_*, test_us1407_*, test_us1409_*
+├── US-14.10/11 → domain/audit.py, db/schema.py (GLOBAL v2 mcp_audit), mcp_server.py audited() → tests/test_audit.py   [TD-001]
+├── US-15.01/06/07 → skills_catalog.py → tests/test_skills.py::test_us1501_*, test_us1506_*, test_us1507_*
+├── US-15.04/05 → mcp_server.py (AcmSkillsExtension, skill_file, acm_skills_*) → tests/test_skills.py::test_us1504_*, test_us1505_*
+├── US-15.08/09/10 → skills/acm-schema, skills/acm-invest, skills/acm-discovery → tests/test_skills.py::test_us1508_*..test_us1510_*
+├── US-24.01/03 → backlog.py (_db: acceso por proyecto), una project.db por proyecto → tests/test_isolation.py   [US-24.03 CA-02 → EPIC-21]
+├── TASK-000-10 → tools/dedupe.json (US-04.04/05 → 04.01; 04.07/08/11/13 → 04.03; US-14.08 → US-01.06)
+└── TASK-002-05 → tools/evidence.py → 12_TESTING/sprint_002_evidence.md
+
+Código → historias: backlog.py ← US-03.03, 04.01..03, 24.01, 24.03 · audit.py ← US-14.10/11, TD-001 · skills_catalog.py ← US-15.01, 15.06, 15.07 · skills/** ← US-15.08..10 · mcp_server.py ← US-14.04..11, US-15.04..07
 ```

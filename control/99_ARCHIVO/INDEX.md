@@ -9,4 +9,5 @@
 | `superseded/product_definition_v1.md` | SUPERSEDED | `superseded/product_definition_v2.md` (v1.1) | 2026-09-30 |
 | `superseded/product_definition_v2.md` | SUPERSEDED | `01_PRODUCTO/product_definition_v3.md` (v1.2) | 2026-09-30 |
 | `deprecated/` | vacío | — | — |
-| `historical/` | vacío | — | — |
+| `historical/sprint_000.md` | HISTORICAL | SPRINT-001 | 2026-09-30 |
+| `historical/sprint_001.md` | HISTORICAL | SPRINT-002 | 2026-09-30 |

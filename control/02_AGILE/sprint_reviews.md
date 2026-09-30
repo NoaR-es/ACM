@@ -11,3 +11,9 @@
 - **Entregado:** 6 historias VERIFIED (US-01.01, 01.03, 01.06, 18.01, 18.02, 18.03) y 1 IMPLEMENTED (US-01.02, falta la UI). TASK-001-01..06.
 - **Evidencia:** 50 tests en PASS; matriz CA↔test en `12_TESTING/sprint_001_evidence.md`; 6 mutaciones del código detectadas por los tests.
 - **No entregado:** interfaz web (TASK-000-07). CI en GitHub: success (run #1).
+
+## SPRINT-002 — Skills y backlog por MCP (2026-09-30)
+- **Goal:** cumplido. Un agente conectado por MCP obtiene las `instructions`, lista y descarga las 3 skills oficiales (extensión Skills o herramientas de respaldo) y crea requisitos, épicas, features, historias y CA en la SQLite del proyecto; cada invocación queda auditada.
+- **Entregado:** 20 historias VERIFIED y 1 IMPLEMENTED (US-24.03, CA-02 depende de EPIC-21). TASK-002-01..05. 7 fusiones de duplicados más (TASK-000-10).
+- **Evidencia:** 122 tests en PASS (72 nuevos); matriz CA↔test generada en `12_TESTING/sprint_002_evidence.md`; 6/6 mutaciones detectadas.
+- **No entregado:** skills acm-error-analysis y acm-documentation (US-15.11/15.12, dependen de EPIC-29/25); interfaz web.

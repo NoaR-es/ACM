@@ -1,7 +1,7 @@
 """Catálogos de migraciones de ACM (ADR-011: SQLite es la fuente de verdad del producto; ADR-013).
 
-- GLOBAL: base de plataforma `<data_dir>/acm.db` — principales, registro de proyectos, pertenencias.
-- PROJECT: base de cada proyecto `<data_dir>/projects/<id>/project.db` — metadatos y configuración.
+- GLOBAL: base de plataforma `<data_dir>/acm.db` — principales, registro de proyectos, pertenencias, auditoría MCP (v2).
+- PROJECT: base de cada proyecto `<data_dir>/projects/<id>/project.db` — metadatos, configuración y backlog (v2).
 
 Una migración publicada no se modifica: los cambios van en migraciones nuevas (US-18.03).
 """
@@ -38,6 +38,27 @@ GLOBAL: tuple[Migration, ...] = (
             "CREATE INDEX idx_project_members_principal ON project_members(principal_id)",
         ),
     ),
+    Migration(
+        2,
+        "mcp_audit",
+        (
+            """CREATE TABLE mcp_audit (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ts TEXT NOT NULL,
+            principal TEXT NOT NULL,
+            operation TEXT NOT NULL,
+            project_id TEXT,
+            arguments_json TEXT NOT NULL,
+            status TEXT NOT NULL CHECK (status IN ('ok', 'error')),
+            error TEXT NOT NULL DEFAULT '',
+            result_json TEXT NOT NULL DEFAULT '',
+            result_truncated INTEGER NOT NULL DEFAULT 0 CHECK (result_truncated IN (0, 1)),
+            duration_ms REAL NOT NULL
+        )""",
+            "CREATE INDEX idx_mcp_audit_principal ON mcp_audit(principal, id)",
+            "CREATE INDEX idx_mcp_audit_project ON mcp_audit(project_id, id)",
+        ),
+    ),
 )
 
 PROJECT: tuple[Migration, ...] = (
@@ -55,6 +76,77 @@ PROJECT: tuple[Migration, ...] = (
             updated_at TEXT NOT NULL,
             updated_by TEXT NOT NULL
         )""",
+        ),
+    ),
+    Migration(
+        2,
+        "backlog",
+        (
+            """CREATE TABLE requirements (
+            id TEXT PRIMARY KEY,
+            title TEXT NOT NULL CHECK (length(title) BETWEEN 1 AND 200),
+            description TEXT NOT NULL DEFAULT '',
+            created_at TEXT NOT NULL,
+            created_by TEXT NOT NULL
+        )""",
+            """CREATE TABLE epics (
+            id TEXT PRIMARY KEY,
+            title TEXT NOT NULL CHECK (length(title) BETWEEN 1 AND 200),
+            objective TEXT NOT NULL CHECK (length(trim(objective)) > 0),
+            scope TEXT NOT NULL CHECK (length(trim(scope)) > 0),
+            coverage_confirmed_at TEXT,
+            coverage_confirmed_by TEXT,
+            created_at TEXT NOT NULL,
+            created_by TEXT NOT NULL
+        )""",
+            """CREATE TABLE epic_requirements (
+            epic_id TEXT NOT NULL REFERENCES epics(id),
+            requirement_id TEXT NOT NULL REFERENCES requirements(id),
+            PRIMARY KEY (epic_id, requirement_id)
+        )""",
+            """CREATE TABLE features (
+            id TEXT PRIMARY KEY,
+            epic_id TEXT NOT NULL REFERENCES epics(id),
+            title TEXT NOT NULL CHECK (length(title) BETWEEN 1 AND 200),
+            description TEXT NOT NULL DEFAULT '',
+            status TEXT NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'SPLIT')),
+            split_into TEXT NOT NULL DEFAULT '',
+            created_at TEXT NOT NULL,
+            created_by TEXT NOT NULL
+        )""",
+            """CREATE TABLE stories (
+            id TEXT PRIMARY KEY,
+            epic_id TEXT NOT NULL REFERENCES epics(id),
+            feature_id TEXT NOT NULL REFERENCES features(id),
+            kind TEXT NOT NULL CHECK (kind IN ('user_story', 'technical')),
+            as_a TEXT NOT NULL,
+            i_want TEXT NOT NULL,
+            so_that TEXT NOT NULL,
+            technical_reason TEXT NOT NULL DEFAULT '',
+            status TEXT NOT NULL DEFAULT 'PLANNED' CHECK (status IN ('PLANNED', 'READY', 'IN_PROGRESS', 'BLOCKED',
+                'IMPLEMENTED', 'TESTING', 'VERIFIED', 'FAILED', 'DEPRECATED', 'CANCELLED', 'DONE')),
+            created_at TEXT NOT NULL,
+            created_by TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            CHECK (kind = 'user_story' OR length(trim(technical_reason)) > 0)
+        )""",
+            """CREATE TABLE story_requirements (
+            story_id TEXT NOT NULL REFERENCES stories(id),
+            requirement_id TEXT NOT NULL REFERENCES requirements(id),
+            PRIMARY KEY (story_id, requirement_id)
+        )""",
+            """CREATE TABLE acceptance_criteria (
+            story_id TEXT NOT NULL REFERENCES stories(id),
+            code TEXT NOT NULL,
+            text TEXT NOT NULL CHECK (length(trim(text)) > 0),
+            created_at TEXT NOT NULL,
+            created_by TEXT NOT NULL,
+            PRIMARY KEY (story_id, code)
+        )""",
+            "CREATE INDEX idx_features_epic ON features(epic_id)",
+            "CREATE INDEX idx_stories_feature ON stories(feature_id)",
+            "CREATE INDEX idx_story_requirements_req ON story_requirements(requirement_id)",
+            "CREATE INDEX idx_epic_requirements_req ON epic_requirements(requirement_id)",
         ),
     ),
 )

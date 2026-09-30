@@ -6,12 +6,12 @@
 |------|-------|-----|----------|----------|----------|
 | EPIC | 53 | 30 | 23 | 48 | 5 nuevas |
 | FEATURE | 201 | 86 | 115 | 48 | 153 |
-| USER_STORY (activas) | 486 | 229 | 257 | 132 | 354 |
-| Criterios de aceptación | 547 | — | — | 519 | 28 |
+| USER_STORY (activas) | 479 | 222 | 257 | 132 | 347 |
+| Criterios de aceptación | 579 | — | — | 519 | 60 |
 | TECH (historia técnica, B) | 30 | — | — | — | 30 |
 | SPIKE (B) | 12 | — | — | — | 12 |
 
-Posibles solapamientos B↔A pendientes (heurística Jaccard ≥ 0.2, GAP-006): **35** · Historias fusionadas por duplicado (`tools/dedupe.json`): **6** · READY: **0**.
+Posibles solapamientos B↔A pendientes (heurística Jaccard ≥ 0.2, GAP-006): **35** · Historias fusionadas por duplicado (`tools/dedupe.json`): **13** · READY: **0**.
 Correspondencia de IDs de la definición v1.1: `id_mapping.md`. Alcance MVP: ADR-010.
 
 ## Historias MVP por épica
@@ -19,14 +19,14 @@ Correspondencia de IDs de la definición v1.1: `id_mapping.md`. Alcance MVP: ADR
 - **EPIC-01** (7): US-01.01, US-01.02, US-01.03, US-01.06, US-01.09, US-01.10, US-01.11
 - **EPIC-02** (3): US-02.01, US-02.02, US-02.03
 - **EPIC-03** (3): US-03.01, US-03.02, US-03.03
-- **EPIC-04** (13): US-04.01, US-04.02, US-04.03, US-04.04, US-04.05, US-04.06, US-04.07, US-04.08, US-04.09, US-04.10, US-04.11, US-04.12, US-04.13
+- **EPIC-04** (7): US-04.01, US-04.02, US-04.03, US-04.06, US-04.09, US-04.10, US-04.12
 - **EPIC-05** (9): US-05.01, US-05.02, US-05.03, US-05.04, US-05.05, US-05.06, US-05.07, US-05.08, US-05.09
 - **EPIC-06** (6): US-06.01, US-06.02, US-06.03, US-06.04, US-06.05, US-06.06
 - **EPIC-10** (15): US-10.01, US-10.02, US-10.03, US-10.04, US-10.05, US-10.06, US-10.07, US-10.11, US-10.12, US-10.13, US-10.14, US-10.15, US-10.16, US-10.17, US-10.18
 - **EPIC-11** (6): US-11.01, US-11.02, US-11.03, US-11.04, US-11.05, US-11.06
 - **EPIC-12** (8): US-12.01, US-12.02, US-12.04, US-12.05, US-12.06, US-12.07, US-12.08, US-12.09
 - **EPIC-13** (11): US-13.03, US-13.04, US-13.05, US-13.06, US-13.07, US-13.08, US-13.09, US-13.10, US-13.11, US-13.12, US-13.13
-- **EPIC-14** (8): US-14.04, US-14.05, US-14.06, US-14.07, US-14.08, US-14.09, US-14.10, US-14.11
+- **EPIC-14** (7): US-14.04, US-14.05, US-14.06, US-14.07, US-14.09, US-14.10, US-14.11
 - **EPIC-15** (11): US-15.01, US-15.03, US-15.04, US-15.05, US-15.06, US-15.07, US-15.08, US-15.09, US-15.10, US-15.11, US-15.12
 - **EPIC-16** (7): US-16.01, US-16.02, US-16.04, US-16.05, US-16.06, US-16.07, US-16.08
 - **EPIC-17** (10): US-17.01, US-17.02, US-17.03, US-17.04, US-17.05, US-17.06, US-17.07, US-17.08, US-17.09, US-17.10

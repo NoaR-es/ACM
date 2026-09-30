@@ -46,3 +46,7 @@ class DataIntegrityError(AcmError):
 
 class MigrationError(AcmError):
     code = "MIGRATION_ERROR"
+
+
+class FailedPrecondition(AcmError):
+    code = "FAILED_PRECONDITION"

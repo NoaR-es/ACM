@@ -1,6 +1,6 @@
 # Servidor MCP de ACM
 
-Estado: **IMPLEMENTED parcialmente (SPRINT-001)**. Herramientas de proyecto en `src/acm/mcp_server.py`; la extensión Skills solo existe en el prototipo de SPIKE-002 y llegará en SPRINT-002. Topología: ADR-014. Decisiones: ADR-005 (Python) y ADR-008 (servidor propio + skills). Historias (numeración unificada, ADR-010): servidor propio FEAT-14.02..14.04 (US-14.04..US-14.11); registro y versionado de skills FEAT-15.01 (US-15.01, US-15.03); distribución FEAT-15.02 (US-15.04..US-15.07); catálogo FEAT-15.03 (US-15.08..US-15.12). ACM como *cliente* MCP (US-14.01..14.03) es POST-MVP.
+Estado: **IMPLEMENTED (SPRINT-001/002)**. `src/acm/mcp_server.py`: herramientas de proyecto (SPRINT-001), backlog, auditoría y extensión Skills con 3 skills oficiales (SPRINT-002). Pendientes: skills US-15.11/15.12 y autenticación (EPIC-20). Topología: ADR-014. Decisiones: ADR-005 (Python) y ADR-008 (servidor propio + skills). Historias (numeración unificada, ADR-010): servidor propio FEAT-14.02..14.04 (US-14.04..US-14.11); registro y versionado de skills FEAT-15.01 (US-15.01, US-15.03); distribución FEAT-15.02 (US-15.04..US-15.07); catálogo FEAT-15.03 (US-15.08..US-15.12). ACM como *cliente* MCP (US-14.01..14.03) es POST-MVP.
 
 ## Principio
 El servidor MCP **es ACM**: los agentes IA se conectan a él para operar sobre los proyectos. Al conectarse, reciben las instrucciones y las skills necesarias para usar ACM correctamente.
@@ -14,16 +14,16 @@ El servidor MCP **es ACM**: los agentes IA se conectan a él para operar sobre l
 
 Clientes sin extensión de skills: herramientas de respaldo `acm_skills_list` y `acm_skill_get` (validadas en el prototipo).
 
-## Catálogo inicial de skills (FEAT-22.01) — PLANNED
+## Catálogo inicial de skills (FEAT-15.03)
 | Skill | URI | Historia | Propósito |
 |-------|-----|----------|-----------|
-| acm-schema | `skill://acm/acm-schema/SKILL.md` | US-15.08 | Modelo de datos y flujo de trabajo de ACM: qué entidades hay, cómo se relacionan y qué herramientas usar en cada paso |
-| acm-invest | `skill://acm/acm-invest/SKILL.md` | US-15.09 | Validar historias según INVEST y criterios binarios |
-| acm-discovery | `skill://acm/acm-discovery/SKILL.md` | US-15.10 | Discovery Socrático antes de crear backlog |
-| acm-error-analysis | `skill://acm/acm-error-analysis/SKILL.md` | US-15.11 | Análisis de errores y causa raíz con registro en ACM |
-| acm-documentation | `skill://acm/acm-documentation/SKILL.md` | US-15.12 | Documentación viva enlazada a requisitos y evidencias |
+| acm-schema | `skill://acm/acm-schema/SKILL.md` | US-15.08 | Modelo de datos y flujo de trabajo de ACM: qué entidades hay, cómo se relacionan y qué herramientas usar en cada paso — IMPLEMENTED v1.0.0 |
+| acm-invest | `skill://acm/acm-invest/SKILL.md` | US-15.09 | Validar historias según INVEST y criterios binarios — IMPLEMENTED v1.0.0 |
+| acm-discovery | `skill://acm/acm-discovery/SKILL.md` | US-15.10 | Discovery Socrático antes de crear backlog — IMPLEMENTED v1.0.0 |
+| acm-error-analysis | `skill://acm/acm-error-analysis/SKILL.md` | US-15.11 | Análisis de errores y causa raíz con registro en ACM — PLANNED (EPIC-29) |
+| acm-documentation | `skill://acm/acm-documentation/SKILL.md` | US-15.12 | Documentación viva enlazada a requisitos y evidencias — PLANNED (EPIC-25) |
 
-Frontmatter obligatorio: `name`, `description`, `version`. Ubicación en el código: directorio de skills del paquete Python de ACM (ruta exacta al crear el esqueleto).
+Frontmatter obligatorio (US-15.01): `name` (= carpeta), `description`, `version` (semver), `capabilities` (lista no vacía), `dependencies` (lista; una dependencia inactiva desactiva en cascada). Ubicación: `src/acm/skills/<nombre>/`, versionadas con el código (US-15.07). Una skill inválida no se sirve. Recarga: `acm_skills_reload` (admin) publica `notifications/resources/list_changed` si el catálogo cambió.
 
 ## Límites de la extensión (SEP-2640)
 - Hasta 512 recursos y 16 MiB por skill.
@@ -32,7 +32,7 @@ Frontmatter obligatorio: `name`, `description`, `version`. Ubicación en el cód
 ## Seguridad
 - Las skills se sirven como contenido de solo lectura.
 - No se incluyen scripts ejecutables en el MVP.
-- Acceso autenticado (EPIC-16) y descargas auditadas (US-14.11).
+- Acceso autenticado (EPIC-20, pendiente). Descargas auditadas (US-14.11/US-15.07 CA-03): `skills/list`, `skills/get` y `resources/read` quedan en `mcp_audit`.
 
 ## Resultados de SPIKE-002 (2026-09-30, SDK `mcp` 2.2.0)
 
@@ -63,3 +63,21 @@ Hallazgo adicional: el SDK devuelve al agente "Error executing tool …" ante ex
 
 Transportes: Streamable HTTP en `/mcp/` (`acm serve`) y stdio (`acm mcp-stdio`). Identidad: `ACM_PRINCIPAL` hasta EPIC-20.
 GAP-007 mitigado: los errores de dominio se convierten en `ToolError` y el agente recibe `Error executing tool <x>: CODE: motivo`.
+
+## Herramientas añadidas en SPRINT-002 (2026-09-30)
+
+Todas las de proyecto exigen `project_id` y lo devuelven. Cualquier rol del proyecto (owner, member) y los admin pueden escribir el backlog; un proyecto no accesible responde `NOT_FOUND`. Toda invocación (herramientas, `skills/list`, `skills/get`, `resources/read`) se registra en `mcp_audit`.
+
+| Herramienta | Argumentos principales | Errores | Historia |
+|-------------|------------------------|---------|----------|
+| `acm_skills_list` | — | — | US-15.05 CA-03 |
+| `acm_skill_get` | `name` | NOT_FOUND | US-15.05 CA-03 |
+| `acm_skills_reload` | — | FORBIDDEN (no admin) | US-15.06, US-15.07 |
+| `acm_audit_list` | `limit` (1..500), `principal_id?`, `operation?`, `project_id?` | FORBIDDEN (no admin), INVALID_ARGUMENT | US-14.10 |
+| `acm_requirement_create` / `_list` / `_trace` | `title`, `description?`, `requirement_id?` / — / `requirement_id` | INVALID_ARGUMENT, ALREADY_EXISTS, NOT_FOUND | US-03.03 |
+| `acm_epic_create` / `_link_requirements` / `_get` / `_list` / `_confirm_coverage` | `title`, `objective`, `scope`, `requirement_ids?`, `epic_id?` | INVALID_ARGUMENT, NOT_FOUND, FAILED_PRECONDITION (sin features activas) | US-04.01, US-04.02 |
+| `acm_feature_create` / `_split` | `epic_id`, `title` / `feature_id`, `parts` (≥2, cada historia en una sola parte) | INVALID_ARGUMENT, NOT_FOUND, FAILED_PRECONDITION | US-04.02 |
+| `acm_story_create` / `_add_criteria` / `_get` / `_mark_ready` | `feature_id`, `as_a`, `i_want`, `so_that`, `requirement_ids` (≥1), `acceptance_criteria?`, `kind`, `technical_reason` | INVALID_ARGUMENT, NOT_FOUND, FAILED_PRECONDITION (lista de huecos) | US-04.03 |
+| `acm_backlog_audit` | — | NOT_FOUND | US-03.03, US-04.03 |
+
+Extensión Skills: `skills/list` y `skills/get` (`-32602` si la skill no existe); archivos en `skill://acm/{skill}/{filename}` (una skill retirada deja de ser legible). Capacidad declarada: `extensions["io.modelcontextprotocol/skills"] = {"directoryRead": false}`.

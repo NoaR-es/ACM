@@ -2,7 +2,7 @@
 
 # User Stories (backlog unificado)
 
-Total activas: **486** · Con criterios de aceptación: **141** · Sin criterios: **345** · Posibles solapamientos señalados: **35**
+Total activas: **479** · Con criterios de aceptación: **151** · Sin criterios: **328** · Posibles solapamientos señalados: **35**
 
 > READY exige la cadena completa de la *Regla de aceptación del backlog* (fuente A): precondiciones, flujo,
 > alternativas, errores, reglas, validaciones, casos límite, CA, tareas y pruebas. Se documenta en
@@ -100,6 +100,7 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 
 - Enunciado: Como agente quiero conocer el proyecto activo antes de ejecutar una herramienta para evitar modificar otro proyecto.
 - Origen: B:US-01.03 · Épica: EPIC-01 · Feature: FEAT-01.02 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-001
+- Absorbe a: US-14.08
 - Refinamiento: `refinements/US-01.06.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Toda herramienta MCP que opera sobre un proyecto exige el parámetro `project_id`; sin él, la llamada se rechaza antes de ejecutar nada. (definido en refinamiento)
@@ -206,7 +207,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-03.03 — Mantener trazabilidad requisito-backlog
 
 - **Como** Product Owner **quiero** saber qué historias implementan cada requisito **para** detectar funcionalidades sin implementar.
-- Origen: A:US-03.03 · Épica: EPIC-03 · Feature: FEAT-03.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-03.03 · Épica: EPIC-03 · Feature: FEAT-03.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-03.03.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Cada requisito puede localizar sus épicas.
   - [ ] CA-02: Cada épica puede localizar sus features.
@@ -267,7 +269,9 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-04.01 — Crear una épica
 
 - **Como** Product Owner **quiero** crear una épica funcional **para** agrupar capacidades relacionadas.
-- Origen: A:US-04.01 · Épica: EPIC-04 · Feature: FEAT-04.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-04.01 · Épica: EPIC-04 · Feature: FEAT-04.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Absorbe a: US-04.04, US-04.05
+- Refinamiento: `refinements/US-04.01.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: La épica recibe identificador único.
   - [ ] CA-02: Tiene objetivo y alcance.
@@ -278,7 +282,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-04.02 — Descomponer una épica en features
 
 - **Como** Product Owner **quiero** descomponer una épica **para** obtener capacidades funcionales manejables.
-- Origen: A:US-04.02 · Épica: EPIC-04 · Feature: FEAT-04.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-04.02 · Épica: EPIC-04 · Feature: FEAT-04.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-04.02.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Cada feature tiene identificador.
   - [ ] CA-02: Cada feature pertenece a una épica.
@@ -288,7 +293,9 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-04.03 — Crear User Stories
 
 - **Como** Product Owner **quiero** convertir features en historias **para** crear unidades implementables.
-- Origen: A:US-04.03 · Épica: EPIC-04 · Feature: FEAT-04.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-04.03 · Épica: EPIC-04 · Feature: FEAT-04.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Absorbe a: US-04.07, US-04.08, US-04.11, US-04.13
+- Refinamiento: `refinements/US-04.03.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Cada historia tiene actor, acción y valor.
   - [ ] CA-02: Cada historia tiene requisito de origen.
@@ -301,13 +308,15 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-04.04
 
 - Enunciado: Como Product Owner quiero crear una épica asociada a funcionalidades concretas.
-- Origen: B:US-04.01 · Épica: EPIC-04 · Feature: FEAT-04.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-04.01 · Épica: EPIC-04 · Feature: FEAT-04.02 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-04.01 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 #### US-04.05
 
 - Enunciado: Como Product Owner quiero definir visión y valor de negocio de una épica.
-- Origen: B:US-04.02 · Épica: EPIC-04 · Feature: FEAT-04.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-04.02 · Épica: EPIC-04 · Feature: FEAT-04.02 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-04.01 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 #### US-04.06
@@ -321,13 +330,15 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-04.07
 
 - Enunciado: Como Product Owner quiero crear historias INVEST para expresar valor funcional atómico.
-- Origen: B:US-04.04 · Épica: EPIC-04 · Feature: FEAT-04.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-04.04 · Épica: EPIC-04 · Feature: FEAT-04.03 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-04.03 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 #### US-04.08
 
 - Enunciado: Como Product Owner quiero relacionar cada historia con su origen funcional.
-- Origen: B:US-04.05 · Épica: EPIC-04 · Feature: FEAT-04.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-04.05 · Épica: EPIC-04 · Feature: FEAT-04.03 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-04.03 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 #### US-04.09
@@ -347,7 +358,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-04.11
 
 - Enunciado: Como Product Owner quiero añadir criterios de aceptación binarios a una historia.
-- Origen: B:US-04.08 · Épica: EPIC-04 · Feature: FEAT-04.04 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-04.08 · Épica: EPIC-04 · Feature: FEAT-04.04 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-04.03 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 #### US-04.12
@@ -359,7 +371,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-04.13
 
 - Enunciado: Como Watchdog quiero impedir que una historia avance sin criterios de aceptación suficientes.
-- Origen: B:US-04.10 · Épica: EPIC-04 · Feature: FEAT-04.04 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-04.10 · Épica: EPIC-04 · Feature: FEAT-04.04 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-04.03 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 ### FEAT-04.05 — Auditor INVEST · origen B:FEAT-05.01
@@ -1113,54 +1126,82 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-14.04
 
 - Enunciado: Como agente IA quiero conectarme a ACM mediante MCP.
-- Origen: B:US-15.01 · Épica: EPIC-14 · Feature: FEAT-14.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-15.01 · Épica: EPIC-14 · Feature: FEAT-14.02 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-14.04.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Un agente se conecta al servidor MCP de ACM por Streamable HTTP en `/mcp/` y puede invocar herramientas. (definido en refinamiento)
+  - [ ] CA-02: Un agente se conecta por stdio lanzando `acm mcp-stdio` y puede invocar herramientas. (definido en refinamiento)
+  - [ ] CA-03: Al conectar, el agente recibe `instructions` que explican cómo usar ACM (skills y `project_id`). (definido en refinamiento)
 
 #### US-14.05
 
 - Enunciado: Como agente quiero descubrir las herramientas MCP disponibles.
-- Origen: B:US-15.02 · Épica: EPIC-14 · Feature: FEAT-14.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-15.02 · Épica: EPIC-14 · Feature: FEAT-14.02 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-14.05.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: `tools/list` devuelve todas las herramientas de ACM, cada una con esquema de entrada. (definido en refinamiento)
+  - [ ] CA-02: Ninguna herramienta tiene descripción vacía. (definido en refinamiento)
+  - [ ] CA-03: Las herramientas que actúan sobre un proyecto declaran `project_id` como obligatorio en su esquema. (definido en refinamiento)
 
 #### US-14.06
 
 - Enunciado: Como agente quiero ejecutar operaciones sobre el proyecto mediante herramientas MCP.
-- Origen: B:US-15.03 · Épica: EPIC-14 · Feature: FEAT-14.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-15.03 · Épica: EPIC-14 · Feature: FEAT-14.02 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-14.06.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Una operación ejecutada con una herramienta MCP queda persistida y es visible en una lectura posterior, incluso tras reiniciar ACM. (definido en refinamiento)
+  - [ ] CA-02: Una operación rechazada no produce ningún cambio en el proyecto. (definido en refinamiento)
 
 ### FEAT-14.03 — Multi-proyecto · origen B:FEAT-15.02
 
 #### US-14.07
 
 - Enunciado: Como operador quiero gestionar múltiples proyectos desde una misma instancia MCP.
-- Origen: B:US-15.04 · Épica: EPIC-14 · Feature: FEAT-14.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-15.04 · Épica: EPIC-14 · Feature: FEAT-14.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-14.07.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Una misma instancia del servidor y una misma conexión MCP operan sobre varios proyectos. (definido en refinamiento)
+  - [ ] CA-02: Cada llamada actúa solo sobre el `project_id` indicado. (definido en refinamiento)
 
 #### US-14.08
 
 - Enunciado: Como agente quiero seleccionar explícitamente el proyecto sobre el que opero.
-- Origen: B:US-15.05 · Épica: EPIC-14 · Feature: FEAT-14.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-15.05 · Épica: EPIC-14 · Feature: FEAT-14.03 · Alcance: CANCELLED · Prioridad: — · Estado: CANCELLED
+- Fusionada en US-01.06 (duplicado; sus criterios se añadieron allí, GAP-006)
 - Criterios de aceptación: MISSING
 
 #### US-14.09
 
 - Enunciado: Como sistema quiero impedir que una sesión acceda accidentalmente a otro proyecto.
-- Origen: B:US-15.06 · Épica: EPIC-14 · Feature: FEAT-14.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-15.06 · Épica: EPIC-14 · Feature: FEAT-14.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-14.09.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Una llamada nunca opera sobre un proyecto usado en llamadas anteriores si no se indica su `project_id`: sin `project_id` la llamada se rechaza. (definido en refinamiento)
+  - [ ] CA-02: Una llamada sobre un proyecto al que el principal no tiene acceso devuelve `NOT_FOUND` y no produce efectos. (definido en refinamiento)
 
 ### FEAT-14.04 — Auditoría MCP · origen B:FEAT-15.03
 
 #### US-14.10
 
 - Enunciado: Como operador quiero conocer qué herramienta MCP ha invocado cada agente.
-- Origen: B:US-15.07 · Épica: EPIC-14 · Feature: FEAT-14.04 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-15.07 · Épica: EPIC-14 · Feature: FEAT-14.04 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-14.10.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Un admin obtiene con `acm_audit_list` las invocaciones recientes con principal, operación, proyecto y fecha, de la más reciente a la más antigua. (definido en refinamiento)
+  - [ ] CA-02: La consulta se puede filtrar por principal, por operación y por proyecto. (definido en refinamiento)
+  - [ ] CA-03: Un principal sin rol admin no puede consultar la auditoría (`FORBIDDEN`). (definido en refinamiento)
 
 #### US-14.11
 
 - Enunciado: Como sistema quiero registrar argumentos, resultado, duración y estado de cada invocación.
-- Origen: B:US-15.08 · Épica: EPIC-14 · Feature: FEAT-14.04 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-15.08 · Épica: EPIC-14 · Feature: FEAT-14.04 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-14.11.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Cada invocación de herramienta registra sus argumentos. (definido en refinamiento)
+  - [ ] CA-02: Se registra el resultado. Si supera 4000 caracteres, se trunca y se marca `result_truncated`. (definido en refinamiento)
+  - [ ] CA-03: Se registra la duración en milisegundos. (definido en refinamiento)
+  - [ ] CA-04: Se registra el estado (`ok`/`error`) y, si hay error, su motivo con código. (definido en refinamiento)
+  - [ ] CA-05: También se registran los intentos de principales desconocidos o sin permiso. (definido en refinamiento)
 
 ## EPIC-15 — SKILLS Y CAPACIDADES REUTILIZABLES
 
@@ -1169,7 +1210,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-15.01 — Registrar una Skill
 
 - **Como** administrador **quiero** registrar una Skill reutilizable **para** ampliar las capacidades de los agentes.
-- Origen: A:US-15.01 · Épica: EPIC-15 · Feature: FEAT-15.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-15.01 · Épica: EPIC-15 · Feature: FEAT-15.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-15.01.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: La Skill tiene identificador y versión.
   - [ ] CA-02: Declara sus capacidades.
@@ -1201,7 +1243,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-15.04
 
 - Enunciado: Como agente IA quiero que, al conectarme al servidor MCP de ACM, este me indique cómo usarlo y qué skills tiene disponibles, para operar correctamente desde el primer momento.
-- Origen: B:US-15.09 · Épica: EPIC-15 · Feature: FEAT-15.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-15.09 · Épica: EPIC-15 · Feature: FEAT-15.02 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-15.04.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: La respuesta de inicialización MCP incluye `instructions` que indican al agente que descargue y cargue las skills de ACM antes de operar.
   - [ ] CA-02: El servidor declara la capacidad `resources` y la extensión `io.modelcontextprotocol/skills`.
@@ -1210,7 +1253,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-15.05
 
 - Enunciado: Como agente IA quiero descargar todas las skills de ACM desde el propio servidor MCP para saber usarlo y sacarle el máximo partido.
-- Origen: B:US-15.10 · Épica: EPIC-15 · Feature: FEAT-15.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-15.10 · Épica: EPIC-15 · Feature: FEAT-15.02 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-15.05.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Cada archivo de cada skill se puede leer con `resources/read` bajo la URI `skill://acm/<nombre>/<archivo>`.
   - [ ] CA-02: `skills/get` devuelve la skill solicitada y una skill inexistente devuelve el error `-32602`.
@@ -1219,7 +1263,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-15.06
 
 - Enunciado: Como agente IA quiero saber si las skills que descargué están desactualizadas para volver a descargarlas.
-- Origen: B:US-15.11 · Épica: EPIC-15 · Feature: FEAT-15.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-15.11 · Épica: EPIC-15 · Feature: FEAT-15.02 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-15.06.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Cada SKILL.md declara `version` en su frontmatter.
   - [ ] CA-02: El `digest` de un recurso cambia si y solo si cambia su contenido.
@@ -1228,7 +1273,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-15.07
 
 - Enunciado: Como operador quiero que ACM gestione el catálogo de skills que sirve para controlar qué aprenden los agentes.
-- Origen: B:US-15.12 · Épica: EPIC-15 · Feature: FEAT-15.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-15.12 · Épica: EPIC-15 · Feature: FEAT-15.02 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-15.07.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Las skills oficiales se versionan junto con el código de ACM.
   - [ ] CA-02: Una skill retirada deja de aparecer en `skills/list` y su URI devuelve error.
@@ -1239,20 +1285,35 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-15.08
 
 - Enunciado: Como agente quiero disponer de una skill que explique el esquema ACM.
-- Origen: B:US-22.01 · Épica: EPIC-15 · Feature: FEAT-15.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-22.01 · Épica: EPIC-15 · Feature: FEAT-15.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-15.08.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: La skill `acm-schema` está en el catálogo oficial con frontmatter válido. (definido en refinamiento)
+  - [ ] CA-02: Documenta todas las herramientas MCP que expone el servidor. (definido en refinamiento)
+  - [ ] CA-03: Solo menciona herramientas que existen. (definido en refinamiento)
+  - [ ] CA-04: Describe el modelo (proyecto, requisito, épica, feature, historia, criterio) y el flujo recomendado. (definido en refinamiento)
 
 #### US-15.09
 
 - Enunciado: Como agente quiero disponer de una skill de validación INVEST.
-- Origen: B:US-22.02 · Épica: EPIC-15 · Feature: FEAT-15.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-22.02 · Épica: EPIC-15 · Feature: FEAT-15.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-15.09.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: La skill `acm-invest` está en el catálogo con frontmatter válido y depende de `acm-schema`. (definido en refinamiento)
+  - [ ] CA-02: Cubre las seis letras de INVEST, cada una con la pregunta y qué hacer si falla. (definido en refinamiento)
+  - [ ] CA-03: Define qué es un criterio de aceptación binario (PASS/FAIL sin interpretación). (definido en refinamiento)
+  - [ ] CA-04: Solo menciona herramientas de ACM que existen. (definido en refinamiento)
 
 #### US-15.10
 
 - Enunciado: Como agente quiero disponer de una skill de Discovery Socrático.
-- Origen: B:US-22.03 · Épica: EPIC-15 · Feature: FEAT-15.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-22.03 · Épica: EPIC-15 · Feature: FEAT-15.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-15.10.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: La skill `acm-discovery` está en el catálogo con frontmatter válido y depende de `acm-schema`. (definido en refinamiento)
+  - [ ] CA-02: Incluye preguntas sobre visión, actores, alcance, restricciones, dependencias ocultas, riesgos y conflictos. (definido en refinamiento)
+  - [ ] CA-03: Explica cómo registrar el resultado con `acm_requirement_create` y `acm_epic_create`, y cómo comprobar la trazabilidad. (definido en refinamiento)
+  - [ ] CA-04: Solo menciona herramientas de ACM que existen. (definido en refinamiento)
 
 #### US-15.11
 
@@ -2104,7 +2165,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-24.01 — Trabajar con varios proyectos
 
 - **Como** usuario **quiero** gestionar varios proyectos **para** utilizar el sistema como plataforma de desarrollo.
-- Origen: A:US-24.01 · Épica: EPIC-24 · Feature: FEAT-24.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-24.01 · Épica: EPIC-24 · Feature: FEAT-24.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-002
+- Refinamiento: `refinements/US-24.01.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Pueden existir múltiples proyectos.
   - [ ] CA-02: Cada proyecto tiene backlog independiente.
@@ -2123,8 +2185,9 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-24.03 — Evitar contaminación entre proyectos
 
 - **Como** sistema **quiero** aislar contexto, memoria y eventos **para** garantizar separación.
-- Origen: A:US-24.03 · Épica: EPIC-24 · Feature: FEAT-24.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-24.03 · Épica: EPIC-24 · Feature: FEAT-24.01 · Alcance: MVP · Prioridad: P1 · Estado: IMPLEMENTED · Sprint: SPRINT-002
 - Absorbe a: US-24.04, US-24.05
+- Refinamiento: `refinements/US-24.03.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Un agente del proyecto A no recupera memoria privada del proyecto B.
   - [ ] CA-02: Los eventos de B no actualizan el cliente de A.

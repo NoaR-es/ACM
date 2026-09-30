@@ -1,8 +1,55 @@
 {
-  "US-01.04": {"into": "US-01.01", "reason": "B:US-01.01 'crear un proyecto ACM' = A:US-01.01 'Crear un proyecto'; sus 4 criterios se conservan en US-01.01"},
-  "US-01.05": {"into": "US-01.02", "reason": "B:US-01.02 'cambiar el proyecto activo sin mezclar contextos' = A:US-01.02 (seleccionar; CA-05 no mezcla datos)"},
-  "US-01.07": {"into": "US-01.03", "reason": "B:US-01.04 'consultar la configuración' está cubierta por A:US-01.03 CA-01 (parámetros con su valor actual)"},
-  "US-01.08": {"into": "US-01.03", "reason": "B:US-01.05 'modificar parámetros configurables' = A:US-01.03 'Configurar un proyecto'"},
-  "US-24.04": {"into": "US-24.03", "reason": "B:US-26.01 'aislar los datos de cada proyecto' = A:US-24.03 'Evitar contaminación entre proyectos'"},
-  "US-24.05": {"into": "US-24.03", "reason": "B:US-26.02 'impedir consultar memoria de otro proyecto' = A:US-24.03 CA-01"}
+  "US-01.04": {
+    "into": "US-01.01",
+    "reason": "B:US-01.01 'crear un proyecto ACM' = A:US-01.01 'Crear un proyecto'; sus 4 criterios se conservan en US-01.01"
+  },
+  "US-01.05": {
+    "into": "US-01.02",
+    "reason": "B:US-01.02 'cambiar el proyecto activo sin mezclar contextos' = A:US-01.02 (seleccionar; CA-05 no mezcla datos)"
+  },
+  "US-01.07": {
+    "into": "US-01.03",
+    "reason": "B:US-01.04 'consultar la configuración' está cubierta por A:US-01.03 CA-01 (parámetros con su valor actual)"
+  },
+  "US-01.08": {
+    "into": "US-01.03",
+    "reason": "B:US-01.05 'modificar parámetros configurables' = A:US-01.03 'Configurar un proyecto'"
+  },
+  "US-24.04": {
+    "into": "US-24.03",
+    "reason": "B:US-26.01 'aislar los datos de cada proyecto' = A:US-24.03 'Evitar contaminación entre proyectos'"
+  },
+  "US-24.05": {
+    "into": "US-24.03",
+    "reason": "B:US-26.02 'impedir consultar memoria de otro proyecto' = A:US-24.03 CA-01"
+  },
+  "US-04.04": {
+    "into": "US-04.01",
+    "reason": "B:US-04.01 'crear una épica asociada a funcionalidades' = A:US-04.01 'Crear una épica' (CA-03/CA-04)"
+  },
+  "US-04.05": {
+    "into": "US-04.01",
+    "reason": "B:US-04.02 'definir visión y valor de negocio de una épica' está cubierta por A:US-04.01 CA-02 (objetivo y alcance)"
+  },
+  "US-04.07": {
+    "into": "US-04.03",
+    "reason": "B:US-04.04 'crear historias INVEST' = A:US-04.03 'Crear User Stories'"
+  },
+  "US-04.08": {
+    "into": "US-04.03",
+    "reason": "B:US-04.05 'relacionar cada historia con su origen funcional' = A:US-04.03 CA-02 (requisito de origen)"
+  },
+  "US-04.11": {
+    "into": "US-04.03",
+    "reason": "B:US-04.08 'añadir criterios de aceptación binarios' = A:US-04.03 CA-03"
+  },
+  "US-04.13": {
+    "into": "US-04.03",
+    "reason": "B:US-04.10 'impedir que una historia avance sin criterios' = A:US-04.03 CA-04 (incompleta no puede ser READY)"
+  },
+  "US-14.08": {
+    "into": "US-01.06",
+    "cross_epic": true,
+    "reason": "B:US-15.05 'seleccionar explícitamente el proyecto' = US-01.06 (project_id explícito en cada herramienta, ADR-014)"
+  }
 }

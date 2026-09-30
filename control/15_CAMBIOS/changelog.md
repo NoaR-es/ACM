@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.2.0.dev0] — 2026-09-30 — SPRINT-002 — skills y backlog por MCP
+- **Cambio:**
+  - Esquema v2:
+    - global: `mcp_audit`;
+    - proyecto: requisitos, épicas, features, historias y CA.
+  - `BacklogService` (`domain/backlog.py`) y `AuditService` (`domain/audit.py`); nuevo error `FAILED_PRECONDITION`.
+  - Servidor MCP: 19 herramientas nuevas (25 en total), extensión Skills (`skills/list`, `skills/get`, `skill://acm/...`), recarga del catálogo con notificación y auditoría de toda invocación.
+  - `SkillCatalog` y 3 skills oficiales: acm-schema, acm-invest, acm-discovery.
+  - `control/`:
+    - 21 refinamientos;
+    - 7 fusiones de duplicados (una entre épicas, `cross_epic`);
+    - `tools/evidence.py`;
+    - SPRINT-001 archivado y SPRINT-002 abierto y cerrado;
+    - TD-001 registrada.
+- **Stories:**
+  - VERIFIED: US-03.03, 04.01..03, 14.04..07, 14.09..11, 15.01, 15.04..10, 24.01;
+  - IMPLEMENTED: US-24.03 (CA-02 → EPIC-21).
+- **Archivos:** `src/acm/{db/schema.py, domain/backlog.py, domain/audit.py, domain/errors.py, skills_catalog.py, skills/**, mcp_server.py, __init__.py}`, `pyproject.toml`, `tests/test_{backlog,isolation,audit,skills,mcp}.py`, `control/**`.
+- **Tests:** 122/122 PASS; 6/6 mutaciones detectadas.
+- **Migración:** las bases existentes suben a v2 al abrirse (migraciones aditivas).
+- **Breaking change:** no.
+
 ## [0.1.0.dev0] — 2026-09-30 — SPRINT-001 — primer código de producto
 - **Cambio:**
   - Paquete `acm`:

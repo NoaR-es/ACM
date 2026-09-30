@@ -41,4 +41,9 @@
 | Principal | Identidad que llama a ACM (usuario o agente). Rol global `admin`/`user`. En SPRINT-001 se fija por `ACM_PRINCIPAL`; con EPIC-20, por token. |
 | owner / member | Roles de pertenencia a un proyecto: owner puede modificar la configuración; member solo leer. |
 | Refinamiento | Documento `01_PRODUCTO/refinements/US-NN.MM.md` con las secciones de la regla READY de la fuente A. |
-| Fusión (dedupe) | Marcar una historia como duplicado de otra (`tools/dedupe.json`): queda CANCELLED y sus CA pasan a la destino. |
+| Fusión (dedupe) | Marcar una historia como duplicado de otra (`tools/dedupe.json`): queda CANCELLED y sus CA pasan a la destino. `cross_epic: true` permite fusionar entre épicas. |
+| Skill | Paquete de instrucciones en Markdown (`SKILL.md` con frontmatter) que ACM sirve por MCP para que el agente sepa usarlo. Oficiales en `src/acm/skills/`. |
+| Extensión Skills | Extensión MCP `io.modelcontextprotocol/skills` (SEP-2640): métodos `skills/list` y `skills/get`, archivos como recursos `skill://`. |
+| Digest | `sha256:<hex>` del contenido de un archivo de skill; cambia solo si cambia el contenido (US-15.06). |
+| Auditoría MCP | Registro en `mcp_audit` de cada invocación: principal, operación, argumentos, estado, error, resultado (truncado) y duración. |
+| TD-NNN | Deuda técnica detectada durante el desarrollo (`13_BUGS/known_issues.md`); distinta de las historias TECH-NNN del backlog. |

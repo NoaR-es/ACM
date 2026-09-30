@@ -394,8 +394,8 @@ def apply_dedupe(epics: list[Epic], errors: list[str]) -> None:
         if src is None or dst is None:
             errors.append(f"dedupe.json: {src_id} → {target_id}: historia inexistente")
             continue
-        if src_id[:5] != target_id[:5]:
-            errors.append(f"dedupe.json: {src_id} y {target_id} deben pertenecer a la misma épica")
+        if src_id[:5] != target_id[:5] and not spec.get("cross_epic"):
+            errors.append(f"dedupe.json: {src_id} y {target_id} son de épicas distintas: requiere \"cross_epic\": true")
         if dst.merged_into or src is dst:
             errors.append(f"dedupe.json: destino inválido para {src_id}")
             continue
