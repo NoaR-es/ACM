@@ -12,5 +12,5 @@ LOCK: none
 | ¿Qué se acaba de terminar? | SPRINT-005: US-13.03, 13.05, 13.06, 13.07, 13.10, 13.11, 13.12, 13.13 VERIFIED; US-35.11 VERIFIED. 220 tests PASS. Evidencia: `12_TESTING/sprint_005_evidence.md` |
 | ¿Qué está bloqueado? | SPIKE-005 (IMP-004): sin Ollama real en el entorno cloud |
 | ¿Qué queda? | `03_ESTADO/pending_work.md` |
-| ¿Siguiente acción? | Operador: revisar y fusionar. Agente: comprobar CI y proponer SPRINT-006. |
+| ¿Siguiente acción? | Operador: revisar y fusionar. CI en verde (run #10). Agente: proponer SPRINT-006. |
 | ¿Salud? | WARNING — ver `project_health.md` |
