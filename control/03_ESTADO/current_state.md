@@ -12,5 +12,5 @@ LOCK: none
 | ¿Qué se acaba de terminar? | SPRINT-003: US-35.08, 35.09, 35.10, 47.01 VERIFIED; US-35.11, 22.01, 22.03 IMPLEMENTED. 172 tests PASS. Evidencia: `12_TESTING/sprint_003_evidence.md` |
 | ¿Qué está bloqueado? | SPIKE-005 (IMP-004): sin Ollama real en el entorno cloud |
 | ¿Qué queda? | `03_ESTADO/pending_work.md` |
-| ¿Siguiente acción? | Operador: revisar y fusionar; ejecutar SPIKE-005 en local si es posible. Agente: comprobar CI y proponer SPRINT-004. |
+| ¿Siguiente acción? | Operador: revisar y fusionar; ejecutar SPIKE-005 en local si es posible. CI en verde (run #6). Agente: proponer SPRINT-004. |
 | ¿Salud? | WARNING — ver `project_health.md` |

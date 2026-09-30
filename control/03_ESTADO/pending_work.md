@@ -1,6 +1,6 @@
 # Trabajo pendiente (ordenado)
 
-1. Comprobar la CI en GitHub del commit de SPRINT-003.
+1. ~~Comprobar la CI en GitHub del commit de SPRINT-003~~ → success (run #6, `6b3bad7`).
 2. **Operador:** ejecutar SPIKE-005 con un Ollama real (IMP-004). Con él, US-22.01 y US-22.03 pueden pasar a VERIFIED y se puede diseñar `OllamaDecisionEngine`.
 3. **Propuesta de SPRINT-004: "Autenticación y RBAC" (EPIC-20).** Sustituye al principal por configuración por tokens; requisito para exponer HTTP fuera de 127.0.0.1 (VULN-001). Ahora que ACM guarda backlog, auditoría y ahorro por agente, la identidad real es lo que más riesgo reduce.
    - Alternativa: Watchdog (EPIC-13) sobre la interfaz de decisión, que cerraría US-35.11 CA-01.
