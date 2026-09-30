@@ -1,0 +1,5 @@
+# Bugs
+
+| BUG-ID | Fecha | Descripción | Reproducción | Impacto | Severidad | Causa | Archivos | Solución | Tests añadidos | Estado |
+|--------|-------|-------------|--------------|---------|-----------|-------|----------|----------|----------------|--------|
+| BUG-001 | 2026-09-30 | Al abrir a la vez una base SQLite **nueva** desde varios procesos, alguno falla con `STORAGE_ERROR: … database is locked`. | CI [run #2](https://github.com/NoaR-es/ACM/actions/runs/36758383579) (`test_us1803_migracion_concurrente_una_sola_vez`, commit `445f09c`); local: 16 procesos con barrera abriendo 30 bases nuevas → 13 fallos. | Un proceso de ACM puede no arrancar, o una migración concurrente puede abortar, si otro proceso crea la misma base en ese momento. Intermitente. | MEDIA | Ver `root_cause_analysis.md` | `src/acm/db/connection.py` | `Database._enable_wal`: reintenta `PRAGMA journal_mode=WAL` con espera exponencial (5 ms → 100 ms) mientras la base esté bloqueada, hasta agotar `busy_timeout` | `tests/test_db.py::test_bug001_apertura_concurrente_de_base_nueva` (falla 3/3 sin la corrección, pasa 3/3 con ella); estrés local: 0 fallos en 480 aperturas | VERIFIED |

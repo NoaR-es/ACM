@@ -1,0 +1,133 @@
+"""Composición del proceso ACM (ADR-014): FastAPI con `/api` y el servidor MCP montado en `/mcp`.
+
+`/mcp` exige un token Bearer de ACM (ADR-017). `/api/health` es público: solo informa de salud y versión.
+"""
+
+from __future__ import annotations
+
+import contextlib
+import logging
+from collections.abc import AsyncIterator
+from typing import Any
+
+import anyio
+from fastapi import FastAPI
+from mcp.server.transport_security import TransportSecuritySettings
+
+from acm import __version__
+from acm.auth import BearerAuth, request_principal, request_token
+from acm.config import Settings
+from acm.domain.audit import AuditService
+from acm.domain.backlog import BacklogService
+from acm.domain.errors import InvalidArgument
+from acm.domain.identity import IdentityService
+from acm.domain.projects import ProjectService
+from acm.domain.watchdog import WatchdogService
+from acm.inference.ollama import OllamaClient, OllamaGenerationEngine
+from acm.inference.router import EngineRouter
+from acm.mcp_server import build_mcp_server
+from acm.skills_catalog import SkillCatalog
+from acm.web_api import build_api
+from acm.webui_app import SecureStatic, webui_available
+
+
+def build_service(settings: Settings) -> ProjectService:
+    service = ProjectService(settings.data_dir, synchronous=settings.sqlite_synchronous)
+    # SPRINT-001: el principal lo fija la configuración y se da de alta como admin si no existe (EPIC-20 lo sustituirá).
+    service.ensure_principal(settings.principal, "admin")
+    return service
+
+
+def build_engines(service: ProjectService, settings: Settings) -> EngineRouter:
+    """Router de inferencia: reglas siempre; Ollama si `ACM_OLLAMA_URL` y `ACM_OLLAMA_MODEL` están configurados."""
+    engines = EngineRouter(service)
+    if settings.ollama_url or settings.ollama_model:
+        if not (settings.ollama_url and settings.ollama_model):
+            raise InvalidArgument("ACM_OLLAMA_URL y ACM_OLLAMA_MODEL deben configurarse juntos", field="ollama")
+        engines.registry.register(OllamaGenerationEngine(OllamaClient(settings.ollama_url), settings.ollama_model))
+    return engines
+
+
+LOCAL_HOSTS = ("127.0.0.1", "localhost", "[::1]")
+logger = logging.getLogger("acm")
+
+
+def transport_security(settings: Settings) -> TransportSecuritySettings:
+    """Protección contra DNS rebinding del SDK MCP: solo se aceptan los Host locales y los de `ACM_ALLOWED_HOSTS`.
+
+    Sin esta configuración, el SDK solo admite Host locales y ACM respondía 421 al servirse con otro nombre (TD-002).
+    """
+    hosts = [f"{h}:*" for h in LOCAL_HOSTS] + [h for extra in settings.allowed_hosts for h in (extra, f"{extra}:*")]
+    origins = [f"http://{h}:*" for h in LOCAL_HOSTS] + [
+        f"{scheme}://{extra}" for extra in settings.allowed_hosts for scheme in ("https", "http")
+    ]
+    return TransportSecuritySettings(enable_dns_rebinding_protection=True, allowed_hosts=hosts, allowed_origins=origins)
+
+
+async def scheduled_watchdog(watchdog: WatchdogService, settings: Settings) -> None:
+    """US-13.06: audita todos los proyectos cada `ACM_WATCHDOG_INTERVAL_S` segundos como el admin local."""
+    while True:
+        await anyio.sleep(settings.watchdog_interval_s)
+        try:
+            await anyio.to_thread.run_sync(watchdog.run_all, settings.principal)
+        except Exception:  # una ronda fallida no detiene el Watchdog; queda en el log del proceso
+            logger.exception("ronda periódica del Watchdog fallida")
+
+
+async def prune_events(service: ProjectService, settings: Settings) -> None:
+    """ADR-018: conserva los últimos `ACM_EVENTS_KEEP` eventos; un cliente más atrasado recibe `resync`."""
+    while True:
+        try:
+            await anyio.to_thread.run_sync(service.events.prune, settings.events_keep)
+        except Exception:
+            logger.exception("no se pudieron purgar los eventos antiguos")
+        await anyio.sleep(60)
+
+
+def create_app(settings: Settings) -> FastAPI:
+    service = build_service(settings)
+    engines = build_engines(service, settings)
+    # HTTP: la identidad sale del token Bearer de cada petición (EPIC-20, ADR-017), nunca de la configuración.
+    catalog = SkillCatalog()
+    mcp = build_mcp_server(
+        service, principal=request_principal, catalog=catalog, engines=engines, token_id=request_token
+    )
+    mcp_app = BearerAuth(
+        mcp.streamable_http_app(streamable_http_path="/", transport_security=transport_security(settings)),
+        IdentityService(service),
+        AuditService(service),
+    )
+
+    watchdog = WatchdogService(service, BacklogService(service, engines), engines)
+
+    @contextlib.asynccontextmanager
+    async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+        # El sub-app MCP montado no ejecuta su propio lifespan: el gestor de sesiones se arranca aquí (SPIKE-002).
+        async with mcp.session_manager.run(), anyio.create_task_group() as tg:
+            if settings.watchdog_interval_s > 0:
+                tg.start_soon(scheduled_watchdog, watchdog, settings)
+            tg.start_soon(prune_events, service, settings)
+            yield
+            tg.cancel_scope.cancel()
+        engines.registry.close()
+        service.close()
+
+    app = FastAPI(title="ACM", version=__version__, lifespan=lifespan)
+
+    @app.get("/api/health")
+    def health() -> dict[str, Any]:
+        """Salud básica: versión y PRAGMAs de la base global (ADR-013: foreign_keys activo)."""
+        info = service.system_info()
+        ok = info["sqlite"]["foreign_keys"] and str(info["sqlite"]["journal_mode"]).lower() == "wal"
+        return {"status": "ok" if ok else "degraded", "acm_version": __version__, **info}
+
+    api, ws = build_api(service, engines, catalog)
+    app.include_router(ws)  # WebSocket con autenticación propia (primer mensaje), antes del montaje de /api/v1
+    app.mount("/api/v1", BearerAuth(api, IdentityService(service), AuditService(service)))
+    app.mount("/mcp", mcp_app)
+    if webui_available():  # ADR-019: la interfaz compilada va dentro del paquete; se monta la última
+        app.mount("/", SecureStatic(), name="webui")
+    else:
+        logger.warning("interfaz web no compilada (src/acm/webui): ejecuta `npm run build` en web/")
+    app.state.service = service
+    return app

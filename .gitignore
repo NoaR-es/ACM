@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+.venv/
+.acm-data/
+web/node_modules/

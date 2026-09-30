@@ -1,0 +1,12 @@
+# Sprint Goals
+
+| Sprint | Goal | Resultado |
+|--------|------|-----------|
+| SPRINT-000 | Reconstruibilidad total del proyecto desde `control/` | Cumplido (2026-09-30) |
+| SPRINT-001 | Un agente IA puede crear, listar, abrir y configurar proyectos ACM (SQLite por proyecto) vía el servidor MCP de ACM, con cada CA verificado por tests | Cumplido en el backend (2026-09-30); US-01.02 CA-03 cerrado en SPRINT-007 |
+| SPRINT-002 | Un agente conectado por MCP descarga las skills oficiales y construye un backlog trazable en la SQLite del proyecto, aislado y auditado, con cada CA verificado por tests | Cumplido (2026-09-30); US-24.03 CA-02 queda para EPIC-21 |
+| SPRINT-003 | Un agente delega decisiones tipadas y pide contexto compacto con tokens ahorrados medidos; interfaz de decisión común con reglas sin modelos, Ollama por configuración y JEV conectable sin cambiar consumidores | Cumplido en el núcleo (2026-09-30); Ollama sin verificar contra una instancia real (IMP-004) y Watchdog pendiente (EPIC-13) |
+| SPRINT-006 | Todo lo que guarda ACM se lee por API REST v1; historias con flujo de estados e historial; cada cambio llega en tiempo real por WebSocket, también desde otros procesos, con reanudación sin pérdidas ni duplicados | Cumplido (2026-09-30) |
+| SPRINT-005 | ACM audita cada proyecto (a demanda y periódicamente), resume en un semáforo con histórico, pone en cuarentena un proyecto con la base dañada e informa de la salud de cada componente | Cumplido (2026-09-30) |
+| SPRINT-004 | Ninguna petición MCP por HTTP sin token válido; credenciales por principal, revocables al instante y nunca guardadas ni auditadas en claro; roles con efecto inmediato y todo auditado | Cumplido (2026-09-30) |
+| SPRINT-007 | Desde el navegador el operador revisa todo lo que ACM guarda y su documentación, mueve historias en un Kanban de uno o varios proyectos (ratón o teclado) y ve al instante los cambios de cualquier agente, con contraste AA; cada CA verificado por e2e en navegador real | Cumplido (2026-09-30), pendiente de CI |

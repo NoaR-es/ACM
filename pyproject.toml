@@ -1,0 +1,44 @@
+[build-system]
+requires = ["hatchling>=1.32"]
+build-backend = "hatchling.build"
+
+[project]
+name = "acm"
+version = "0.7.0.dev0"
+description = "Agile Context Manager: memoria de estado, gobernanza y trazabilidad Agile para agentes IA, servida por MCP."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary" }
+dependencies = [
+    "mcp==2.2.0",          # ADR-008, ADR-014 (validado en SPIKE-002)
+    "fastapi==0.142.2",    # ADR-014
+    "uvicorn==0.54.0",     # ADR-014
+    "anyio>=4.15,<5",      # ADR-013: sqlite3 en hilos de trabajo
+    "httpx==0.28.1",       # EPIC-22: cliente HTTP de Ollama (ya lo traía mcp; ahora dependencia explícita)
+    "websockets==17.1",    # EPIC-21: implementación WebSocket de uvicorn (ADR-018) y cliente de los tests
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.1.1",
+    "ruff==0.16.9",
+    "playwright==1.63.0",  # e2e de la interfaz web (SPRINT-007)
+]
+
+[project.scripts]
+acm = "acm.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/acm"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = ["spikes", "control"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]

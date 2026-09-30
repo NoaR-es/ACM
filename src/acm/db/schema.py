@@ -1,0 +1,290 @@
+"""Catálogos de migraciones de ACM (ADR-011: SQLite es la fuente de verdad del producto; ADR-013).
+
+- GLOBAL: base de plataforma `<data_dir>/acm.db` — principales, proyectos, pertenencias, auditoría MCP, inferencia (v3)
+  tokens de acceso (v4), Watchdog (v5) y eventos (v6).
+- PROJECT: base de cada proyecto `<data_dir>/projects/<id>/project.db` — metadatos, configuración y backlog (v2).
+
+Una migración publicada no se modifica: los cambios van en migraciones nuevas (US-18.03).
+"""
+
+from __future__ import annotations
+
+from acm.db.migrations import Migration
+
+GLOBAL: tuple[Migration, ...] = (
+    Migration(
+        1,
+        "principals_projects_members",
+        (
+            """CREATE TABLE principals (
+            id TEXT PRIMARY KEY CHECK (length(id) BETWEEN 1 AND 64),
+            role TEXT NOT NULL CHECK (role IN ('admin', 'user')),
+            created_at TEXT NOT NULL
+        )""",
+            """CREATE TABLE projects (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL CHECK (length(name) BETWEEN 1 AND 120),
+            description TEXT NOT NULL DEFAULT '',
+            created_at TEXT NOT NULL,
+            created_by TEXT NOT NULL REFERENCES principals(id),
+            db_path TEXT NOT NULL
+        )""",
+            """CREATE TABLE project_members (
+            project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+            principal_id TEXT NOT NULL REFERENCES principals(id),
+            role TEXT NOT NULL CHECK (role IN ('owner', 'member')),
+            added_at TEXT NOT NULL,
+            PRIMARY KEY (project_id, principal_id)
+        )""",
+            "CREATE INDEX idx_project_members_principal ON project_members(principal_id)",
+        ),
+    ),
+    Migration(
+        2,
+        "mcp_audit",
+        (
+            """CREATE TABLE mcp_audit (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ts TEXT NOT NULL,
+            principal TEXT NOT NULL,
+            operation TEXT NOT NULL,
+            project_id TEXT,
+            arguments_json TEXT NOT NULL,
+            status TEXT NOT NULL CHECK (status IN ('ok', 'error')),
+            error TEXT NOT NULL DEFAULT '',
+            result_json TEXT NOT NULL DEFAULT '',
+            result_truncated INTEGER NOT NULL DEFAULT 0 CHECK (result_truncated IN (0, 1)),
+            duration_ms REAL NOT NULL
+        )""",
+            "CREATE INDEX idx_mcp_audit_principal ON mcp_audit(principal, id)",
+            "CREATE INDEX idx_mcp_audit_project ON mcp_audit(project_id, id)",
+        ),
+    ),
+    Migration(
+        3,
+        "inference",
+        (
+            # US-47.01 / US-22.01: motores registrados y su último estado de salud (modelos detectados, no supuestos)
+            """CREATE TABLE inference_engines (
+            name TEXT PRIMARY KEY,
+            kind TEXT NOT NULL CHECK (kind IN ('decision', 'generation')),
+            provider TEXT NOT NULL,
+            endpoint TEXT NOT NULL DEFAULT '',
+            status TEXT NOT NULL CHECK (status IN ('unknown', 'ok', 'error')),
+            detail TEXT NOT NULL DEFAULT '',
+            models_json TEXT NOT NULL DEFAULT '[]',
+            checked_at TEXT
+        )""",
+            # US-35.10 CA-02 / US-22.03 CA-02: cada llamada de inferencia con su motor y su resultado
+            """CREATE TABLE inference_calls (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ts TEXT NOT NULL,
+            principal TEXT NOT NULL,
+            project_id TEXT NOT NULL,
+            kind TEXT NOT NULL CHECK (kind IN ('decision', 'generation')),
+            purpose TEXT NOT NULL,
+            engine TEXT NOT NULL DEFAULT '',
+            fallback_from TEXT,
+            status TEXT NOT NULL CHECK (status IN ('ok', 'error')),
+            error TEXT NOT NULL DEFAULT '',
+            duration_ms REAL NOT NULL,
+            input_tokens INTEGER,
+            output_tokens INTEGER
+        )""",
+            "CREATE INDEX idx_inference_calls_project ON inference_calls(project_id, id)",
+            # US-35.09: cada entrega de contexto con el tamaño entregado y el equivalente completo
+            """CREATE TABLE context_deliveries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ts TEXT NOT NULL,
+            principal TEXT NOT NULL,
+            project_id TEXT NOT NULL,
+            story_id TEXT NOT NULL,
+            delivered_tokens INTEGER NOT NULL CHECK (delivered_tokens >= 0),
+            full_tokens INTEGER NOT NULL CHECK (full_tokens >= 0),
+            method TEXT NOT NULL,
+            summarized INTEGER NOT NULL CHECK (summarized IN (0, 1)),
+            engine TEXT NOT NULL DEFAULT ''
+        )""",
+            "CREATE INDEX idx_context_deliveries_principal ON context_deliveries(principal, project_id)",
+        ),
+    ),
+    Migration(
+        4,
+        "identity_tokens",
+        (
+            # US-20.04: credenciales independientes para usuarios y agentes
+            "ALTER TABLE principals ADD COLUMN kind TEXT NOT NULL DEFAULT 'user' CHECK (kind IN ('user', 'agent'))",
+            # US-20.03 / ADR-017: tokens opacos; solo se guarda su hash sha256 y un prefijo visible
+            """CREATE TABLE api_tokens (
+            id TEXT PRIMARY KEY,
+            principal_id TEXT NOT NULL REFERENCES principals(id),
+            name TEXT NOT NULL CHECK (length(name) BETWEEN 1 AND 80),
+            prefix TEXT NOT NULL,
+            secret_hash TEXT NOT NULL UNIQUE,
+            created_at TEXT NOT NULL,
+            created_by TEXT NOT NULL,
+            revoked_at TEXT,
+            revoked_by TEXT,
+            last_used_at TEXT,
+            use_count INTEGER NOT NULL DEFAULT 0
+        )""",
+            "CREATE INDEX idx_api_tokens_principal ON api_tokens(principal_id)",
+            # US-20.03 CA-04: cada invocación auditada identifica el token con el que se hizo
+            "ALTER TABLE mcp_audit ADD COLUMN token_id TEXT",
+        ),
+    ),
+    Migration(
+        5,
+        "watchdog",
+        (
+            # US-13.05 / US-13.11: estado de integridad por proyecto; 'corrupt' bloquea las escrituras
+            "ALTER TABLE projects ADD COLUMN integrity_status TEXT NOT NULL DEFAULT 'unknown' "
+            "CHECK (integrity_status IN ('unknown', 'ok', 'corrupt'))",
+            "ALTER TABLE projects ADD COLUMN integrity_detail TEXT NOT NULL DEFAULT ''",
+            "ALTER TABLE projects ADD COLUMN integrity_checked_at TEXT",
+            # US-13.12 / US-13.13: histórico de auditorías de gobernanza (en la base global: sobrevive a una
+            # base de proyecto corrupta)
+            """CREATE TABLE watchdog_runs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+            ts TEXT NOT NULL,
+            trigger TEXT NOT NULL CHECK (trigger IN ('manual', 'scheduled')),
+            principal TEXT NOT NULL,
+            semaphore TEXT NOT NULL CHECK (semaphore IN ('GREEN', 'AMBER', 'RED')),
+            findings_json TEXT NOT NULL,
+            critical INTEGER NOT NULL,
+            warning INTEGER NOT NULL,
+            review INTEGER NOT NULL,
+            info INTEGER NOT NULL,
+            engines_json TEXT NOT NULL DEFAULT '[]',
+            duration_ms REAL NOT NULL
+        )""",
+            "CREATE INDEX idx_watchdog_runs_project ON watchdog_runs(project_id, id)",
+        ),
+    ),
+    Migration(
+        6,
+        "events",
+        (
+            # US-21.01..03 / ADR-018: eventos de dominio persistidos. Los escribe cualquier proceso de ACM (HTTP,
+            # stdio, CLI); el servidor HTTP los lee por `seq` y los empuja por WebSocket. `seq` permite reanudar.
+            """CREATE TABLE events (
+            seq INTEGER PRIMARY KEY AUTOINCREMENT,
+            ts TEXT NOT NULL,
+            type TEXT NOT NULL,
+            project_id TEXT,
+            principal TEXT NOT NULL,
+            entity_type TEXT NOT NULL,
+            entity_id TEXT NOT NULL,
+            data_json TEXT NOT NULL DEFAULT '{}'
+        )""",
+        ),
+    ),
+)
+
+PROJECT: tuple[Migration, ...] = (
+    Migration(
+        1,
+        "meta_config",
+        (
+            """CREATE TABLE project_meta (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        )""",
+            """CREATE TABLE config (
+            key TEXT PRIMARY KEY,
+            value_json TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            updated_by TEXT NOT NULL
+        )""",
+        ),
+    ),
+    Migration(
+        2,
+        "backlog",
+        (
+            """CREATE TABLE requirements (
+            id TEXT PRIMARY KEY,
+            title TEXT NOT NULL CHECK (length(title) BETWEEN 1 AND 200),
+            description TEXT NOT NULL DEFAULT '',
+            created_at TEXT NOT NULL,
+            created_by TEXT NOT NULL
+        )""",
+            """CREATE TABLE epics (
+            id TEXT PRIMARY KEY,
+            title TEXT NOT NULL CHECK (length(title) BETWEEN 1 AND 200),
+            objective TEXT NOT NULL CHECK (length(trim(objective)) > 0),
+            scope TEXT NOT NULL CHECK (length(trim(scope)) > 0),
+            coverage_confirmed_at TEXT,
+            coverage_confirmed_by TEXT,
+            created_at TEXT NOT NULL,
+            created_by TEXT NOT NULL
+        )""",
+            """CREATE TABLE epic_requirements (
+            epic_id TEXT NOT NULL REFERENCES epics(id),
+            requirement_id TEXT NOT NULL REFERENCES requirements(id),
+            PRIMARY KEY (epic_id, requirement_id)
+        )""",
+            """CREATE TABLE features (
+            id TEXT PRIMARY KEY,
+            epic_id TEXT NOT NULL REFERENCES epics(id),
+            title TEXT NOT NULL CHECK (length(title) BETWEEN 1 AND 200),
+            description TEXT NOT NULL DEFAULT '',
+            status TEXT NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'SPLIT')),
+            split_into TEXT NOT NULL DEFAULT '',
+            created_at TEXT NOT NULL,
+            created_by TEXT NOT NULL
+        )""",
+            """CREATE TABLE stories (
+            id TEXT PRIMARY KEY,
+            epic_id TEXT NOT NULL REFERENCES epics(id),
+            feature_id TEXT NOT NULL REFERENCES features(id),
+            kind TEXT NOT NULL CHECK (kind IN ('user_story', 'technical')),
+            as_a TEXT NOT NULL,
+            i_want TEXT NOT NULL,
+            so_that TEXT NOT NULL,
+            technical_reason TEXT NOT NULL DEFAULT '',
+            status TEXT NOT NULL DEFAULT 'PLANNED' CHECK (status IN ('PLANNED', 'READY', 'IN_PROGRESS', 'BLOCKED',
+                'IMPLEMENTED', 'TESTING', 'VERIFIED', 'FAILED', 'DEPRECATED', 'CANCELLED', 'DONE')),
+            created_at TEXT NOT NULL,
+            created_by TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            CHECK (kind = 'user_story' OR length(trim(technical_reason)) > 0)
+        )""",
+            """CREATE TABLE story_requirements (
+            story_id TEXT NOT NULL REFERENCES stories(id),
+            requirement_id TEXT NOT NULL REFERENCES requirements(id),
+            PRIMARY KEY (story_id, requirement_id)
+        )""",
+            """CREATE TABLE acceptance_criteria (
+            story_id TEXT NOT NULL REFERENCES stories(id),
+            code TEXT NOT NULL,
+            text TEXT NOT NULL CHECK (length(trim(text)) > 0),
+            created_at TEXT NOT NULL,
+            created_by TEXT NOT NULL,
+            PRIMARY KEY (story_id, code)
+        )""",
+            "CREATE INDEX idx_features_epic ON features(epic_id)",
+            "CREATE INDEX idx_stories_feature ON stories(feature_id)",
+            "CREATE INDEX idx_story_requirements_req ON story_requirements(requirement_id)",
+            "CREATE INDEX idx_epic_requirements_req ON epic_requirements(requirement_id)",
+        ),
+    ),
+    Migration(
+        3,
+        "story_status_history",
+        (
+            # US-06.02 CA-02: cada cambio de estado de una historia queda registrado
+            """CREATE TABLE story_status_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            story_id TEXT NOT NULL REFERENCES stories(id),
+            from_status TEXT NOT NULL,
+            to_status TEXT NOT NULL,
+            reason TEXT NOT NULL DEFAULT '',
+            changed_at TEXT NOT NULL,
+            changed_by TEXT NOT NULL
+        )""",
+            "CREATE INDEX idx_story_status_history_story ON story_status_history(story_id, id)",
+        ),
+    ),
+)
