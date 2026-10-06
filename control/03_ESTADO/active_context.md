@@ -1,4 +1,4 @@
-TASK: none (SPRINT-008 entregado; pendiente de CI)
+TASK: none (SPRINT-008 entregado; CI en verde, runs #15 y #16)
 STORY: —
 SPRINT: SPRINT-008
 

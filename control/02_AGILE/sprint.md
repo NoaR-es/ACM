@@ -7,6 +7,7 @@ Contexto: el operador pide dejar ACM **totalmente funcional** tras esta iteraci√
 | Campo | Valor |
 |-------|-------|
 | Sprint ID | SPRINT-008 |
+| CI | En verde: runs #15 y #16, commit `872d137` |
 | Objetivo | Operar ACM entero desde el navegador y que ACM supervise su trabajo √°gil con sus propios modelos |
 | Inicio | 2026-09-30 |
 | Fin | Al cumplir el Sprint Goal (sin timebox; desarrollo por agente) |

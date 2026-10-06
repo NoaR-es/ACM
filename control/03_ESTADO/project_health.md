@@ -10,5 +10,5 @@
 | IA | WARNING | Motores JEV y Ollama (decisión y generación), selección por propósito, supervisor y agente interno implementados (ADR-020..022), pero solo probados contra servidores simulados: sin Ollama ni Ollaya reales (IMP-004). Calidad de decisión no medida |
 | Código | OK | Backend `src/acm` y frontend `web/`: lint y tipos limpios; archivos inventariados con cabecera; deuda TD-001, TD-003 |
 | Testing | OK | 380 tests Python (37 e2e en Chromium) + 26 vitest en PASS; matrices CA↔test por sprint; mutaciones SPRINT-008: 9/10 detectadas + 1 equivalente |
-| CI/CD | OK | CI en verde hasta SPRINT-007 (runs #13 y #14); SPRINT-008 pendiente de comprobar; sin CD |
+| CI/CD | OK | CI en verde hasta SPRINT-008 (runs #15 y #16, commit `872d137`); sin CD |
 | Seguridad | WARNING | Token y RBAC (ADR-017); escritura REST con la misma autorización que MCP; claves de Ollaya solo por entorno (ADR-021); el supervisor actúa como principal propio y auditado (ADR-020). Sin TLS propio: exponer solo tras un proxy TLS (VULN-002) |

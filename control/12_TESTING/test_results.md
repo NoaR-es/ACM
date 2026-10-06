@@ -53,3 +53,4 @@
 | 2026-10-06 | TEST-CTRL-001 (SPRINT-008) | PASS | `stories=483 criteria=711 merged=23 test_refs=342`; `OK (check)` |
 | 2026-10-06 | `code_inventory.py --check` | PASS | 95 archivos inventariados; `code_reference.md` regenerado |
 | 2026-10-06 | Evidencia SPRINT-008 | 85 PASS, 1 PENDIENTE | `sprint_008_evidence.md` (US-05.02 CA-03: el producto no modela dependencias entre historias) |
+| 2026-10-06 | CI GitHub Actions runs #15 y #16 | PASS | [run #15](https://github.com/NoaR-es/ACM/actions/runs/37469122183) y [run #16](https://github.com/NoaR-es/ACM/actions/runs/37469126949), commit `872d137` (SPRINT-008): jobs `test` (e2e obligatorios) y `web` en verde |
