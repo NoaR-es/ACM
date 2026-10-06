@@ -1,8 +1,8 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v4.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v5.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
 
 # User Stories (backlog unificado)
 
-Total activas: **473** · Con criterios de aceptación: **169** · Sin criterios: **304** · Posibles solapamientos señalados: **29**
+Total activas: **483** · Con criterios de aceptación: **196** · Sin criterios: **287** · Posibles solapamientos señalados: **29**
 
 > READY exige la cadena completa de la *Regla de aceptación del backlog* (fuente A): precondiciones, flujo,
 > alternativas, errores, reglas, validaciones, casos límite, CA, tareas y pruebas. Se documenta en
@@ -350,8 +350,10 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-04.10
 
 - Enunciado: Como Watchdog quiero detectar historias que no sean suficientemente pequeñas, claras o testeables.
-- Origen: B:US-04.07 · Épica: EPIC-04 · Feature: FEAT-04.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-04.07 · Épica: EPIC-04 · Feature: FEAT-04.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-04.10.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: El supervisor señala las historias demasiado grandes o con criterios no verificables, con el motor que lo decidió. (definido en refinamiento)
 
 ### FEAT-04.04 — Requisitos · origen B:FEAT-04.03
 
@@ -380,14 +382,18 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-04.14
 
 - Enunciado: Como Watchdog quiero evaluar automáticamente una historia según INVEST.
-- Origen: B:US-05.01 · Épica: EPIC-04 · Feature: FEAT-04.05 · Alcance: POST-MVP · Prioridad: P3 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-05.01 · Épica: EPIC-04 · Feature: FEAT-04.05 · Alcance: POST-MVP · Prioridad: P3 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-04.14.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Cada historia viva se evalúa según INVEST a través de la interfaz de decisión y las que no lo cumplen se señalan. (definido en refinamiento)
 
 #### US-04.15
 
 - Enunciado: Como Watchdog quiero identificar criterios vagos o no verificables.
-- Origen: B:US-05.02 · Épica: EPIC-04 · Feature: FEAT-04.05 · Alcance: POST-MVP · Prioridad: P3 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-05.02 · Épica: EPIC-04 · Feature: FEAT-04.05 · Alcance: POST-MVP · Prioridad: P3 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-04.15.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: El supervisor identifica las historias con criterios vagos o no verificables. (definido en refinamiento)
 
 #### US-04.16
 
@@ -412,7 +418,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-05.02 — Crear un sprint
 
 - **Como** Scrum Master **quiero** crear un sprint **para** agrupar trabajo con un objetivo concreto.
-- Origen: A:US-05.02 · Épica: EPIC-05 · Feature: FEAT-05.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-05.02 · Épica: EPIC-05 · Feature: FEAT-05.01 · Alcance: MVP · Prioridad: P1 · Estado: IMPLEMENTED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-05.02.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: El sprint tiene identificador y objetivo.
   - [ ] CA-02: Las historias asignadas quedan vinculadas al sprint.
@@ -422,7 +429,8 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-05.03 — Cerrar un sprint
 
 - **Como** Scrum Master **quiero** cerrar un sprint **para** registrar su resultado y actualizar la planificación.
-- Origen: A:US-05.03 · Épica: EPIC-05 · Feature: FEAT-05.01 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: A:US-05.03 · Épica: EPIC-05 · Feature: FEAT-05.01 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-05.03.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: El sistema identifica historias terminadas y no terminadas.
   - [ ] CA-02: Las historias no terminadas pueden trasladarse.
@@ -434,42 +442,64 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-05.04
 
 - Enunciado: Como Scrum Master quiero crear un sprint con objetivo, fechas y capacidad.
-- Origen: B:US-06.01 · Épica: EPIC-05 · Feature: FEAT-05.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-06.01 · Épica: EPIC-05 · Feature: FEAT-05.02 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-05.04.md` — completo (regla READY de A)
 - ⚠ Posible solapamiento con US-05.02: revisar si es duplicado, detalle o historia distinta (GAP-006)
-- Criterios de aceptación: MISSING
+- Criterios de aceptación:
+  - [ ] CA-01: Un sprint guarda nombre, objetivo, fecha de inicio, fecha de fin y, opcionalmente, su capacidad en historias. (definido en refinamiento)
+  - [ ] CA-02: Una fecha inválida o un fin anterior al inicio se rechazan indicando el campo. (definido en refinamiento)
+  - [ ] CA-03: Una capacidad que no sea un entero entre 1 y 1000 se rechaza. (definido en refinamiento)
 
 #### US-05.05
 
 - Enunciado: Como Scrum Master quiero asignar historias a un sprint.
-- Origen: B:US-06.02 · Épica: EPIC-05 · Feature: FEAT-05.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-06.02 · Épica: EPIC-05 · Feature: FEAT-05.02 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-05.05.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Las historias elegidas quedan planificadas en el sprint. (definido en refinamiento)
+  - [ ] CA-02: Una historia solo puede estar en un sprint abierto a la vez. (definido en refinamiento)
+  - [ ] CA-03: Una historia DONE, CANCELLED o DEPRECATED no se puede planificar. (definido en refinamiento)
+  - [ ] CA-04: Planificar una historia que no está READY se permite con un aviso. (definido en refinamiento)
+  - [ ] CA-05: Una historia se puede retirar de un sprint abierto y queda en su historial. (definido en refinamiento)
+  - [ ] CA-06: El tablero Kanban puede mostrar solo las historias de un sprint. (definido en refinamiento)
 
 #### US-05.06
 
 - Enunciado: Como Scrum Master quiero cerrar un sprint conservando sus métricas históricas.
-- Origen: B:US-06.03 · Épica: EPIC-05 · Feature: FEAT-05.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-06.03 · Épica: EPIC-05 · Feature: FEAT-05.02 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-05.06.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: El cierre guarda las métricas del sprint (historias, terminadas, porcentaje, reparto por estado). (definido en refinamiento)
+  - [ ] CA-02: Esas métricas no cambian aunque las historias cambien después. (definido en refinamiento)
 
 ### FEAT-05.03 — Capacidad · origen B:FEAT-06.02
 
 #### US-05.07
 
 - Enunciado: Como Scrum Master quiero registrar la capacidad disponible del sprint.
-- Origen: B:US-06.04 · Épica: EPIC-05 · Feature: FEAT-05.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-06.04 · Épica: EPIC-05 · Feature: FEAT-05.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-05.07.md` — completo (regla READY de A)
 - ⚠ Posible solapamiento con US-05.03: revisar si es duplicado, detalle o historia distinta (GAP-006)
-- Criterios de aceptación: MISSING
+- Criterios de aceptación:
+  - [ ] CA-01: La capacidad del sprint se registra y se muestra junto a su carga. (definido en refinamiento)
 
 #### US-05.08
 
 - Enunciado: Como Scrum Master quiero conocer la carga asignada al sprint.
-- Origen: B:US-06.05 · Épica: EPIC-05 · Feature: FEAT-05.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-06.05 · Épica: EPIC-05 · Feature: FEAT-05.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-05.08.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: El sprint informa de su carga (historias planificadas) y de si supera la capacidad. (definido en refinamiento)
+  - [ ] CA-02: Al superar la capacidad se avisa al planificar. (definido en refinamiento)
 
 #### US-05.09
 
 - Enunciado: Como sistema quiero detectar sobrecarga antes de iniciar un sprint.
-- Origen: B:US-06.06 · Épica: EPIC-05 · Feature: FEAT-05.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-06.06 · Épica: EPIC-05 · Feature: FEAT-05.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-05.09.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Un sprint sobrecargado no se inicia y se explica por qué. (definido en refinamiento)
+  - [ ] CA-02: El Scrum Master puede iniciarlo igualmente de forma explícita. (definido en refinamiento)
 
 ### FEAT-05.04 — Predicción · origen B:FEAT-06.03
 
@@ -1138,6 +1168,31 @@ READY: **0** · Fusionadas (CANCELLED): **0**
   - [ ] CA-02: El histórico se consulta por proyecto, de la más reciente a la más antigua. (definido en refinamiento)
   - [ ] CA-03: Cada entrada incluye su semáforo y sus hallazgos. (definido en refinamiento)
   - [ ] CA-04: Solo quien tiene acceso al proyecto consulta su histórico. (definido en refinamiento)
+
+### FEAT-13.06 — Supervisor ágil autónomo **[v1.4]** · origen B:FEAT-10.04
+
+#### US-13.14
+
+- Enunciado: Como operador quiero que ACM supervise por sí mismo el trabajo ágil de cada proyecto (backlog, sprints y Kanban) con sus propios motores de decisión, y me informe de lo hecho, lo pendiente y las incongruencias.
+- Origen: B:US-10.09 · Épica: EPIC-13 · Feature: FEAT-13.06 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-13.14.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: El supervisor revisa, a demanda y periódicamente, las historias, sus criterios, los sprints y el Kanban de cada proyecto.
+  - [ ] CA-02: Las decisiones de juicio (calidad INVEST, criterios verificables, tamaño de historia, riesgo del sprint) se delegan en la interfaz de decisión común; cada hallazgo indica qué motor lo produjo y si es calibrado.
+  - [ ] CA-03: Una historia que no ha cambiado no se vuelve a evaluar: se reutiliza su última revisión.
+  - [ ] CA-04: Cada revisión genera un informe con lo hecho, lo pendiente, las incongruencias y las acciones; si hay un modelo local lo redacta en lenguaje natural y, si no, ACM lo compone sin modelo.
+  - [ ] CA-05: El informe, los hallazgos y las acciones se ven en la interfaz en tiempo real.
+
+#### US-13.15
+
+- Enunciado: Como operador quiero que ACM aplique por sí mismo solo cambios seguros y reversibles, y poder limitar o desactivar esa autonomía.
+- Origen: B:US-10.10 · Épica: EPIC-13 · Feature: FEAT-13.06 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-13.15.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Solo se aplican acciones de una lista cerrada de cambios reversibles; nunca se marca DONE, ni se cancela ni se borra nada.
+  - [ ] CA-02: Una acción solo se aplica si la decide un motor calibrado (reglas o JEV) con una confianza igual o superior al umbral del proyecto; si no, queda como propuesta.
+  - [ ] CA-03: Cada acción aplicada queda auditada con su motivo, motor y confianza, figura como hecha por el agente `acm-supervisor` y se puede deshacer.
+  - [ ] CA-04: El modo del supervisor se configura por proyecto: apagado, solo proponer o aplicar cambios seguros.
 
 ## EPIC-14 — MCP Y HERRAMIENTAS
 
@@ -2132,8 +2187,13 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-22.04
 
 - Enunciado: Como operador quiero conectar una instancia Ollama a ACM.
-- Origen: B:US-23.01 · Épica: EPIC-22 · Feature: FEAT-22.02 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-23.01 · Épica: EPIC-22 · Feature: FEAT-22.02 · Alcance: MVP · Prioridad: P1 · Estado: IMPLEMENTED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-22.04.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Con la URL de Ollama, ACM registra su motor de generación y su motor de decisión. (definido en refinamiento)
+  - [ ] CA-02: Las decisiones de Ollama solo pueden elegir entre las opciones dadas y se marcan como no calibradas. (definido en refinamiento)
+  - [ ] CA-03: Un gate (READY) no acepta decisiones de Ollama. (definido en refinamiento)
+  - [ ] CA-04: Una respuesta fuera de las opciones es un error. (definido en refinamiento)
 
 #### US-22.05
 
@@ -2147,15 +2207,19 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-22.06
 
 - Enunciado: Como operador quiero asignar modelos a tipos de tareas.
-- Origen: B:US-23.03 · Épica: EPIC-22 · Feature: FEAT-22.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-23.03 · Épica: EPIC-22 · Feature: FEAT-22.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-22.06.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: El operador asigna un modelo de Ollaya a un propósito y uno por defecto, y un modelo de Ollama para lo generativo. (definido en refinamiento)
 
 #### US-22.07
 
 - Enunciado: Como sistema quiero seleccionar automáticamente un modelo adecuado para una tarea.
-- Origen: B:US-23.04 · Épica: EPIC-22 · Feature: FEAT-22.03 · Alcance: MVP · Prioridad: P1 · Estado: PLANNED
+- Origen: B:US-23.04 · Épica: EPIC-22 · Feature: FEAT-22.03 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-22.07.md` — completo (regla READY de A)
 - ⚠ Posible solapamiento con US-22.01: revisar si es duplicado, detalle o historia distinta (GAP-006)
-- Criterios de aceptación: MISSING
+- Criterios de aceptación:
+  - [ ] CA-01: Una decisión usa el modelo de Ollaya asignado a su propósito o, si no hay, el de por defecto, sin que el consumidor lo indique. (definido en refinamiento)
 
 ### FEAT-22.04 — Recursos · origen B:FEAT-23.03
 
@@ -2170,6 +2234,31 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 - Enunciado: Como sistema quiero evitar lanzar más inferencias de las que el hardware puede soportar.
 - Origen: B:US-23.06 · Épica: EPIC-22 · Feature: FEAT-22.04 · Alcance: POST-MVP · Prioridad: P3 · Estado: PLANNED
 - Criterios de aceptación: MISSING
+
+### FEAT-22.05 — Conversación con el modelo local y agente interno **[v1.4]** · origen B:FEAT-23.05
+
+#### US-22.10
+
+- Enunciado: Como agente IA quiero conversar con el modelo local de Ollama en un hilo que ACM conserva, para delegarle trabajo sin reenviar el contexto en cada mensaje.
+- Origen: B:US-23.09 · Épica: EPIC-22 · Feature: FEAT-22.05 · Alcance: MVP · Prioridad: P1 · Estado: IMPLEMENTED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-22.10.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: El agente envía un mensaje y recibe la respuesta del modelo Ollama seleccionado junto con el identificador del hilo.
+  - [ ] CA-02: En los siguientes mensajes del mismo hilo ACM añade la conversación anterior; el agente solo envía el mensaje nuevo.
+  - [ ] CA-03: Cada hilo pertenece a un proyecto y a quien lo abrió; solo él o un administrador pueden leerlo.
+  - [ ] CA-04: El hilo conserva cada mensaje con su autor, fecha y modelo, y se puede consultar después.
+  - [ ] CA-05: Sin modelo Ollama configurado o seleccionado, la respuesta es un error explícito, nunca una respuesta inventada.
+
+#### US-22.11
+
+- Enunciado: Como agente interno de Ollama quiero consultar yo mismo la información del proyecto que controla ACM, para responder con datos reales.
+- Origen: B:US-23.10 · Épica: EPIC-22 · Feature: FEAT-22.05 · Alcance: MVP · Prioridad: P1 · Estado: IMPLEMENTED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-22.11.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: El modelo local recibe herramientas de solo lectura de ACM (backlog, historias, sprints, gobernanza, contexto compacto y búsqueda) y unas instrucciones que explican el modelo de ACM y cómo usarlas.
+  - [ ] CA-02: ACM ejecuta las herramientas que el modelo pide con los permisos de quien abrió el hilo y le devuelve el resultado; nunca le da herramientas de escritura.
+  - [ ] CA-03: La respuesta indica qué herramientas se usaron, y cada llamada queda en el hilo.
+  - [ ] CA-04: El número de rondas de herramientas por mensaje está limitado.
 
 ## EPIC-23 — GOBERNANZA DE INFERENCIA
 
@@ -3018,6 +3107,50 @@ READY: **0** · Fusionadas (CANCELLED): **0**
   - [ ] CA-02: La interfaz indica si está conectada en tiempo real.
   - [ ] CA-03: Tras perder la conexión, la interfaz se reconecta y recupera los cambios ocurridos mientras tanto.
 
+### FEAT-31.04 — Operar ACM desde la interfaz **[v1.4]** · origen B:FEAT-19.07
+
+#### US-31.09
+
+- Enunciado: Como operador quiero crear proyectos y cambiar su configuración desde la interfaz web.
+- Origen: B:US-19.14 · Épica: EPIC-31 · Feature: FEAT-31.04 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-31.09.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Un administrador crea un proyecto desde el panel indicando clave, nombre y descripción; una clave inválida o repetida se rechaza con el motivo.
+  - [ ] CA-02: Los parámetros de configuración se editan con controles adecuados a su tipo y un valor inválido se rechaza sin guardar ningún cambio.
+  - [ ] CA-03: Solo el owner del proyecto o un administrador pueden cambiar la configuración; los demás ven los valores sin poder editarlos.
+
+#### US-31.10
+
+- Enunciado: Como Product Owner quiero construir el backlog desde la interfaz web: requisitos, épicas, features, historias y criterios de aceptación.
+- Origen: B:US-19.15 · Épica: EPIC-31 · Feature: FEAT-31.04 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-31.10.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Desde el backlog se crean requisitos, épicas (enlazadas a requisitos), features (dentro de una épica) e historias (dentro de una feature, enlazadas a requisitos y con sus criterios).
+  - [ ] CA-02: A una historia existente se le añaden criterios de aceptación desde su ficha.
+  - [ ] CA-03: Una épica puede enlazarse a más requisitos y su cobertura puede confirmarse; una feature puede dividirse repartiendo sus historias.
+  - [ ] CA-04: Cada error de validación se muestra junto al formulario, con el campo afectado, sin perder lo escrito.
+
+#### US-31.11
+
+- Enunciado: Como administrador quiero gestionar el acceso desde la interfaz web: principales, roles, miembros de proyecto y tokens.
+- Origen: B:US-19.16 · Épica: EPIC-31 · Feature: FEAT-31.04 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-31.11.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Se crean principales (usuarios o agentes) y se cambia su rol global.
+  - [ ] CA-02: Se añaden miembros a un proyecto, se cambia su rol y se retiran.
+  - [ ] CA-03: Se crean tokens para un principal: el secreto se muestra una sola vez, con opción de copiarlo, y nunca vuelve a mostrarse.
+  - [ ] CA-04: Un token se revoca desde la interfaz y deja de funcionar de inmediato.
+
+#### US-31.12
+
+- Enunciado: Como operador quiero ver y comprobar desde la interfaz los motores de inferencia (reglas, JEV, Ollama) y su orden de uso.
+- Origen: B:US-19.17 · Épica: EPIC-31 · Feature: FEAT-31.04 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-31.12.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: La vista de sistema muestra cada motor con su tipo (decisión o generación), proveedor, estado y modelos detectados.
+  - [ ] CA-02: Un administrador puede comprobar de nuevo la salud de los motores sin reiniciar ACM.
+  - [ ] CA-03: El orden de motores de decisión de un proyecto se cambia desde su configuración.
+
 ## EPIC-32 — NOTIFICACIONES Y EVENTOS DE NEGOCIO
 
 ### FEAT-32.01 — Alertas · origen A:FEAT-32.01
@@ -3683,8 +3816,10 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-43.08
 
 - Enunciado: Como Scrum Master quiero consultar predicciones sobre riesgos del sprint.
-- Origen: B:US-38.06 · Épica: EPIC-43 · Feature: FEAT-43.05 · Alcance: POST-MVP · Prioridad: P3 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-38.06 · Épica: EPIC-43 · Feature: FEAT-43.05 · Alcance: POST-MVP · Prioridad: P3 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-43.08.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: El sprint activo recibe una predicción de riesgo (bajo, medio, alto) de un motor de decisión, visible en el informe; riesgo alto genera un aviso. (definido en refinamiento)
 
 ## EPIC-44 — SEGURIDAD OPERATIVA
 
@@ -4031,28 +4166,44 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-50.01
 
 - Enunciado: Como sistema quiero conectarme a un servidor JEV para ejecutar evaluaciones decisionales.
-- Origen: B:US-24.01 · Épica: EPIC-50 · Feature: FEAT-50.01 · Alcance: POST-MVP · Prioridad: P3 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-24.01 · Épica: EPIC-50 · Feature: FEAT-50.01 · Alcance: POST-MVP · Prioridad: P3 · Estado: IMPLEMENTED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-50.01.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Con la URL de Ollaya y un modelo, ACM registra el motor JEV y comprueba su salud y sus modelos. (definido en refinamiento)
+  - [ ] CA-02: Si el servidor exige clave, ACM la envía; con una clave errónea el motor queda en error. (definido en refinamiento)
+  - [ ] CA-03: Un servidor inaccesible o sin el modelo queda en error sin afectar a los demás motores. (definido en refinamiento)
+  - [ ] CA-04: Una configuración incompleta se rechaza o se informa de forma explícita. (definido en refinamiento)
 
 #### US-50.02
 
 - Enunciado: Como agente quiero solicitar una evaluación JEV antes de una decisión crítica.
-- Origen: B:US-24.02 · Épica: EPIC-50 · Feature: FEAT-50.01 · Alcance: POST-MVP · Prioridad: P3 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-24.02 · Épica: EPIC-50 · Feature: FEAT-50.01 · Alcance: POST-MVP · Prioridad: P3 · Estado: IMPLEMENTED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-50.02.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: `acm_decide` devuelve las respuestas de JEV con sus probabilidades y `calibrated: true`. (definido en refinamiento)
+  - [ ] CA-02: Las respuestas se traducen al contrato de ACM (score en 1..n con probabilidades por nivel; noul con probabilidades sí/no). (definido en refinamiento)
+  - [ ] CA-03: Un rechazo o una respuesta inválida de JEV es un error, nunca una decisión. (definido en refinamiento)
 
 ### FEAT-50.02 — Orquestación híbrida · origen B:FEAT-24.02
 
 #### US-50.03
 
 - Enunciado: Como sistema quiero dirigir tareas generativas hacia Ollama y tareas decisionales hacia JEV cuando corresponda.
-- Origen: B:US-24.03 · Épica: EPIC-50 · Feature: FEAT-50.02 · Alcance: POST-MVP · Prioridad: P3 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-24.03 · Épica: EPIC-50 · Feature: FEAT-50.02 · Alcance: POST-MVP · Prioridad: P3 · Estado: IMPLEMENTED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-50.03.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Con ambos configurados y el orden por defecto, las decisiones sin regla las responde JEV y el resumen de contexto Ollama. (definido en refinamiento)
+  - [ ] CA-02: Si JEV no está disponible, decide Ollama sin calibrar y la respuesta indica de qué motor se cayó. (definido en refinamiento)
+  - [ ] CA-03: El orden de motores se cambia por proyecto sin reiniciar. (definido en refinamiento)
 
 #### US-50.04
 
 - Enunciado: Como sistema quiero registrar qué motor produjo cada decisión.
-- Origen: B:US-24.04 · Épica: EPIC-50 · Feature: FEAT-50.02 · Alcance: POST-MVP · Prioridad: P3 · Estado: PLANNED
-- Criterios de aceptación: MISSING
+- Origen: B:US-24.04 · Épica: EPIC-50 · Feature: FEAT-50.02 · Alcance: POST-MVP · Prioridad: P3 · Estado: VERIFIED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-50.04.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Cada decisión queda registrada con el motor, el propósito, el proyecto, el resultado y los tokens. (definido en refinamiento)
+  - [ ] CA-02: La respuesta de `acm_decide` incluye el motor y el identificador de ese registro. (definido en refinamiento)
 
 ### FEAT-50.03 — Simulación · origen B:FEAT-24.03
 
@@ -4081,6 +4232,29 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 - Enunciado: Como operador quiero consultar la evaluación decisional asociada a una decisión crítica.
 - Origen: B:US-24.08 · Épica: EPIC-50 · Feature: FEAT-50.04 · Alcance: POST-MVP · Prioridad: P3 · Estado: PLANNED
 - Criterios de aceptación: MISSING
+
+### FEAT-50.05 — Catálogo y selección de modelos **[v1.4]** · origen B:FEAT-24.05
+
+#### US-50.09
+
+- Enunciado: Como operador quiero ver los modelos disponibles en Ollama y en Ollaya y elegir desde ACM uno de Ollama y varios de Ollaya según su propósito.
+- Origen: B:US-24.09 · Épica: EPIC-50 · Feature: FEAT-50.05 · Alcance: POST-MVP · Prioridad: P3 · Estado: IMPLEMENTED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-50.09.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: ACM muestra los modelos que detecta en cada runtime, con sus detalles.
+  - [ ] CA-02: El operador elige un modelo de Ollama y, en Ollaya, un modelo por defecto y uno por propósito; solo se aceptan modelos detectados.
+  - [ ] CA-03: La elección se aplica sin reiniciar ACM y tiene prioridad sobre la configuración de arranque.
+  - [ ] CA-04: El operador puede anotar para qué sirve cada modelo de Ollaya.
+
+#### US-50.10
+
+- Enunciado: Como agente IA quiero conocer los modelos disponibles, para qué sirve cada uno y cómo usarlo, para delegar en el adecuado y ahorrar tokens.
+- Origen: B:US-24.10 · Épica: EPIC-50 · Feature: FEAT-50.05 · Alcance: POST-MVP · Prioridad: P3 · Estado: IMPLEMENTED · Sprint: SPRINT-008
+- Refinamiento: `refinements/US-50.10.md` — completo (regla READY de A)
+- Criterios de aceptación:
+  - [ ] CA-01: Una herramienta MCP devuelve los modelos de Ollaya con sus detalles, los propósitos que tienen asignados y la nota del operador, y el modelo de Ollama seleccionado con los disponibles.
+  - [ ] CA-02: El catálogo explica cómo usar cada motor (decisiones tipadas con JEV, conversación con Ollama) y qué propósitos conoce ACM.
+  - [ ] CA-03: El agente puede pedir una decisión a un modelo concreto de Ollaya; si no existe, la decisión cae al siguiente motor y lo indica.
 
 ## EPIC-51 — SANDBOX, GEMELO DIGITAL Y USUARIOS SINTÉTICOS
 

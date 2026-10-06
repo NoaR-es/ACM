@@ -23,8 +23,10 @@ from acm.domain.errors import InvalidArgument
 from acm.domain.identity import IdentityService
 from acm.domain.projects import ProjectService
 from acm.domain.watchdog import WatchdogService
-from acm.inference.ollama import OllamaClient, OllamaGenerationEngine
+from acm.inference.jev import JevDecisionEngine, OllayaClient
+from acm.inference.ollama import OllamaClient, OllamaDecisionEngine, OllamaGenerationEngine
 from acm.inference.router import EngineRouter
+from acm.inference.selection import ModelSelection
 from acm.mcp_server import build_mcp_server
 from acm.skills_catalog import SkillCatalog
 from acm.web_api import build_api
@@ -39,12 +41,26 @@ def build_service(settings: Settings) -> ProjectService:
 
 
 def build_engines(service: ProjectService, settings: Settings) -> EngineRouter:
-    """Router de inferencia: reglas siempre; Ollama si `ACM_OLLAMA_URL` y `ACM_OLLAMA_MODEL` están configurados."""
+    """Router de inferencia (ADR-015). Reglas siempre. JEV (Ollaya) si hay `ACM_JEV_URL`: decisiones calibradas.
+    Ollama si hay `ACM_OLLAMA_URL`: resume el contexto, conversa (agente interno) y decide sin calibrar.
+
+    Los modelos se eligen en ACM (US-50.09: Sistema → Modelos o `acm_models_select`) entre los que detecta cada runtime;
+    `ACM_OLLAMA_MODEL` y `ACM_JEV_MODEL` solo dan el valor inicial. Qué motor decide primero lo fija cada proyecto
+    (`decision.engine_order`, por defecto reglas → JEV → Ollama).
+    """
+    if settings.jev_model and not settings.jev_url:
+        raise InvalidArgument("ACM_JEV_MODEL necesita ACM_JEV_URL", field="jev")
+    if settings.ollama_model and not settings.ollama_url:
+        raise InvalidArgument("ACM_OLLAMA_MODEL necesita ACM_OLLAMA_URL", field="ollama")
     engines = EngineRouter(service)
-    if settings.ollama_url or settings.ollama_model:
-        if not (settings.ollama_url and settings.ollama_model):
-            raise InvalidArgument("ACM_OLLAMA_URL y ACM_OLLAMA_MODEL deben configurarse juntos", field="ollama")
-        engines.registry.register(OllamaGenerationEngine(OllamaClient(settings.ollama_url), settings.ollama_model))
+    selection = ModelSelection(service, ollama_model=settings.ollama_model, jev_model=settings.jev_model)
+    engines.selection = selection
+    if settings.jev_url:
+        client = OllayaClient(settings.jev_url, api_key=settings.jev_api_key)
+        engines.registry.register(JevDecisionEngine(client, selection.jev_model))
+    if settings.ollama_url:
+        engines.registry.register(OllamaGenerationEngine(OllamaClient(settings.ollama_url), selection.ollama_model))
+        engines.registry.register(OllamaDecisionEngine(OllamaClient(settings.ollama_url), selection.ollama_model))
     return engines
 
 

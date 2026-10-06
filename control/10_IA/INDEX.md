@@ -2,7 +2,7 @@
 
 **Responde a:** Qué IA utilizamos
 
-**Salud:** WARNING — interfaz de decisión, reglas y adaptador Ollama implementados (SPRINT-003); Ollama sin verificar contra una instancia real (IMP-004); JEV sin integrar
+**Salud:** WARNING — motores de reglas, Ollama (generación y decisión) y JEV (Ollaya) implementados; supervisor y agente interno (SPRINT-008); ninguno verificado contra un servidor real (IMP-004)
 
 | Documento | Estado |
 |-----------|--------|
@@ -14,7 +14,7 @@
 | `prompts.md` | ACTIVE |
 | `agents.md` | ACTIVE |
 | `tools.md` | ACTIVE |
-| `workflows.md` | N/A (no existe aún; revisado en SPRINT-007) |
+| `workflows.md` | N/A (revisado en SPRINT-008: el flujo del supervisor está en `agents.md`) |
 | `rag.md` | N/A (no existe aún; revisado en SPRINT-007) |
 | `embeddings.md` | N/A (no existe aún; revisado en SPRINT-007) |
 | `vector_stores.md` | N/A (no existe aún; revisado en SPRINT-007) |

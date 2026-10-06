@@ -28,10 +28,13 @@ from mcp_types.jsonrpc import INVALID_PARAMS
 from acm import __version__
 from acm.domain.audit import AuditService
 from acm.domain.backlog import BacklogService
+from acm.domain.chat import ChatService
 from acm.domain.context import ContextService
 from acm.domain.errors import AcmError, Forbidden
 from acm.domain.identity import IdentityService
+from acm.domain.models import ModelService
 from acm.domain.projects import ProjectService
+from acm.domain.sprints import SprintService
 from acm.domain.watchdog import WatchdogService
 from acm.inference.ports import DecisionRequest
 from acm.inference.router import EngineRouter
@@ -82,6 +85,9 @@ def build_mcp_server(
     backlog = BacklogService(service, engines)
     context = ContextService(service, backlog, engines)
     watchdog = WatchdogService(service, backlog, engines)
+    sprints = SprintService(backlog)
+    models = ModelService(service, engines)
+    chat = ChatService(service, backlog, engines)
     audit = AuditService(service)
     identity = IdentityService(service)
     bus = InMemorySubscriptionBus()
@@ -486,20 +492,87 @@ def build_mcp_server(
         """Huecos de trazabilidad: requisitos huérfanos, épicas/features vacías, historias sin CA."""
         return await call("acm_backlog_audit", {"project_id": project_id}, backlog.audit, principal(), project_id)
 
+    # ------------------------------------------------------------------ sprints (EPIC-05)
+    @server.tool()
+    async def acm_sprint_create(
+        project_id: str, name: str, goal: str, start_date: str, end_date: str, capacity: int | None = None
+    ) -> dict[str, Any]:
+        """Crea un sprint SPRINT-NN (PLANNED) con objetivo, fechas AAAA-MM-DD y capacidad opcional en historias."""
+        args = {
+            "project_id": project_id,
+            "name": name,
+            "goal": goal,
+            "start_date": start_date,
+            "end_date": end_date,
+            "capacity": capacity,
+        }
+        fn = partial(sprints.create, principal(), project_id, name, goal, start_date, end_date, capacity)
+        return await call("acm_sprint_create", args, fn)
+
+    @server.tool()
+    async def acm_sprint_list(project_id: str) -> dict[str, Any]:
+        """Sprints del proyecto con estado, historias, carga, capacidad y resumen de cierre."""
+        return await call("acm_sprint_list", {"project_id": project_id}, sprints.list, principal(), project_id)
+
+    @server.tool()
+    async def acm_sprint_get(project_id: str, sprint_id: str) -> dict[str, Any]:
+        """Un sprint con sus historias actuales, historial de pertenencia y métricas."""
+        args = {"project_id": project_id, "sprint_id": sprint_id}
+        return await call("acm_sprint_get", args, sprints.get, principal(), project_id, sprint_id)
+
+    @server.tool()
+    async def acm_sprint_add_stories(project_id: str, sprint_id: str, story_ids: list[str]) -> dict[str, Any]:
+        """Planifica historias en un sprint abierto (una historia, un sprint abierto); avisa si no están READY."""
+        args = {"project_id": project_id, "sprint_id": sprint_id, "story_ids": story_ids}
+        fn = partial(sprints.add_stories, principal(), project_id, sprint_id, story_ids)
+        return await call("acm_sprint_add_stories", args, fn)
+
+    @server.tool()
+    async def acm_sprint_remove_story(project_id: str, sprint_id: str, story_id: str) -> dict[str, Any]:
+        """Retira una historia de un sprint abierto (queda en su historial como retirada)."""
+        args = {"project_id": project_id, "sprint_id": sprint_id, "story_id": story_id}
+        fn = partial(sprints.remove_story, principal(), project_id, sprint_id, story_id)
+        return await call("acm_sprint_remove_story", args, fn)
+
+    @server.tool()
+    async def acm_sprint_start(project_id: str, sprint_id: str, force: bool = False) -> dict[str, Any]:
+        """Inicia un sprint PLANNED. Rechaza si ya hay uno activo o si supera su capacidad (salvo force=true)."""
+        args = {"project_id": project_id, "sprint_id": sprint_id, "force": force}
+        return await call("acm_sprint_start", args, sprints.start, principal(), project_id, sprint_id, force)
+
+    @server.tool()
+    async def acm_sprint_close(project_id: str, sprint_id: str, carry_over_to: str | None = None) -> dict[str, Any]:
+        """Cierra el sprint activo: lo DONE queda hecho; el resto pasa a `carry_over_to` o vuelve al backlog."""
+        args = {"project_id": project_id, "sprint_id": sprint_id, "carry_over_to": carry_over_to}
+        fn = partial(sprints.close, principal(), project_id, sprint_id, carry_over_to)
+        return await call("acm_sprint_close", args, fn)
+
+    @server.tool()
+    async def acm_sprint_cancel(project_id: str, sprint_id: str) -> dict[str, Any]:
+        """Cancela un sprint PLANNED o ACTIVE: sus historias vuelven al backlog sin cambiar de estado."""
+        args = {"project_id": project_id, "sprint_id": sprint_id}
+        return await call("acm_sprint_cancel", args, sprints.cancel, principal(), project_id, sprint_id)
+
     # ------------------------------------------------------------------ segundo cerebro (EPIC-35)
     @server.tool()
     async def acm_decide(
-        project_id: str, purpose: str, questions: dict[str, Any], state: dict[str, Any] | str
+        project_id: str,
+        purpose: str,
+        questions: dict[str, Any],
+        state: dict[str, Any] | str,
+        model: str | None = None,
     ) -> dict[str, Any]:
         """Delega una decisión tipada (noul = sí/no, choice = clasificar, score = puntuar) en el motor de decisión.
 
         questions: {clave: {"type": "noul"|"choice"|"score", "instructions": str, "criteria": ...}}. Respuesta con
-        probabilidades, el motor que decidió (`engine`), `calibrated` y `fallback_from`. Ver skill acm-schema.
+        probabilidades, el motor que decidió (`engine`), `calibrated` y `fallback_from`. `model` pide un modelo concreto
+        de Ollaya (ver `acm_models_list`); sin él se usa el asignado al propósito. Ver skill acm-schema.
         """
-        args = {"project_id": project_id, "purpose": purpose, "questions": questions, "state": state}
+        args = {"project_id": project_id, "purpose": purpose, "questions": questions, "state": state, "model": model}
 
         def decide() -> dict[str, Any]:
-            routed = engines.decide(principal(), DecisionRequest.from_json(project_id, purpose, state, questions))
+            request = DecisionRequest.from_json(project_id, purpose, state, questions, model)
+            routed = engines.decide(principal(), request)
             return {"project_id": project_id, "call_id": routed.call_id, **routed.result.to_json()}
 
         return await call("acm_decide", args, decide)
@@ -543,6 +616,53 @@ def build_mcp_server(
         args = {"principal_id": principal_id, "project_id": project_id}
         fn = partial(context.savings_report, principal(), filter_principal=principal_id, project_id=project_id)
         return await call("acm_savings_report", args, fn)
+
+    # ---------------------------------------------------------- modelos y conversación (US-50.09/10, US-22.10/11)
+    @server.tool()
+    async def acm_models_list() -> dict[str, Any]:
+        """Modelos disponibles: Ollaya (JEV, decisiones) con detalles, propósitos asignados y nota; Ollama (local)
+        con el elegido. Explica para qué y cómo usar cada motor, y qué propósitos conoce ACM."""
+        return await call("acm_models_list", {}, models.catalog, principal())
+
+    @server.tool()
+    async def acm_models_select(
+        ollama_model: str | None = None,
+        jev_default_model: str | None = None,
+        jev_models_by_purpose: dict[str, str] | None = None,
+        jev_model_notes: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        """(admin) Elige el modelo de Ollama y, en Ollaya, el de por defecto, uno por propósito y notas de uso.
+        Solo modelos detectados; se aplica sin reiniciar."""
+        args = {
+            "ollama_model": ollama_model,
+            "jev_default_model": jev_default_model,
+            "jev_models_by_purpose": jev_models_by_purpose,
+            "jev_model_notes": jev_model_notes,
+        }
+        fn = partial(models.select, principal(), **args)
+        return await call("acm_models_select", args, fn)
+
+    @server.tool()
+    async def acm_chat(
+        project_id: str, message: str, thread_id: str | None = None, title: str | None = None
+    ) -> dict[str, Any]:
+        """Habla con el modelo local de Ollama en un hilo que ACM conserva: envía solo el mensaje nuevo (y `thread_id`
+        para continuar). El modelo consulta él mismo el proyecto con herramientas de ACM de solo lectura. Delega en él
+        resúmenes, revisiones o búsquedas sobre el proyecto para ahorrar tus tokens."""
+        args = {"project_id": project_id, "message": message, "thread_id": thread_id, "title": title}
+        fn = partial(chat.send, principal(), project_id, message, thread_id, title)
+        return await call("acm_chat", args, fn)
+
+    @server.tool()
+    async def acm_chat_threads(project_id: str) -> dict[str, Any]:
+        """Tus hilos de conversación con el modelo local en el proyecto (un admin ve todos)."""
+        return await call("acm_chat_threads", {"project_id": project_id}, chat.threads, principal(), project_id)
+
+    @server.tool()
+    async def acm_chat_get(project_id: str, thread_id: str) -> dict[str, Any]:
+        """Un hilo con todos sus mensajes, herramientas usadas y modelo."""
+        args = {"project_id": project_id, "thread_id": thread_id}
+        return await call("acm_chat_get", args, chat.get, principal(), project_id, thread_id)
 
     # ------------------------------------------------------------------ identidad, roles y tokens (EPIC-20)
     @server.tool()

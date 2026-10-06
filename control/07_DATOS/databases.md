@@ -1,9 +1,9 @@
-# Bases de datos (SPRINT-001; v2 en SPRINT-002; global v3 en SPRINT-003; global v4 en SPRINT-004; global v5 en SPRINT-005; global v6 y proyecto v3 en SPRINT-006, 2026-09-30)
+# Bases de datos (SPRINT-001; v2 en SPRINT-002; global v3 en SPRINT-003; global v4 en SPRINT-004; global v5 en SPRINT-005; global v6 y proyecto v3 en SPRINT-006; global v8 y proyecto v5 en SPRINT-008)
 
 | Base | Ruta | Motor | Propósito | Esquema | Migraciones |
 |------|------|-------|-----------|---------|-------------|
-| Global | `<ACM_DATA_DIR>/acm.db` | SQLite 3 (WAL) | Principales, registro de proyectos, pertenencias, auditoría MCP, motores y llamadas de inferencia, entregas de contexto, tokens de acceso, Watchdog, eventos | `acm.db.schema.GLOBAL` v6 | `schema_migrations` |
-| Proyecto | `<ACM_DATA_DIR>/projects/<project_id>/project.db` | SQLite 3 (WAL) | Metadatos y configuración del proyecto y backlog con historial de estados (y, en el futuro, todo su estado: ADR-011) | `acm.db.schema.PROJECT` v3 | `schema_migrations` |
+| Global | `<ACM_DATA_DIR>/acm.db` | SQLite 3 (WAL) | Principales, registro de proyectos, pertenencias, auditoría MCP, motores y llamadas de inferencia, entregas de contexto, tokens de acceso, Watchdog con informe y acciones del supervisor, eventos, modelos elegidos | `acm.db.schema.GLOBAL` v8 | `schema_migrations` |
+| Proyecto | `<ACM_DATA_DIR>/projects/<project_id>/project.db` | SQLite 3 (WAL) | Metadatos y configuración del proyecto y backlog con historial de estados, sprints, revisiones del supervisor e hilos del agente interno (y, en el futuro, todo su estado: ADR-011) | `acm.db.schema.PROJECT` v5 | `schema_migrations` |
 
 ## Esquema global v1
 | Tabla | Columnas | Restricciones |
@@ -44,6 +44,21 @@ Retención de `inference_calls` y `context_deliveries`: sin política (MISSING, 
 |--------|---------|
 | `projects.integrity_status` / `integrity_detail` / `integrity_checked_at` | `unknown` \| `ok` \| `corrupt`; `corrupt` bloquea las escrituras del proyecto (US-13.11) |
 | `watchdog_runs` | Histórico de auditorías: proyecto, fecha, trigger (`manual` \| `scheduled`), principal, semáforo, recuentos por severidad, hallazgos (JSON), motores, duración. Retención: sin política (MISSING, EPIC-44) |
+
+## Esquema global v7 y v8 (SPRINT-008)
+| Versión | Cambio | Uso |
+|---------|--------|-----|
+| v7 `supervisor` | `watchdog_runs` + `report`, `report_engine`, `actions_json`, `summary_json` | Informe del supervisor (redactado por Ollama o compuesto sin modelo), acciones propuestas o aplicadas con motor y confianza, resumen (ADR-020) |
+| v8 `inference_settings` | tabla nueva: `key` (PK), `value_json`, `updated_at`, `updated_by` | Modelos elegidos desde ACM: `ollama.model`, `jev.default_model`, `jev.models_by_purpose`, `jev.model_notes`. Tienen prioridad sobre `ACM_OLLAMA_MODEL`/`ACM_JEV_MODEL` (ADR-021) |
+
+## Esquema de proyecto v4 y v5 (SPRINT-008)
+| Tabla | Uso | Restricciones |
+|-------|-----|---------------|
+| `sprints` | Sprints `SPRINT-NN` con objetivo, fechas, capacidad (en historias), estado y `summary_json` del cierre | `status IN ('PLANNED','ACTIVE','CLOSED','CANCELLED')`; `end_date >= start_date`; `capacity ≥ 1` o NULL; un solo ACTIVE por proyecto (lo garantiza `SprintService`) |
+| `sprint_stories` | Pertenencia historia ↔ sprint. Las filas no se borran: al cerrar o retirar se anota `ended_at` y `outcome` (`done`, `carried_over`, `returned`, `removed`) | PK (`sprint_id`, `story_id`); índice por historia |
+| `supervisor_reviews` | Última revisión de cada historia por un motor de decisión; se reutiliza mientras `story_updated_at` no cambie | PK `story_id` |
+| `chat_threads` (v5) | Hilos `TH-NNN` del agente interno, por quien los abre | — |
+| `chat_messages` (v5) | Mensajes `user`/`assistant`/`tool` con herramientas pedidas (`tool_calls_json`) y modelo | `role IN ('user','assistant','tool')`; índice (`thread_id`, `id`) |
 
 ## Esquema global v6 (SPRINT-006)
 | Tabla | Uso |

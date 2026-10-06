@@ -4,10 +4,16 @@
 >
 > Implementado en SPRINT-003: `RulesDecisionEngine` y `OllamaGenerationEngine` (`src/acm/inference/`). Registro de modelos: `model_registry.md`.
 
-Estado: **PLANNED** — ninguno integrado ni probado en este entorno. Información de fuentes públicas consultadas el 2026-09-30.
+Estado (2026-10-06, SPRINT-008): **IMPLEMENTED** `RulesDecisionEngine`, `OllamaGenerationEngine`, `OllamaDecisionEngine` (`inference/ollama.py`) y `JevDecisionEngine` con `OllayaClient` (`inference/jev.py`). Ninguno está probado contra un servidor real (IMP-004): los tests usan `tests/fake_ollama.py` y `tests/fake_ollaya.py`, que reproducen el contrato documentado. Selección de modelos: `inference/selection.py` (ADR-021). Información de fuentes públicas consultadas el 2026-09-30.
+
+### Cómo traduce ACM las respuestas de Ollaya (`jev.parse_answer`)
+- `noul` → `value` true/false con `probabilities` {true, false}.
+- `choice` → `value` = opción elegida, `probabilities` por opción, `confidence`.
+- `score` → Ollaya devuelve el índice 0..n-1; ACM lo convierte a nivel 1..n y da las probabilidades con la etiqueta de cada nivel.
+- Errores: 422 (`INVALID_REQUEST`…) → `EngineError` (no hay respaldo: la pregunta está mal); 404, 503 y 500 → `EngineUnavailable` (pasa al siguiente motor).
 
 ## Ollama (generativo) — EPIC-22, TECH-018
-Modelos locales generativos. Detalle pendiente de SPIKE-005.
+Modelos locales generativos por `/api/chat` (con `tools` para el agente interno y `format` con esquema JSON para decidir). Verificación con hardware real pendiente de SPIKE-005.
 
 ## Ollaya (decisional, "JEV") — EPIC-50, TECH-020, ADR-006
 

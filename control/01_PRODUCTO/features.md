@@ -1,8 +1,8 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v4.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v5.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
 
 # Features (backlog unificado)
 
-Total: **203**
+Total: **207**
 
 | ID | Épica | Título | Origen | Alcance | Historias |
 |----|-------|--------|--------|---------|-----------|
@@ -49,6 +49,7 @@ Total: **203**
 | FEAT-13.03 | EPIC-13 | Inspector | B:FEAT-10.01 | MVP | US-13.06, US-13.07, US-13.08, US-13.09 |
 | FEAT-13.04 | EPIC-13 | Semáforo | B:FEAT-10.02 | MVP | US-13.10, US-13.11 |
 | FEAT-13.05 | EPIC-13 | Auditoría | B:FEAT-10.03 | MVP | US-13.12, US-13.13 |
+| FEAT-13.06 | EPIC-13 | Supervisor ágil autónomo **[v1.4]** | B:FEAT-10.04 | MVP | US-13.14, US-13.15 |
 | FEAT-14.01 | EPIC-14 | MCP | A:FEAT-14.01 | POST-MVP | US-14.01, US-14.02, US-14.03 |
 | FEAT-14.02 | EPIC-14 | MCP | B:FEAT-15.01 | MVP | US-14.04, US-14.05, US-14.06 |
 | FEAT-14.03 | EPIC-14 | Multi-proyecto | B:FEAT-15.02 | MVP | US-14.07, US-14.08, US-14.09 |
@@ -98,6 +99,7 @@ Total: **203**
 | FEAT-22.02 | EPIC-22 | Conexión | B:FEAT-23.01 | MVP | US-22.04, US-22.05 |
 | FEAT-22.03 | EPIC-22 | Selección | B:FEAT-23.02 | MVP | US-22.06, US-22.07 |
 | FEAT-22.04 | EPIC-22 | Recursos | B:FEAT-23.03 | POST-MVP | US-22.08, US-22.09 |
+| FEAT-22.05 | EPIC-22 | Conversación con el modelo local y agente interno **[v1.4]** | B:FEAT-23.05 | MVP | US-22.10, US-22.11 |
 | FEAT-23.01 | EPIC-23 | Control de consumo | A:FEAT-23.01 | POST-MVP | US-23.01, US-23.02, US-23.03 |
 | FEAT-23.02 | EPIC-23 | Cuotas | B:FEAT-28.01 | POST-MVP | US-23.04, US-23.05, US-23.06 |
 | FEAT-23.03 | EPIC-23 | Rate Limiting | B:FEAT-28.02 | POST-MVP | US-23.07, US-23.08 |
@@ -136,6 +138,7 @@ Total: **203**
 | FEAT-31.01 | EPIC-31 | Consola de ejecución | A:FEAT-31.01 | MVP | US-31.01, US-31.02, US-31.03 |
 | FEAT-31.02 | EPIC-31 | Actividad | B:FEAT-19.02 | MVP | US-31.04, US-31.05 |
 | FEAT-31.03 | EPIC-31 | Interfaz web completa **[v1.3]** | B:FEAT-19.05 | MVP | US-31.06, US-31.07, US-31.08 |
+| FEAT-31.04 | EPIC-31 | Operar ACM desde la interfaz **[v1.4]** | B:FEAT-19.07 | MVP | US-31.09, US-31.10, US-31.11, US-31.12 |
 | FEAT-32.01 | EPIC-32 | Alertas | A:FEAT-32.01 | POST-MVP | US-32.01, US-32.02 |
 | FEAT-32.02 | EPIC-32 | Webhooks | B:FEAT-30.01 | POST-MVP | US-32.03, US-32.04 |
 | FEAT-32.03 | EPIC-32 | Notificaciones | B:FEAT-30.02 | POST-MVP | US-32.05, US-32.06 |
@@ -195,6 +198,7 @@ Total: **203**
 | FEAT-50.02 | EPIC-50 | Orquestación híbrida | B:FEAT-24.02 | POST-MVP | US-50.03, US-50.04 |
 | FEAT-50.03 | EPIC-50 | Simulación | B:FEAT-24.03 | POST-MVP | US-50.05, US-50.06 |
 | FEAT-50.04 | EPIC-50 | Watchdog JEV | B:FEAT-24.04 | POST-MVP | US-50.07, US-50.08 |
+| FEAT-50.05 | EPIC-50 | Catálogo y selección de modelos **[v1.4]** | B:FEAT-24.05 | POST-MVP | US-50.09, US-50.10 |
 | FEAT-51.01 | EPIC-51 | Sandbox | B:FEAT-25.01 | POST-MVP | US-51.01, US-51.02 |
 | FEAT-51.02 | EPIC-51 | Gemelo de ejecución | B:FEAT-25.02 | POST-MVP | US-51.03, US-51.04 |
 | FEAT-51.03 | EPIC-51 | Comparación | B:FEAT-25.03 | POST-MVP | US-51.05, US-51.06 |

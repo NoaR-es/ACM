@@ -47,4 +47,11 @@ describe("canal en vivo (US-06.03, US-21.03)", () => {
     expect(affectedKeys(ev(3, { type: "watchdog.run", entity_type: "project" })).map((k) => k.join("/"))).toContain(
       "governance/alpha");
   });
+
+  it("recarga sprints y modelos cuando cambian (SPRINT-008)", () => {
+    const sprint = affectedKeys(ev(4, { type: "sprint.started", entity_type: "sprint", entity_id: "SPRINT-01" }));
+    expect(sprint.map((k) => k.join("/"))).toContain("sprints/alpha");
+    const models = affectedKeys(ev(5, { type: "models.changed", entity_type: "models", project_id: null }));
+    expect(models.map((k) => k.join("/"))).toEqual(expect.arrayContaining(["models", "engines"]));
+  });
 });

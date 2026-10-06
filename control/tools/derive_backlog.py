@@ -32,7 +32,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = ROOT / "01_PRODUCTO"
 SRC_A_REL = "01_PRODUCTO/backlog_completo_v1.md"
-SRC_B_REL = "01_PRODUCTO/product_definition_v4.md"
+SRC_B_REL = "01_PRODUCTO/product_definition_v5.md"
 SRC_A = ROOT / SRC_A_REL
 SRC_B = ROOT / SRC_B_REL
 # Estados distintos de PLANNED (historias, TECH, SPIKE). Sin entrada = PLANNED. Solo estados permitidos (CLAUDE.md §4).
@@ -73,7 +73,7 @@ FEATURE_MAP = {
     "FEAT-07.01": 10, "FEAT-07.02": 10, "FEAT-07.03": 11,
     "FEAT-08.01": 10, "FEAT-08.02": 10, "FEAT-08.03": 10,
     "FEAT-09.01": 28, "FEAT-09.02": 28, "FEAT-09.03": 28,
-    "FEAT-10.01": 13, "FEAT-10.02": 13, "FEAT-10.03": 13,
+    "FEAT-10.01": 13, "FEAT-10.02": 13, "FEAT-10.03": 13, "FEAT-10.04": 13,
     "FEAT-11.01": 29, "FEAT-11.02": 29, "FEAT-11.03": 29,
     "FEAT-12.01": 49, "FEAT-12.02": 49, "FEAT-12.03": 49,
     "FEAT-13.01": 12, "FEAT-13.02": 12, "FEAT-13.03": 12,
@@ -82,12 +82,12 @@ FEATURE_MAP = {
     "FEAT-16.01": 20, "FEAT-16.02": 20, "FEAT-16.03": 20, "FEAT-16.04": 20,
     "FEAT-17.01": 19, "FEAT-17.02": 19, "FEAT-17.03": 41, "FEAT-17.04": 41,
     "FEAT-18.01": 21, "FEAT-18.02": 21, "FEAT-18.03": 21,
-    "FEAT-19.01": 6, "FEAT-19.02": 31, "FEAT-19.03": 26, "FEAT-19.04": 45, "FEAT-19.05": 31, "FEAT-19.06": 6,
+    "FEAT-19.01": 6, "FEAT-19.02": 31, "FEAT-19.03": 26, "FEAT-19.04": 45, "FEAT-19.05": 31, "FEAT-19.06": 6, "FEAT-19.07": 31,
     "FEAT-20.01": 27, "FEAT-20.02": 27, "FEAT-20.03": 27,
     "FEAT-21.01": 16, "FEAT-21.02": 16, "FEAT-21.03": 16, "FEAT-21.04": 16, "FEAT-21.05": 16,
     "FEAT-22.01": 15, "FEAT-22.02": 15, "FEAT-22.03": 15, "FEAT-22.04": 15,
-    "FEAT-23.01": 22, "FEAT-23.02": 22, "FEAT-23.03": 22, "FEAT-23.04": 39,
-    "FEAT-24.01": 50, "FEAT-24.02": 50, "FEAT-24.03": 50, "FEAT-24.04": 50,
+    "FEAT-23.01": 22, "FEAT-23.02": 22, "FEAT-23.03": 22, "FEAT-23.04": 39, "FEAT-23.05": 22,
+    "FEAT-24.01": 50, "FEAT-24.02": 50, "FEAT-24.03": 50, "FEAT-24.04": 50, "FEAT-24.05": 50,
     "FEAT-25.01": 51, "FEAT-25.02": 51, "FEAT-25.03": 51, "FEAT-25.04": 51,
     "FEAT-26.01": 24, "FEAT-26.02": 44, "FEAT-26.03": 44,
     "FEAT-27.01": 44, "FEAT-27.02": 26,

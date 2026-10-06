@@ -368,3 +368,59 @@ Consecuencias:
 - GAP-002 queda resuelto.
 Trade-offs: Si el bundle crece, se puede dividir por rutas o publicar el build como artefacto de release en lugar de versionarlo.
 
+## ADR-020 — Supervisor ágil autónomo con acciones seguras
+Fecha: 2026-09-30
+Estado: ACCEPTED
+Contexto: El operador pide que ACM use por sí mismo JEV y Ollama para controlar el trabajo ágil e informar de incongruencias, pendientes y hechos; y elige (decisión del operador en SPRINT-008) que ACM «aplique cambios seguros», no solo proponga.
+Problema: Cómo dar autonomía a ACM sin que un modelo cambie el proyecto de forma irreversible o sin control.
+Alternativas consideradas:
+(a) solo informar;
+(b) proponer y que una persona aplique;
+(c) aplicar cambios seguros y proponer el resto;
+(d) aplicar cualquier cambio que el modelo decida.
+Decisión: (c), configurable por proyecto (`supervisor.mode`: off | propose | apply_safe, por defecto apply_safe).
+- Lista cerrada `SAFE_ACTIONS`: pasar a READY, devolver a PLANNED (solo fuera de sprint) y sacar de un sprint una historia cancelada. Todas reversibles. Nunca DONE, cancelar ni borrar.
+- Solo con motor calibrado (reglas o JEV) y confianza ≥ `supervisor.min_confidence_pct` (85 %); Ollama nunca aplica.
+- Se ejecutan como el agente `acm-supervisor` (principal admin sin tokens), quedan auditadas (`supervisor:*`) y se pueden deshacer desde la interfaz.
+- Las revisiones de historias se guardan y no se repiten mientras la historia no cambie.
+Motivo: Es lo que pidió el operador, con los límites de ADR-015 (no aceptar la confianza de un LLM generativo) y de la constitución (DONE solo con verificación humana).
+Consecuencias: ACM puede cambiar estados sin intervención humana; el historial y la auditoría lo atribuyen a `acm-supervisor`. Las preguntas de revisión las responde el modelo elegido para cada propósito (ADR-021).
+Trade-offs: Una decisión errónea de JEV con confianza alta puede aplicarse; es reversible y visible. La calidad real de JEV en estas preguntas queda por medir (SPIKE-006).
+
+## ADR-021 — Selección de modelos en tiempo de ejecución, guardada en la base global
+Fecha: 2026-09-30
+Estado: ACCEPTED
+Contexto: El operador quiere que ACM descubra los modelos de Ollama y Ollaya y permita elegir uno de Ollama y varios de Ollaya según el propósito.
+Problema: Dónde vive esa elección y cómo se aplica sin reiniciar y en todos los procesos de ACM.
+Alternativas consideradas:
+(a) solo variables de entorno;
+(b) configuración por proyecto;
+(c) tabla `inference_settings` en la base global, leída por los motores en cada llamada (caché de 1 s).
+Decisión: (c).
+- La elección tiene prioridad sobre `ACM_OLLAMA_MODEL`/`ACM_JEV_MODEL`, que pasan a ser valor inicial.
+- Solo se aceptan modelos que el runtime detecta en ese momento.
+- Las URL y la clave de Ollaya siguen solo en el entorno: son infraestructura y secretos y no se editan desde la web.
+- JEV: modelo por defecto + uno por propósito + modelo explícito por petición (`acm_decide(model=…)`).
+- El nombre del motor incluye el modelo y el registro inserta filas nuevas al refrescar; las anteriores quedan como histórico.
+- Guía de modelos de Ollaya integrada (`inference/ollaya_models.py`), con fuente y fecha.
+Motivo: Un único lugar compartido por HTTP y stdio, sin reinicios; sin abrir la puerta a configurar destinos de red desde la interfaz.
+Consecuencias: Esquema global v8. Arrancar con solo la URL es válido: los modelos se eligen después.
+Trade-offs: Una elección por instalación, no por proyecto; el orden de motores sí es por proyecto.
+
+## ADR-022 — Agente interno de Ollama con herramientas de solo lectura e hilos persistidos
+Fecha: 2026-09-30
+Estado: ACCEPTED
+Contexto: El operador quiere que un agente IA pueda hablar con el modelo de Ollama conservando el hilo, y que ese modelo local revise él mismo la información del proyecto.
+Problema: Cómo dar al modelo local acceso al proyecto sin riesgo y sin que el agente reenvíe contexto.
+Alternativas consideradas:
+(a) volcar todo el proyecto en el prompt;
+(b) herramientas de lectura y escritura;
+(c) herramientas de solo lectura vía tool calling de Ollama, ejecutadas por ACM con los permisos de quien abre el hilo.
+Decisión: (c).
+- 7 herramientas de lectura (`chat.TOOLS`) y como máximo 5 rondas por mensaje.
+- Hilos `chat_threads`/`chat_messages` en la base del proyecto (esquema v5); cada hilo pertenece a quien lo abrió (y lo ve un admin) y se envían los últimos 30 mensajes.
+- Prompt versionado `acm-chat@v1`.
+Motivo: El modelo solo ve lo que el usuario podría ver y no puede modificar nada; el agente externo ahorra tokens delegando lectura y resumen.
+Consecuencias: Herramientas MCP `acm_chat`, `acm_chat_threads`, `acm_chat_get`; pestaña Asistente en la interfaz.
+Trade-offs: Calidad dependiente del modelo local y de su soporte de tool calling (sin verificar con un Ollama real, IMP-004).
+

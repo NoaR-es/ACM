@@ -6,6 +6,7 @@ import { api, post } from "../api";
 import { Empty, ErrorBox, fmtDate, Loading, Section, StatusBadge } from "../components";
 import { STATUS_LABEL, type StoryStatus } from "../theme";
 import type { StoryDetail } from "../types";
+import { CriteriaForm } from "./BacklogForms";
 import { useBacklog } from "./Project";
 
 type Compact = {
@@ -66,9 +67,13 @@ export function StoryPage() {
         {s.technical_reason && <p>Razón técnica: {s.technical_reason}</p>}
         <p className="small muted">
           Creada por {s.created_by} el {fmtDate(s.created_at)} · actualizada {fmtDate(s.updated_at)}
+          {s.sprint_id && <> · en <Link to={`/p/${projectId}/sprints`}>{s.sprint_id}</Link></>}
         </p>
       </Section>
-      <Section title={`Criterios de aceptación (${s.acceptance_criteria.length})`}>
+      <Section
+        title={`Criterios de aceptación (${s.acceptance_criteria.length})`}
+        actions={<CriteriaForm projectId={projectId} storyId={s.id} />}
+      >
         {s.acceptance_criteria.length === 0 ? (
           <Empty>Sin criterios: no puede pasar a READY.</Empty>
         ) : (

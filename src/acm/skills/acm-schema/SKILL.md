@@ -1,8 +1,8 @@
 ---
 name: acm-schema
 description: Explica qué es ACM, su modelo de datos (proyecto, requisito, épica, feature, historia, criterio de aceptación) y qué herramienta MCP usar en cada paso. Léela antes de operar sobre cualquier proyecto ACM.
-version: 1.4.0
-capabilities: [acm-model, acm-tools, acm-workflow, acm-second-brain, acm-identity, acm-governance]
+version: 1.5.0
+capabilities: [acm-model, acm-tools, acm-workflow, acm-second-brain, acm-models, acm-local-chat, acm-identity, acm-governance, acm-sprints]
 dependencies: []
 ---
 
@@ -29,6 +29,8 @@ Proyecto (project_id)
     └── Feature FEAT-NN.MM (ACTIVE | SPLIT)
         └── Historia US-NN.MM (como / quiero / para, requisitos de origen, estado)
             └── Criterio de aceptación CA-NN (binario, PASS/FAIL)
+└── Sprint SPRINT-NN (objetivo, fechas, capacidad en historias; PLANNED → ACTIVE → CLOSED | CANCELLED)
+    └── historias planificadas (una historia solo está en un sprint abierto a la vez)
 ```
 
 ## Flujo recomendado
@@ -43,6 +45,10 @@ Proyecto (project_id)
    Nunca marques DONE sin verificación: ACM solo lo permite desde VERIFIED. Los operadores lo ven en vivo.
 7. `acm_epic_confirm_coverage` cuando las features cubran el objetivo de la épica.
 8. `acm_backlog_audit` y `acm_requirement_trace` para detectar huecos de trazabilidad.
+9. **Sprints:** `acm_sprint_create` → `acm_sprint_add_stories` (mejor historias READY) → `acm_sprint_start` → al terminar,
+   `acm_sprint_close` (lo no terminado vuelve al backlog o pasa a otro sprint con `carry_over_to`). Solo un sprint
+   ACTIVE por proyecto; un sprint con más historias que su capacidad no se inicia salvo `force=true`.
+   `acm_sprint_cancel` anula un sprint abierto y devuelve sus historias al backlog.
 
 ## Segundo cerebro: ahorra tus tokens
 - **Contexto de una historia:** en lugar de leer historia, épica, requisitos e historias hermanas por separado, pide
@@ -56,6 +62,26 @@ Proyecto (project_id)
   (`criteria` = [nivel, …] de 2 a 10 → `value` = 1..n). La respuesta dice qué motor decidió (`engine`), si sus
   probabilidades son reales (`calibrated`) y si hubo `fallback_from`. Con `calibrated: false` trata la confianza
   como orientativa, no como probabilidad.
+- **Qué motor responde:** el orden lo fija el proyecto (`decision.engine_order`, por defecto reglas → JEV → Ollama).
+  JEV (modelos de decisión servidos por Ollaya) da probabilidades reales (`calibrated: true`) y responde cualquier
+  propósito; Ollama elige entre las opciones con un modelo local pero sin probabilidades (`calibrated: false`).
+  `acm_engines_list` te dice cuáles están configurados y sanos. Delega en `acm_decide` las clasificaciones y
+  comprobaciones repetitivas en lugar de razonarlas tú: ahorras tokens.
+- **Qué modelos hay y para qué:** `acm_models_list` devuelve los modelos de Ollaya (JEV) que ACM detecta, con sus
+  detalles, los propósitos que tiene asignados cada uno (`purposes`), si es el de por defecto y la nota del operador
+  sobre para qué sirve, y una `guide` con qué es cada modelo y cuándo conviene (fuente: README de Ollaya): p. ej.
+  `winnow:e4b` es el recomendado con GPU, `laya` el indicado en CPU y en español, `kev` da probabilidades fiables
+  para umbrales, `nli`/`gliclass` etiquetan texto sin entrenamiento y `nimble` admite hasta 255 opciones
+  (`jev.guide.choosing` resume cómo elegir). También los modelos de Ollama con el elegido. Incluye `usage` (cómo usar cada motor) y los propósitos
+  que ACM conoce. Pide a JEV un modelo concreto con `acm_decide(..., model="nombre")`; si no existe, la decisión cae al
+  siguiente motor y `fallback_from` lo dice. Un admin elige modelos con `acm_models_select` (solo detectados).
+- **Conversar con el modelo local (ahorra tokens):** `acm_chat(project_id, message)` abre un hilo con el modelo de
+  Ollama y devuelve `thread_id`; para seguir, `acm_chat(project_id, message, thread_id)`: ACM añade la conversación
+  anterior, tú solo envías el mensaje nuevo. El modelo local es un **agente interno** que consulta él mismo el
+  proyecto con herramientas de solo lectura (`backlog_overview`, `get_story`, `search_stories`, `trace_requirement`,
+  `list_sprints`, `governance`, `story_context`) y con tus permisos; la respuesta indica las herramientas que usó
+  (`tool_calls`). Encárgale resúmenes, búsquedas o revisiones del proyecto en vez de leerlo todo tú.
+  `acm_chat_threads` y `acm_chat_get` recuperan tus hilos.
 - **Qué cubren las reglas (sin modelo):** `acm_engines_list` devuelve el catálogo `rules`. Hoy: purpose
   `story.quality` con `state` = la historia de `acm_story_get` y preguntas `has_statement`, `has_requirements`,
   `has_acceptance_criteria`, `technical_reason_ok` (noul), `readiness` (choice `ready`/`not_ready`) y `completeness`
@@ -68,6 +94,12 @@ Proyecto (project_id)
 - `acm_watchdog_run(project_id)` audita el proyecto: integridad SQLite (CRITICAL), calidad de cada historia
   evaluada por el motor de decisión (WARNING si el motor es calibrado; REVIEW si no), y huecos de estructura (INFO).
   Corrige los WARNING antes de marcar historias como READY. `acm_watchdog_history` guarda cada auditoría.
+- **Supervisor ágil autónomo:** cada auditoría incluye la revisión de ACM con sus propios motores: calidad INVEST,
+  criterios verificables y tamaño de cada historia viva; sprints vencidos, sobrecargados o en riesgo; WIP, historias
+  estancadas y trabajo fuera del sprint. Devuelve `report` (lo hecho, lo pendiente, incongruencias y acciones),
+  `summary` y `actions`. Según `supervisor.mode` del proyecto, ACM aplica por sí solo cambios seguros y reversibles
+  (pasar a READY, devolver a PLANNED, sacar de un sprint una historia cancelada) como el agente `acm-supervisor`;
+  verás esos cambios en el historial. El resto son propuestas para ti o para el operador.
 
 ## Herramientas
 | Herramienta | Para qué |
@@ -100,7 +132,20 @@ Proyecto (project_id)
 | `acm_story_history` | Historial de cambios de estado de una historia |
 | `acm_backlog_audit` | Huecos: requisitos huérfanos, épicas/features vacías, historias sin criterios |
 | `acm_context_compact` | Contexto compacto de una historia, con fuentes y tokens ahorrados |
+| `acm_sprint_create` | Crea un sprint con objetivo, fechas y capacidad |
+| `acm_sprint_list` | Sprints del proyecto con carga, capacidad y resumen |
+| `acm_sprint_get` | Un sprint con sus historias e historial |
+| `acm_sprint_add_stories` | Planifica historias en un sprint abierto |
+| `acm_sprint_remove_story` | Retira una historia de un sprint abierto |
+| `acm_sprint_start` | Inicia un sprint (una sola vez activo; control de sobrecarga) |
+| `acm_sprint_close` | Cierra el sprint activo con resumen y traslado de lo no terminado |
+| `acm_sprint_cancel` | Cancela un sprint abierto; sus historias vuelven al backlog |
 | `acm_decide` | Decisión tipada (noul, choice, score) delegada en el motor de decisión |
+| `acm_models_list` | Modelos de Ollaya y Ollama: disponibles, elegidos, propósitos, notas y cómo usarlos |
+| `acm_models_select` | (admin) Elige el modelo de Ollama y los de Ollaya por defecto y por propósito |
+| `acm_chat` | Conversa con el modelo local en un hilo que ACM conserva; el modelo consulta el proyecto |
+| `acm_chat_threads` | Tus hilos de conversación del proyecto |
+| `acm_chat_get` | Un hilo con sus mensajes y herramientas usadas |
 | `acm_engines_list` | Motores de inferencia, su estado, modelos detectados y reglas disponibles |
 | `acm_engines_refresh` | (admin) Comprueba los motores y detecta modelos |
 | `acm_savings_report` | (admin) Tokens ahorrados por agente y proyecto |
@@ -114,7 +159,7 @@ Proyecto (project_id)
 | `acm_token_create` | (admin) Crea un token; el secreto solo se muestra una vez |
 | `acm_token_list` | Tokens sin secreto: prefijo, estado y uso |
 | `acm_token_revoke` | Revoca un token al instante |
-| `acm_watchdog_run` | Audita integridad, calidad de historias y estructura; semáforo y hallazgos |
+| `acm_watchdog_run` | Audita integridad, calidad, estructura, sprints y Kanban; semáforo, informe y acciones del supervisor |
 | `acm_watchdog_history` | Histórico de auditorías del proyecto |
 | `acm_governance_status` | Semáforo de la última auditoría, integridad y si admite escrituras |
 | `acm_health` | (admin) Salud de bases, catálogo de skills y motores |

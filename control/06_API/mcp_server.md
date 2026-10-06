@@ -1,6 +1,6 @@
 # Servidor MCP de ACM
 
-Estado: **IMPLEMENTED (SPRINT-001..006)**. Por HTTP exige token Bearer de ACM (ADR-017). `src/acm/mcp_server.py`: herramientas de proyecto (SPRINT-001), backlog, auditoría y extensión Skills con 3 skills oficiales (SPRINT-002). Pendientes: skills US-15.11/15.12 y autenticación (EPIC-20). Topología: ADR-014. Decisiones: ADR-005 (Python) y ADR-008 (servidor propio + skills). Historias (numeración unificada, ADR-010): servidor propio FEAT-14.02..14.04 (US-14.04..US-14.11); registro y versionado de skills FEAT-15.01 (US-15.01, US-15.03); distribución FEAT-15.02 (US-15.04..US-15.07); catálogo FEAT-15.03 (US-15.08..US-15.12). ACM como *cliente* MCP (US-14.01..14.03) es POST-MVP.
+Estado: **IMPLEMENTED (SPRINT-001..008)**. Por HTTP exige token Bearer de ACM (ADR-017). `src/acm/mcp_server.py`: herramientas de proyecto (SPRINT-001), backlog, auditoría y extensión Skills con 3 skills oficiales (SPRINT-002). Pendientes: skills US-15.11/15.12 y autenticación (EPIC-20). Topología: ADR-014. Decisiones: ADR-005 (Python) y ADR-008 (servidor propio + skills). Historias (numeración unificada, ADR-010): servidor propio FEAT-14.02..14.04 (US-14.04..US-14.11); registro y versionado de skills FEAT-15.01 (US-15.01, US-15.03); distribución FEAT-15.02 (US-15.04..US-15.07); catálogo FEAT-15.03 (US-15.08..US-15.12). ACM como *cliente* MCP (US-14.01..14.03) es POST-MVP.
 
 ## Principio
 El servidor MCP **es ACM**: los agentes IA se conectan a él para operar sobre los proyectos. Al conectarse, reciben las instrucciones y las skills necesarias para usar ACM correctamente.
@@ -122,6 +122,23 @@ Error nuevo: `DATA_INTEGRITY` en escrituras sobre un proyecto en cuarentena (US-
 | `acm_story_set_status` | `project_id`, `story_id`, `status`, `reason?` | US-06.02 |
 | `acm_story_history` | `project_id`, `story_id` | US-06.02 CA-02 |
 
-Total: 46 herramientas. Cada invocación emite un evento `activity` (solo admin, ADR-018).
+## Herramientas añadidas en SPRINT-008 (2026-10-06)
+
+| Herramienta | Argumentos | Quién | Historia |
+|-------------|------------|-------|----------|
+| `acm_sprint_create` | `project_id`, `name`, `goal`, `start_date`, `end_date`, `capacity?` | miembros | US-05.02 |
+| `acm_sprint_list` / `acm_sprint_get` | `project_id` / `sprint_id` | miembros | US-05.02, US-05.09 |
+| `acm_sprint_add_stories` / `acm_sprint_remove_story` | `project_id`, `sprint_id`, `story_ids` / `story_id` (devuelve `warnings`) | miembros | US-05.03, US-05.04 |
+| `acm_sprint_start` | `project_id`, `sprint_id`, `force?` (sobrecarga) | miembros | US-05.05, US-05.06 |
+| `acm_sprint_close` | `project_id`, `sprint_id`, `carry_over_to?` | miembros | US-05.07, US-05.08, US-05.09 |
+| `acm_sprint_cancel` | `project_id`, `sprint_id` | miembros | US-05.02 |
+| `acm_models_list` | — | cualquiera | US-50.09 (catálogo, guía de cada familia de Ollaya, propósitos y modelo por defecto) |
+| `acm_models_select` | `ollama_model?`, `jev_default_model?`, `jev_models_by_purpose?`, `jev_model_notes?` | admin | US-50.10 (ADR-021) |
+| `acm_chat` | `project_id`, `message`, `thread_id?`, `title?` | miembros | US-22.10, US-22.11 (ADR-022) |
+| `acm_chat_threads` / `acm_chat_get` | `project_id` / `thread_id` | miembros | US-22.11 |
+
+`acm_decide` acepta además `model` (un modelo JEV concreto). Errores nuevos: ninguno (los motores no disponibles siguen dando ENGINE_UNAVAILABLE).
+
+Total: 59 herramientas. Cada invocación emite un evento `activity` (solo admin, ADR-018).
 
 Extensión Skills: `skills/list` y `skills/get` (`-32602` si la skill no existe); archivos en `skill://acm/{skill}/{filename}` (una skill retirada deja de ser legible). Capacidad declarada: `extensions["io.modelcontextprotocol/skills"] = {"directoryRead": false}`.

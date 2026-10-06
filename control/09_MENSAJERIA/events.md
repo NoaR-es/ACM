@@ -11,6 +11,8 @@
 | `story.status_changed` | story | `mark_ready`, `set_status` | lo anterior + `from` | miembros, admin |
 | `member.changed` | member | `IdentityService` | `role` (null si se retira) | miembros, admin |
 | `principal.changed` | principal | `IdentityService` | `kind`, `role` | admin |
+| `sprint.created` / `sprint.updated` / `sprint.started` / `sprint.closed` / `sprint.cancelled` | sprint | `SprintService` | `status`, `name`, `load` | miembros, admin |
+| `models.changed` | models | `ModelService.select` | `changed` (claves de `inference_settings`) | admin |
 | `watchdog.run` | project | `WatchdogService.run` | `run_id`, `semaphore`, `integrity`, `counts` | miembros, admin |
 | `activity` | operation | servidor MCP (cada invocación) | `status`, `error` | admin |
 

@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.8.0.dev0] — 2026-10-06 — SPRINT-008 — ACM operable desde la interfaz, sprints y supervisor autónomo
+- **Cambio:**
+  - API REST de escritura completa (54 rutas HTTP, 28 de escritura). Cada ruta usa el mismo servicio de dominio que su herramienta MCP y emite su evento de actividad.
+  - Interfaz: formularios para proyectos, requisitos, épicas, features, historias, criterios, miembros, principales, tokens (secreto visible una sola vez), configuración y modelos (`forms.tsx`). Pestañas Sprints y Asistente; panel del supervisor con deshacer.
+  - Sprints (EPIC-05): crear, planificar, iniciar con control de sobrecarga, cerrar con traslado, cancelar, tablero y resumen de cierre. 8 herramientas MCP `acm_sprint_*`; Kanban filtrable por sprint.
+  - Motores de decisión `JevDecisionEngine` (Ollaya `/api/decide`) y `OllamaDecisionEngine` (esquema JSON, sin calibrar).
+  - Supervisor ágil autónomo (`acm-supervisor`, ADR-020) dentro del Watchdog: reglas de flujo, revisión INVEST/criterios/tamaño, informe y acciones seguras con deshacer.
+  - Catálogo y selección de modelos por propósito, con guía de las familias de Ollaya (ADR-021).
+  - Agente interno de Ollama con 7 herramientas de solo lectura e hilos persistentes (ADR-022).
+  - 59 herramientas MCP; skill acm-schema 1.5.0; variables `ACM_JEV_URL`, `ACM_JEV_MODEL`, `ACM_JEV_API_KEY`; `ACM_OLLAMA_MODEL` pasa a ser opcional.
+  - Parámetros de proyecto nuevos: `supervisor.mode`, `supervisor.min_confidence_pct`, `supervisor.stale_days`, `kanban.wip_limit`.
+  - BUG-002 corregido (recargar una vista de admin volvía al panel).
+  - README bilingüe EN/ES.
+  - `control/`:
+    - definición de producto v1.4 (`product_definition_v5.md`; v4 archivada) con FEAT-19.07, FEAT-10.04, FEAT-23.05 y FEAT-24.05;
+    - 29 refinamientos; ADR-020..022;
+    - SPRINT-007 archivado con su CI (runs #13 y #14).
+- **Stories:**
+  - VERIFIED: US-31.09..31.12, 05.03..05.09, 13.14, 13.15, 04.10, 04.14, 04.15, 43.08, 50.04, 22.06, 22.07.
+  - IMPLEMENTED: US-05.02 (CA-03 pendiente), 50.01..50.03, 50.09, 50.10, 22.04, 22.10, 22.11 (sin runtimes reales, IMP-004).
+- **Archivos:**
+  - `src/acm/domain/{sprints, supervisor, models, chat}.py`;
+  - `src/acm/inference/{jev, selection, ollaya_models}.py`;
+  - modificados `app.py`, `config.py`, `db/schema.py`, `web_api.py`, `mcp_server.py`, `domain/{backlog, watchdog, config_schema}.py`, `inference/{ollama, ports, router}.py`, skill acm-schema, `webui/**`;
+  - `web/src/{forms.tsx, pages/{BacklogForms, Sprints, Assistant, Supervisor, Models}.tsx}` y vistas existentes;
+  - `tests/{fake_ollaya, test_second_brain, test_sprints, test_supervisor, test_models_chat, test_rest_write, test_webui_ops}.py` y tests existentes;
+  - `README.md`, `control/**`.
+- **Tests:** 381/381 PASS (37 e2e), 26/26 vitest; evidencia 85 CA en PASS y 1 PENDIENTE; mutaciones 9/10 detectadas + 1 equivalente.
+- **Migración:** esquema global v7 (`watchdog_runs` + informe y acciones) y v8 (`inference_settings`); esquema de proyecto v4 (`sprints`, `sprint_stories`, `supervisor_reviews`) y v5 (`chat_threads`, `chat_messages`). Automáticas al abrir; solo añaden tablas y columnas.
+- **Breaking change:** no. `ACM_OLLAMA_URL` sin `ACM_OLLAMA_MODEL` ya no es un error de configuración: el modelo se elige en ACM.
+
 ## [0.7.0.dev0] — 2026-09-30 — SPRINT-007 — interfaz web completa
 - **Cambio:**
   - Interfaz React + TypeScript + Vite (ADR-019) servida por ACM en `/` con CSP y cabeceras de seguridad (`webui_app.py`); build versionado en `src/acm/webui`.

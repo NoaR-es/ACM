@@ -1,18 +1,15 @@
 # Trabajo pendiente (ordenado)
 
-1. Comprobar la CI en GitHub del commit de SPRINT-007 (jobs `web` y `test`) y registrarla.
-2. **Propuesta para SPRINT-008 (decide el operador):** edición desde la interfaz, es decir, crear y editar requisitos, épicas, features, historias y CA. Exige rutas REST de escritura (hoy solo existen por MCP).
-3. Artefactos que la interfaz mostrará en cuanto existan en el producto:
-   - sprints y objetivos (EPIC-05);
-   - tareas y su Kanban (EPIC-10, US-06.04);
+1. Comprobar la CI en GitHub del commit de SPRINT-008 y registrarla.
+2. **Operador:** SPIKE-005 con Ollama y Ollaya reales (IMP-004). Pasaría a VERIFIED US-22.01, 22.03, 22.04, 22.10, 22.11, 50.01..50.03, 50.09 y 50.10, y mediría la calidad de las decisiones del supervisor con modelos reales.
+3. **Propuesta para SPRINT-009 (decide el operador):** dependencias entre historias (cierra US-05.02 CA-03) y tareas con su Kanban (EPIC-10, US-06.04).
+4. Artefactos que la interfaz mostrará en cuanto existan en el producto:
    - documentación viva y ADR (EPIC-25);
    - bugs e incidentes (EPIC-29);
    - presencia de agentes (US-21.10/11).
-4. **Operador:** SPIKE-005 con un Ollama real (IMP-004).
-5. Adaptador JEV (EPIC-50) cuando haya acceso a Ollaya/TypeSafe.
-6. Seguridad pendiente: US-20.07, expiración de tokens, retención (EPIC-44), VULN-002.
-7. TD-001 y TD-003 (auditoría y eventos no atómicos con la operación).
-8. Medir con carga: auditoría del Watchdog, polling de eventos por cliente WS y tamaño del bundle (423 kB).
-9. Resto de solapamientos (GAP-006) y refinamientos (GAP-001).
-10. Automatizar las pruebas de mutación.
-11. Generar los tipos TS desde OpenAPI si la API crece (`05_CODIGO/types.md`).
+5. Seguridad pendiente: US-20.07, expiración de tokens, retención (EPIC-44), VULN-002.
+6. TD-001 y TD-003 (auditoría y eventos no atómicos con la operación).
+7. Medir con carga: auditoría del Watchdog y del supervisor, polling de eventos por cliente WS y tamaño del bundle (~461 kB).
+8. Resto de solapamientos (GAP-006) y refinamientos (GAP-001).
+9. Automatizar las pruebas de mutación.
+10. Generar los tipos TS desde OpenAPI (la API ya tiene 54 rutas HTTP; `05_CODIGO/types.md`).

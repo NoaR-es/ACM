@@ -1,5 +1,7 @@
 // Cabecera de la aplicación (navegación, estado del canal en vivo, tema, sesión) y tabla de rutas (HashRouter).
+import type { ReactNode } from "react";
 import { NavLink, Navigate, Route, Routes } from "react-router-dom";
+import { Loading } from "./components";
 import { useAuth } from "./auth";
 import { useLive, type LiveStatus } from "./live";
 import { ActivityPage } from "./pages/Activity";
@@ -75,8 +77,10 @@ function Header() {
 }
 
 export function App() {
-  const { token, isAdmin } = useAuth();
+  const { token, isAdmin, me } = useAuth();
   if (!token) return <Login />;
+  // Las vistas de admin esperan a conocer la identidad: redirigir antes de cargar `/me` sacaba al admin al recargar.
+  const adminOnly = (page: ReactNode) => (me ? isAdmin ? page : <Navigate to="/" /> : <Loading what="identidad" />);
   return (
     <>
       <Header />
@@ -87,8 +91,8 @@ export function App() {
           <Route path="/p/:projectId/s/:storyId" element={<StoryPage />} />
           <Route path="/p/:projectId/*" element={<ProjectPage />} />
           <Route path="/docs" element={<DocsPage />} />
-          <Route path="/activity" element={isAdmin ? <ActivityPage /> : <Navigate to="/" />} />
-          <Route path="/system" element={isAdmin ? <SystemPage /> : <Navigate to="/" />} />
+          <Route path="/activity" element={adminOnly(<ActivityPage />)} />
+          <Route path="/system" element={adminOnly(<SystemPage />)} />
           <Route path="*" element={<p className="empty">Página no encontrada.</p>} />
         </Routes>
       </main>

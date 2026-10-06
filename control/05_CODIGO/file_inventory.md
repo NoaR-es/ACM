@@ -14,7 +14,7 @@ Actualizado: 2026-09-30 (SPRINT-007). **Regla:** todo archivo de código (`src/a
 | `src/acm/events.py` | `EventStore`: eventos de dominio persistidos (ADR-018) | mensajería | db.connection | ProjectService (y por él todos los servicios), web_api, mcp_server | `test_realtime.py` | IMPLEMENTED |
 | `src/acm/web_api.py` | API REST v1 (24 rutas), WebSocket de eventos, `Access` | API | servicios de dominio, events, auth | app | `test_realtime.py`, `test_webui.py` | IMPLEMENTED |
 | `src/acm/webui_app.py` | `SecureStatic`: sirve la interfaz compilada con cabeceras de seguridad (ADR-019) | web | starlette | app | `test_webui.py` | IMPLEMENTED |
-| `src/acm/mcp_server.py` | Servidor MCP: 46 herramientas, extensión Skills, auditoría y eventos `activity` | API (agentes) | servicios de dominio, skills_catalog, inference | app, CLI stdio | `test_mcp.py`, `test_skills.py`, `test_audit.py`, `test_auth.py` | IMPLEMENTED |
+| `src/acm/mcp_server.py` | Servidor MCP: 59 herramientas, extensión Skills, auditoría y eventos `activity` | API (agentes) | servicios de dominio, skills_catalog, inference | app, CLI stdio | `test_mcp.py`, `test_skills.py`, `test_audit.py`, `test_auth.py` | IMPLEMENTED |
 | `src/acm/skills_catalog.py` | `SkillCatalog`: carga, valida y sirve las skills (US-15.01) | catálogo | — | mcp_server, web_api, watchdog.health | `test_skills.py` | IMPLEMENTED |
 | `src/acm/db/connection.py` | `Database`: conexión SQLite por hilo, PRAGMAs, `write()`/`read()` con reintentos (ADR-013) | datos | sqlite3 | ProjectService, EventStore | `test_db.py` | IMPLEMENTED |
 | `src/acm/db/migrations.py` | `Migration`, `migrate`: migraciones versionadas (US-18.03) | datos | connection | ProjectService | `test_migrations.py` | IMPLEMENTED |
@@ -26,12 +26,19 @@ Actualizado: 2026-09-30 (SPRINT-007). **Regla:** todo archivo de código (`src/a
 | `src/acm/domain/identity.py` | `IdentityService`: principales, roles, miembros, tokens | dominio | projects | auth, mcp_server, web_api, CLI | `test_auth.py` | IMPLEMENTED |
 | `src/acm/domain/audit.py` | `AuditService`: auditoría de invocaciones con redacción de secretos | dominio | projects | mcp_server, web_api, auth, CLI | `test_audit.py`, `test_auth.py` | IMPLEMENTED |
 | `src/acm/domain/context.py` | `ContextService`: contexto compacto y ahorro de tokens | dominio | backlog, inference.router | mcp_server, web_api | `test_context.py` | IMPLEMENTED |
-| `src/acm/domain/watchdog.py` | `WatchdogService`: integridad, calidad, semáforo, histórico, salud | dominio | backlog, inference.router, projects | mcp_server, web_api, app | `test_watchdog.py` | IMPLEMENTED |
+| `src/acm/domain/watchdog.py` | `WatchdogService`: integridad, calidad, supervisor ágil, semáforo, histórico (con informe y acciones), salud | dominio | backlog, supervisor, inference.router, projects | mcp_server, web_api, app, chat | `test_watchdog.py`, `test_supervisor.py` | IMPLEMENTED |
+| `src/acm/domain/supervisor.py` | `AgileSupervisor`: revisión de historias (JEV/Ollama, con caché), reglas de sprints y Kanban, acciones seguras como `acm-supervisor`, informe (ADR-020) | dominio | backlog, sprints, audit, inference.router, inference.rules | watchdog | `test_supervisor.py`, `test_webui_ops.py` | IMPLEMENTED |
+| `src/acm/domain/sprints.py` | `SprintService`: crear, planificar, retirar, iniciar (sobrecarga), cerrar con traslado y resumen, cancelar (EPIC-05) | dominio | backlog | mcp_server, web_api, supervisor, chat | `test_sprints.py`, `test_rest_write.py`, `test_webui_ops.py` | IMPLEMENTED |
+| `src/acm/domain/models.py` | `ModelService`: catálogo de modelos (con guía de Ollaya) y selección (ADR-021) | dominio | inference.router, inference.jev, inference.ollaya_models | mcp_server, web_api | `test_models_chat.py`, `test_webui_ops.py` | IMPLEMENTED |
+| `src/acm/domain/chat.py` | `ChatService`: hilos con el modelo local y agente interno con herramientas de solo lectura (ADR-022) | dominio | backlog, sprints, context, watchdog, inference.router | mcp_server, web_api | `test_models_chat.py`, `test_webui_ops.py` | IMPLEMENTED (sin Ollama real, IMP-004) |
 | `src/acm/inference/__init__.py` | Paquete de inferencia | inferencia | — | — | — | ACTIVE |
 | `src/acm/inference/ports.py` | Contratos de decisión y generación (ADR-015/016) | inferencia | errors | todos los consumidores de inferencia | `test_inference.py` | IMPLEMENTED |
 | `src/acm/inference/rules.py` | `RulesDecisionEngine` (sin modelo) | inferencia | ports | router | `test_inference.py` | IMPLEMENTED |
 | `src/acm/inference/router.py` | `EngineRegistry`, `EngineRouter`, `require_calibrated` | inferencia | ports, rules, projects | backlog, context, watchdog, mcp_server | `test_inference.py` | IMPLEMENTED |
-| `src/acm/inference/ollama.py` | Adaptador Ollama (`/api/tags`, `/api/chat`) | inferencia | httpx, ports | app.build_engines | `test_inference.py`, `test_context.py` (Ollama simulado) | IMPLEMENTED (sin Ollama real, IMP-004) |
+| `src/acm/inference/ollama.py` | Adaptador Ollama (`/api/tags`, `/api/chat` con esquema JSON y tools): generación y decisión no calibrada, modelo elegido en caliente | inferencia | httpx, ports | app.build_engines, chat, models | `test_inference.py`, `test_context.py`, `test_second_brain.py` (Ollama simulado) | IMPLEMENTED (sin Ollama real, IMP-004) |
+| `src/acm/inference/jev.py` | Adaptador JEV sobre Ollaya (`/api/tags`, `/api/decide`, Bearer opcional): decisiones calibradas, modelo por propósito o explícito | inferencia | httpx, ports | app.build_engines, models | `test_second_brain.py`, `test_models_chat.py` (Ollaya simulado) | IMPLEMENTED (sin Ollaya real, IMP-004) |
+| `src/acm/inference/selection.py` | `ModelSelection`: modelos elegidos en ACM (base global) con prioridad sobre el entorno | inferencia | projects | app.build_engines, models | `test_models_chat.py` | IMPLEMENTED |
+| `src/acm/inference/ollaya_models.py` | Guía de modelos de Ollaya (fuente: README del proyecto) y sugerencias de ACM | inferencia | — | models | `test_models_chat.py` | IMPLEMENTED |
 | `src/acm/skills/*/SKILL.md` | Skills oficiales (acm-schema 1.4.0, acm-invest 1.0.0, acm-discovery 1.0.0) | contenido | — | SkillCatalog | `test_skills.py` | ACTIVE |
 | `src/acm/webui/**` | **Generado**: interfaz compilada por `npm run build` (no editar) | web | web/src | SecureStatic | job `web` de CI (bundle al día) | GENERATED |
 
@@ -45,7 +52,8 @@ Actualizado: 2026-09-30 (SPRINT-007). **Regla:** todo archivo de código (`src/a
 | `web/index.html` | Documento raíz (favicon SVG en línea) | html | — | vite | — | ACTIVE |
 | `web/src/main.tsx` | Arranque: QueryClient, proveedores y HashRouter | entrada | App, auth, live, prefs | navegador | e2e | IMPLEMENTED |
 | `web/src/App.tsx` | Cabecera, navegación, indicador en vivo, rutas | shell | pages, auth, live, prefs | main | e2e | IMPLEMENTED |
-| `web/src/api.ts` | Cliente REST v1, `ApiError`, almacén del token | datos | fetch | todas las páginas, auth | e2e | IMPLEMENTED |
+| `web/src/api.ts` | Cliente REST v1 (`api`, `post`, `put`, `patch`, `del`), `ApiError`, almacén del token | datos | fetch | todas las páginas, auth | e2e | IMPLEMENTED |
+| `web/src/forms.tsx` | Formularios: `useAction`, `Field` (error junto al campo; grupos accesibles), `FormStatus`, `Disclosure`, `lines` | componentes | react-query, api, auth | páginas con escritura | e2e (`test_webui_ops.py`) | IMPLEMENTED |
 | `web/src/auth.tsx` | `AuthProvider`/`useAuth`: sesión con token, `/me`, cierre de sesión | estado | api, react-query | App, pages | e2e | IMPLEMENTED |
 | `web/src/live.tsx` | `LiveProvider`/`useLive`: WebSocket, reanudación, invalidación de datos | tiempo real | liveCore, auth, react-query | App, Dashboard, Activity, KanbanBoard | `liveCore.test.ts`, e2e | IMPLEMENTED |
 | `web/src/liveCore.ts` | Lógica pura del canal en vivo (seq, duplicados, resync, backoff, claves afectadas) | lógica | types | live | `liveCore.test.ts` | IMPLEMENTED |
@@ -63,7 +71,12 @@ Actualizado: 2026-09-30 (SPRINT-007). **Regla:** todo archivo de código (`src/a
 | `web/src/pages/Story.tsx` | Detalle de historia: enunciado, CA, trazabilidad, estado, historial, contexto compacto | página | api, Project.useBacklog | App | e2e | IMPLEMENTED |
 | `web/src/pages/Activity.tsx` | Actividad en vivo y auditoría filtrable (admin) | página | api, live | App | e2e | IMPLEMENTED |
 | `web/src/pages/Docs.tsx` | Documentación: skills, flujo de estados, referencia de la API | página | api, markdown | App | e2e | IMPLEMENTED |
-| `web/src/pages/System.tsx` | Sistema: salud, motores, ahorro, principales, tokens (admin) | página | api | App | e2e | IMPLEMENTED |
+| `web/src/pages/System.tsx` | Sistema: salud, modelos, motores (comprobar), ahorro, principales (crear, rol), tokens (crear una vez, revocar) | página | api, forms, Models | App | e2e | IMPLEMENTED |
+| `web/src/pages/Models.tsx` | Modelos: detectados, guía de Ollaya, elegir el de Ollama y los de Ollaya por propósito, notas | página | api, forms | System | `test_webui_ops.py` | IMPLEMENTED |
+| `web/src/pages/BacklogForms.tsx` | Formularios de requisito, épica, feature, historia, criterios, enlazar, confirmar cobertura, dividir | página | api, forms | Project, Story | `test_webui_ops.py` | IMPLEMENTED |
+| `web/src/pages/Sprints.tsx` | Sprints: crear, planificar, iniciar (sobrecarga), cerrar con traslado, cancelar, tablero del sprint | página | api, forms, KanbanBoard | Project | `test_webui_ops.py` | IMPLEMENTED |
+| `web/src/pages/Supervisor.tsx` | Informe del supervisor, acciones aplicadas con «Deshacer», propuestas | página | api, forms | Project (Gobernanza) | `test_webui_ops.py` | IMPLEMENTED |
+| `web/src/pages/Assistant.tsx` | Asistente: hilos y conversación con el modelo local (agente interno) | página | api, forms | Project | `test_webui_ops.py` | IMPLEMENTED |
 | `web/src/theme.test.ts` | Contraste WCAG AA de toda la paleta en ambos temas | test | theme | vitest | — | ACTIVE |
 | `web/src/kanban.test.ts` | Agrupación, filtros y transiciones del Kanban | test | kanban | vitest | — | ACTIVE |
 | `web/src/liveCore.test.ts` | Orden, duplicados, reanudación y resync del canal en vivo | test | liveCore | vitest | — | ACTIVE |
@@ -72,13 +85,13 @@ Actualizado: 2026-09-30 (SPRINT-007). **Regla:** todo archivo de código (`src/a
 
 ## Tests — `tests/` (pytest; detalle en `tests.md`)
 
-Recuentos medidos con `pytest --collect-only` el 2026-09-30 (casos = funciones × parametrizaciones): 241 funciones, 275 casos.
+Recuentos medidos con `pytest --collect-only` el 2026-10-06 (casos = funciones × parametrizaciones): 337 funciones, 381 casos.
 
 | Path | Qué prueba | Funciones / casos | Estado |
 |------|------------|-------------------|--------|
 | `tests/conftest.py` | Fixtures `data_dir`, `service`; `add_member`; registra `tests.live` | — | ACTIVE |
-| `tests/live.py` | Fixture `acm`: ACM real por HTTP (uvicorn en hilo); `mcp()` cliente con token | — | ACTIVE |
-| `tests/fake_ollama.py` | Ollama simulado (servidor HTTP real) | — | ACTIVE |
+| `tests/live.py` | `running_acm()` y fixture `acm`: ACM real por HTTP (uvicorn en hilo), con motores configurables; `mcp()` cliente con token | — | ACTIVE |
+| `tests/fake_ollama.py` | Ollama simulado (servidor HTTP real): generación, decisiones con esquema JSON y guion de *tool calling* | — | ACTIVE |
 | `tests/test_db.py` | US-18.01/02, BUG-001 | 11 / 12 | ACTIVE |
 | `tests/test_migrations.py` | US-18.03 | 7 / 10 | ACTIVE |
 | `tests/test_projects.py` | US-01.01..03 | 20 / 22 | ACTIVE |
@@ -94,12 +107,19 @@ Recuentos medidos con `pytest --collect-only` el 2026-09-30 (casos = funciones �
 | `tests/test_watchdog.py` | EPIC-13, US-35.11 CA-01 | 22 / 22 | ACTIVE |
 | `tests/test_realtime.py` | EPIC-06, EPIC-21, EPIC-30 | 25 / 31 | ACTIVE |
 | `tests/test_webui.py` | Interfaz web e2e (Chromium) | 23 / 24 | ACTIVE |
+| `tests/fake_ollaya.py` | Ollaya simulado (servidor HTTP real con el contrato documentado de `/api/tags` y `/api/decide`) | — | ACTIVE |
+| `tests/test_sprints.py` | US-05.02..05.09 (sprints) | 22 / 28 | ACTIVE |
+| `tests/test_supervisor.py` | US-13.14, 13.15, 04.10, 04.14, 04.15, 43.08 (supervisor ágil) | 15 / 15 | ACTIVE |
+| `tests/test_second_brain.py` | US-50.01..04, US-22.04 (JEV y Ollama como motores de decisión) | 16 / 19 | ACTIVE |
+| `tests/test_models_chat.py` | US-50.09, 50.10, 22.06, 22.07, 22.10, 22.11 (modelos y chat) | 17 / 17 | ACTIVE |
+| `tests/test_rest_write.py` | US-31.09..31.12 (servidor), US-05.05 CA-06, actividad de escrituras REST | 13 / 14 | ACTIVE |
+| `tests/test_webui_ops.py` | US-31.09..31.12, sprints, supervisor, modelos y asistente en la interfaz (e2e) | 13 / 13 | ACTIVE |
 
 ## Herramientas de control — `control/tools/`
 
 | Path | Propósito | Entradas | Salidas | En CI | Estado |
 |------|-----------|----------|---------|-------|--------|
-| `control/tools/derive_backlog.py` | Unifica fuentes A y B del backlog, aplica fusiones, refinamientos y estados; comprueba integridad y referencias a tests | `01_PRODUCTO/backlog_completo_v1.md`, `product_definition_v4.md`, `refinements/`, `dedupe.json`, `item_status.json` | `epics.md`, `features.md`, `user_stories.md`, `backlog.md`, `technical_stories.md`, `id_mapping.md` | `--check` | IMPLEMENTED |
+| `control/tools/derive_backlog.py` | Unifica fuentes A y B del backlog, aplica fusiones, refinamientos y estados; comprueba integridad y referencias a tests | `01_PRODUCTO/backlog_completo_v1.md`, `product_definition_v5.md`, `refinements/`, `dedupe.json`, `item_status.json` | `epics.md`, `features.md`, `user_stories.md`, `backlog.md`, `technical_stories.md`, `id_mapping.md` | `--check` | IMPLEMENTED |
 | `control/tools/evidence.py` | Matriz CA ↔ test de un sprint | refinamientos + JUnit | `12_TESTING/sprint_00N_evidence.md` | — (al cerrar sprint) | IMPLEMENTED |
 | `control/tools/code_inventory.py` | Referencia de código generada y control de que cada archivo está inventariado | código | `05_CODIGO/code_reference.md` | `--check` | IMPLEMENTED |
 | `control/tools/dedupe.json` | Fusiones de historias duplicadas (GAP-006) | — | — | vía derive | ACTIVE |
@@ -116,5 +136,5 @@ Recuentos medidos con `pytest --collect-only` el 2026-09-30 (casos = funciones �
 | `CLAUDE.md` | Constitución del agente | ACTIVE |
 | `spikes/**` | Experimentos de SPIKE-001/002 (no es producto) | SPIKE |
 | `control/01_PRODUCTO/backlog_completo_v1.md` | Fuente A del backlog | ACTIVE |
-| `control/01_PRODUCTO/product_definition_v4.md` | Fuente B: definición de producto v1.3 | ACTIVE |
+| `control/01_PRODUCTO/product_definition_v5.md` | Fuente B: definición de producto v1.3 | ACTIVE |
 | `control/99_ARCHIVO/superseded/product_definition_v{1,2,3}.md` | Definiciones v1.0, v1.1, v1.2 | SUPERSEDED |

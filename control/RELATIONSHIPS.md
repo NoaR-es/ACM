@@ -1,6 +1,6 @@
 # Relaciones
 
-LAST_UPDATED: 2026-09-30
+LAST_UPDATED: 2026-10-06
 
 ## Sprint → Tasks
 ```
@@ -33,7 +33,7 @@ control/tools/derive_backlog.py
 ```
 
 ## Producto
-- Backlog unificado (ADR-010) = fuente A `01_PRODUCTO/backlog_completo_v1.md` + fuente B `01_PRODUCTO/product_definition_v4.md` (v1.3, que supersede a v1.2, v1.1 y v1.0 en `99_ARCHIVO/superseded/`). Traducción de IDs de B: `01_PRODUCTO/id_mapping.md`.
+- Backlog unificado (ADR-010) = fuente A `01_PRODUCTO/backlog_completo_v1.md` + fuente B `01_PRODUCTO/product_definition_v5.md` (v1.4, que supersede a v1.3, v1.2, v1.1 y v1.0 en `99_ARCHIVO/superseded/`). Traducción de IDs de B: `01_PRODUCTO/id_mapping.md`.
 - Épica → Feature → Historia: generado en `01_PRODUCTO/features.md` y `01_PRODUCTO/user_stories.md` (bidireccional por ID).
 - Requisito funcional → Épica: `01_PRODUCTO/requirements.md` (REQ-F-01..40).
 - Épica → Componente arquitectónico: `04_ARQUITECTURA/architecture.md`.
@@ -84,7 +84,7 @@ ADR-009 (MVP v2)
 ```
 ADR-010 (backlog unificado + MVP v3)
 ├── supersede ADR-009
-├── fuentes: backlog_completo_v1.md (A), product_definition_v4.md (B, v1.3; antes v3/v2)
+├── fuentes: backlog_completo_v1.md (A), product_definition_v5.md (B, v1.4; antes v4/v3/v2)
 ├── genera: epics.md, features.md, user_stories.md, backlog.md, technical_stories.md, id_mapping.md
 ├── nuevas épicas: EPIC-49 (deuda), EPIC-50 (JEV ← ADR-006), EPIC-51 (sandbox), EPIC-52 (CLI), EPIC-53 (extensiones)
 └── conflictos: CONF-001 (EPIC-47 ↔ EPIC-50), CONF-002 (EPIC-02 ↔ EPIC-18), CONF-003 (EPIC-07/08/09/46), CONF-004 (EPIC-14)
@@ -224,4 +224,19 @@ SPRINT-007
 └── 05_CODIGO/{frontend,components,hooks,types,tests,dependencies}.md, 16_DOCUMENTACION/user_documentation.md
 
 Código → historias: webui_app.py ← ADR-019, VULN-004 · KanbanBoard.tsx/kanban.ts ← US-06.06, 06.07 · live.tsx/liveCore.ts ← US-31.08, 31.04 · Activity.tsx ← US-31.01, 31.02, 31.04, 21.09 · Dashboard.tsx ← US-45.02, 45.03 · Project/Story/Docs/System.tsx ← US-31.06, US-01.02 · theme.ts/prefs.tsx ← US-31.07
+
+SPRINT-008
+├── TASK-008-01 → 01_PRODUCTO/product_definition_v5.md (v1.4: FEAT-19.07, FEAT-10.04, FEAT-23.05, FEAT-24.05), tools/derive_backlog.py, 29 refinamientos
+├── US-31.09..31.12 (FEAT-19.07) → web_api.py (escritura), web/src/forms.tsx, pages/{Dashboard,BacklogForms,Project,Story,System}.tsx → tests/test_rest_write.py::test_us3109_*..test_us3112_*, tests/test_webui_ops.py::test_us3109_*..test_us3112_*
+├── US-05.02..05.09 (EPIC-05) → domain/sprints.py, db/schema.py (proyecto v4), mcp_server.py (acm_sprint_*), web_api.py (/sprints, /kanban?sprint=), web/src/pages/Sprints.tsx → tests/test_sprints.py, tests/test_rest_write.py::test_us0505_*, tests/test_webui_ops.py::test_us0502_us0505_us0509_us0503_*
+├── US-13.14, 13.15, 04.10, 04.14, 04.15, 43.08 (FEAT-10.04) / ADR-020 → domain/supervisor.py, domain/watchdog.py, db/schema.py (global v7, supervisor_reviews), web/src/pages/Supervisor.tsx → tests/test_supervisor.py, tests/test_webui_ops.py::test_us1314_ca05_us1315_ca03_*
+├── US-50.01..50.04 (EPIC-50), US-22.04 → inference/jev.py, inference/ollama.py (OllamaDecisionEngine), app.py (build_engines), inference/router.py → tests/test_second_brain.py, tests/fake_ollaya.py, tests/fake_ollama.py
+├── US-50.09, 50.10, 22.06, 22.07 (FEAT-24.05) / ADR-021 → domain/models.py, inference/selection.py, inference/ollaya_models.py, db/schema.py (global v8, inference_settings), web/src/pages/Models.tsx → tests/test_models_chat.py::test_us5009_*, test_us5010_*, test_us2206_us2207_*, tests/test_webui_ops.py::test_us5009_*
+├── US-22.10, 22.11 (FEAT-23.05) / ADR-022 → domain/chat.py, db/schema.py (proyecto v5), web/src/pages/Assistant.tsx → tests/test_models_chat.py::test_us2210_*, test_us2211_*, tests/test_webui_ops.py::test_us2210_us2211_*
+├── BUG-002 → web/src/App.tsx (adminOnly) → tests/test_webui_ops.py::test_us3111_ca03_ca04_token_una_vez_y_revocar
+├── IMP-004 → US-50.01..03, 50.09, 50.10, 22.04, 22.10, 22.11 (IMPLEMENTED hasta tener runtimes reales)
+└── README.md, 06_API/{rest_api,mcp_server}.md, 07_DATOS/databases.md, 09_MENSAJERIA/events.md, 10_IA/**, 11_SEGURIDAD/{permissions,secrets}.md, 12_TESTING/sprint_008_evidence.md
+
+Código → historias: sprints.py ← US-05.02..05.09 · supervisor.py ← US-13.14, 13.15, 04.10, 04.14, 04.15, 43.08, ADR-020 · jev.py ← US-50.01, 50.02 · ollama.py (decisión) ← US-22.04 · router.py ← US-50.03, 50.04 · models.py/selection.py/ollaya_models.py ← US-50.09, 50.10, 22.06, 22.07, ADR-021 · chat.py ← US-22.10, 22.11, ADR-022 · forms.tsx ← US-31.09..31.12
+Modelo IA → uso: jev:<modelo> → agile.story_review, agile.sprint_review, acm_decide · ollama-decide:<modelo> → respaldo de decisiones · ollama:<modelo> → context.compact, agile.report, agent.chat (10_IA/model_registry.md)
 ```

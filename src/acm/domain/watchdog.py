@@ -8,8 +8,10 @@ Una ejecución (`run`) de un proyecto:
    (`EngineRouter`, purpose `story.quality`; US-35.11 CA-01). Una respuesta no calibrada no se da por fallo: se marca
    REVIEW (ADR-015).
 3. **Estructura**: requisitos huérfanos, épicas sin features, features sin historias (`BacklogService.audit`).
-4. **Semáforo** (US-13.10): RED si hay algún CRITICAL; AMBER si hay WARNING o REVIEW; GREEN si no.
-5. **Histórico** (US-13.13): cada ejecución se guarda en `watchdog_runs` de la base global.
+4. **Supervisor ágil** (SPRINT-008, `supervisor.py`): revisión de historias, sprints y Kanban con JEV/Ollama y reglas,
+   acciones seguras autónomas según `supervisor.mode` e informe de lo hecho, lo pendiente y las incongruencias.
+5. **Semáforo** (US-13.10): RED si hay algún CRITICAL; AMBER si hay WARNING o REVIEW; GREEN si no.
+6. **Histórico** (US-13.13): cada ejecución se guarda en `watchdog_runs` de la base global.
 
 `run_all` recorre todos los proyectos; la app lo lanza periódicamente (`ACM_WATCHDOG_INTERVAL_S`, US-13.06).
 """
@@ -25,6 +27,7 @@ from typing import Any
 from acm.domain.backlog import READY_GATE_QUESTIONS, BacklogService
 from acm.domain.errors import AcmError, Forbidden, InvalidArgument
 from acm.domain.projects import ProjectService
+from acm.domain.supervisor import AgileSupervisor
 from acm.inference.ports import DecisionRequest
 from acm.inference.router import EngineRouter
 
@@ -67,6 +70,7 @@ class WatchdogService:
         self.projects = projects
         self.backlog = backlog
         self.engines = engines
+        self.supervisor = AgileSupervisor(projects, backlog, engines)
 
     # ------------------------------------------------------------------ US-13.05
     def _integrity(self, project_id: str) -> list[dict[str, Any]]:
@@ -152,16 +156,23 @@ class WatchdogService:
         findings = self._integrity(project_id)
         integrity = self._set_integrity(project_id, findings)
         engines: set[str] = set()
+        supervision: dict[str, Any] = {"actions": [], "summary": {}, "report": "", "report_engine": ""}
         if integrity == "ok":
             quality, engines = self._story_quality(principal, project_id)
             findings += quality + self._structure(principal, project_id)
+            supervision = self.supervisor.run(project_id)
+            findings += supervision["findings"]
+            engines |= supervision["engines"]
+            if supervision["report_engine"]:
+                engines.add(supervision["report_engine"])
         counts = {s.lower(): sum(f["severity"] == s for f in findings) for s in SEVERITIES}
         light = semaphore(findings)
         ts = _now()
         with self.projects.global_db.write() as conn:
             cur = conn.execute(
                 "INSERT INTO watchdog_runs(project_id, ts, trigger, principal, semaphore, findings_json, critical, "
-                "warning, review, info, engines_json, duration_ms) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "warning, review, info, engines_json, duration_ms, report, report_engine, actions_json, summary_json) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     project_id,
                     ts,
@@ -175,6 +186,10 @@ class WatchdogService:
                     counts["info"],
                     json.dumps(sorted(engines)),
                     round((time.perf_counter() - start) * 1000, 3),
+                    supervision["report"],
+                    supervision["report_engine"],
+                    json.dumps(supervision["actions"], ensure_ascii=False),
+                    json.dumps(supervision["summary"], ensure_ascii=False),
                 ),
             )
             run_id = int(cur.lastrowid)
@@ -184,7 +199,13 @@ class WatchdogService:
             project_id=project_id,
             entity_type="project",
             entity_id=project_id,
-            data={"run_id": run_id, "semaphore": light, "integrity": integrity, "counts": counts},
+            data={
+                "run_id": run_id,
+                "semaphore": light,
+                "integrity": integrity,
+                "counts": counts,
+                "actions_applied": sum(1 for a in supervision["actions"] if a.get("applied")),
+            },
         )
         return {
             "project_id": project_id,
@@ -196,6 +217,10 @@ class WatchdogService:
             "counts": counts,
             "engines": sorted(engines),
             "findings": findings,
+            "actions": supervision["actions"],
+            "summary": supervision["summary"],
+            "report": supervision["report"],
+            "report_engine": supervision["report_engine"],
         }
 
     def run_all(self, principal: str, trigger: str = "scheduled") -> list[dict[str, Any]]:
@@ -227,6 +252,8 @@ class WatchdogService:
             run = dict(r)
             run["findings"] = json.loads(run.pop("findings_json"))
             run["engines"] = json.loads(run.pop("engines_json"))
+            run["actions"] = json.loads(run.pop("actions_json"))
+            run["summary"] = json.loads(run.pop("summary_json"))
             runs.append(run)
         return {"project_id": project_id, "runs": runs}
 

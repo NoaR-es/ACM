@@ -2,7 +2,7 @@
 
 **Responde a:** Cómo funcionan las APIs
 
-**Salud:** OK — MCP (46 herramientas), API REST v1, WebSocket (SPRINT-006) e interfaz web en `/` (SPRINT-007)
+**Salud:** OK — MCP (59 herramientas), API REST v1 con escritura completa (54 rutas HTTP, SPRINT-008), WebSocket (SPRINT-006) e interfaz web en `/` (SPRINT-007)
 
 | Documento | Estado |
 |-----------|--------|

@@ -57,3 +57,19 @@
 - **Evidencia:** 275 tests Python en PASS (24 e2e en Chromium); 25 vitest; `12_TESTING/sprint_007_evidence.md`; build reproducible.
 - **No entregado:** edición del backlog desde la interfaz (la API solo expone lectura, estado y gate READY); presencia de agentes (US-21.10/11).
 
+
+## SPRINT-008 — ACM operable y supervisor autónomo (2026-10-06)
+- **Goal:** cumplido, con dos límites declarados:
+  - US-05.02 CA-03 (dependencias entre historias) queda pendiente;
+  - los motores JEV/Ollama, la selección de modelos y el agente interno solo están probados contra servidores simulados (IMP-004).
+- **Entregado:**
+  - API REST de escritura (54 rutas HTTP, 28 de escritura) y formularios para todo lo que antes solo se hacía por MCP: proyectos, backlog, criterios, miembros, principales, tokens (secreto visible una vez), configuración y modelos.
+  - Sprints completos: crear, planificar, iniciar con control de sobrecarga, cerrar con traslado, cancelar, tablero y resumen de cierre.
+  - Supervisor ágil autónomo dentro del Watchdog. Usa reglas de flujo, revisión INVEST/criterios/tamaño por JEV o Ollama y un informe redactado por Ollama. Solo aplica 3 acciones seguras y reversibles por encima del umbral de confianza, todas auditadas y con deshacer.
+  - Motores `JevDecisionEngine` (contrato Ollaya `/api/decide`) y `OllamaDecisionEngine`; selección de modelos por propósito (ADR-021) y guía de uso de las familias de Ollaya.
+  - Agente interno de Ollama con 7 herramientas de solo lectura e hilos persistentes (ADR-022).
+  - README bilingüe EN/ES.
+  - VERIFIED: 20 historias. IMPLEMENTED: 9 (US-05.02 y 8 que dependen de runtimes reales).
+- **Evidencia:** 380 tests Python en PASS (37 e2e en Chromium); 26 vitest; `12_TESTING/sprint_008_evidence.md` (85 CA en PASS, 1 PENDIENTE); 10 mutaciones (9 detectadas, 1 equivalente).
+- **Bug encontrado y corregido:** BUG-002 (al recargar `/system`, un administrador volvía al panel).
+- **No entregado:** dependencias entre historias; verificación con Ollama/Ollaya reales.

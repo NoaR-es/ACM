@@ -10,7 +10,7 @@
 | MCP | Model Context Protocol: interfaz por la que los agentes invocan herramientas de ACM. |
 | RAG | Retrieval-Augmented Generation: recuperación semántica de contexto. |
 | Ollama | Motor de inferencia de modelos locales. |
-| JEV / Jev | Modelos de decisión "System One" (TypeSafe) servidos en local por Ollaya: estado + preguntas tipadas → respuestas con probabilidades calibradas, sin generar texto. Se integrarán (EPIC-50); la interfaz de decisión existe desde el MVP (ADR-006, ADR-012). |
+| JEV / Jev | Modelos de decisión "System One" (TypeSafe) servidos en local por Ollaya: estado + preguntas tipadas → respuestas con probabilidades calibradas, sin generar texto. Integrados en SPRINT-008 (`JevDecisionEngine`, EPIC-50), aún sin verificar contra un Ollaya real (IMP-004) (ADR-006, ADR-012). |
 | Interfaz de decisión | Puerto único del núcleo por el que Watchdog, gates y router piden decisiones tipadas; implementaciones: reglas, Ollama y JEV (US-35.11, ADR-012). |
 | Segundo cerebro | Papel de ACM respecto al agente IA: contexto compacto y decisiones resueltas con modelos locales para que el agente gaste menos tokens (definición §1.2, ADR-012). |
 | Preparado para JEV | Diseño en el que conectar el adaptador JEV no requiere cambiar a los consumidores (US-47.01). |
@@ -23,7 +23,7 @@
 | Historia técnica (TECH-NNN) | Trabajo técnico transversal necesario para el producto (no es deuda). |
 | GAP-NNN | Hueco/inconsistencia detectado en el sistema de control o backlog. |
 | MVP / POST-MVP | Clasificación de alcance (ADR-010). |
-| Fuente A / Fuente B | A = `backlog_completo_v1.md` (columna vertebral del backlog); B = `product_definition_v4.md` (definición v1.3). ADR-010. |
+| Fuente A / Fuente B | A = `backlog_completo_v1.md` (columna vertebral del backlog); B = `product_definition_v5.md` (definición v1.4). ADR-010. |
 | Backlog unificado | Backlog generado a partir de A y B con IDs sin colisiones; traducción de IDs de B en `id_mapping.md`. |
 | CA-NN | Criterio de aceptación binario PASS/FAIL de una historia. |
 | CONF-NNN | Conflicto de requisitos entre fuentes que requiere decisión del operador. |
@@ -63,3 +63,11 @@
 | Carril | En el Kanban de varios proyectos, fila propia de cada proyecto (US-06.07 CA-03); la alternativa es la vista mezclada. |
 | WCAG AA | Nivel de accesibilidad exigido a la paleta: contraste ≥ 4.5:1 para texto y ≥ 3:1 para elementos gráficos (US-31.07). |
 | code_reference.md | Referencia de símbolos generada desde el código por `control/tools/code_inventory.py`; no se edita a mano. |
+| Supervisor ágil | Revisión autónoma que ACM hace de cada proyecto en cada ejecución del Watchdog: detecta incongruencias, revisa historias con JEV u Ollama, redacta un informe y aplica solo acciones seguras y reversibles (ADR-020, FEAT-10.04). |
+| `acm-supervisor` | Principal interno (agente, admin, sin token) con el que actúa y se audita el supervisor ágil. |
+| Acción segura | Cambio que el supervisor puede aplicar solo: `story.mark_ready`, `story.back_to_planned`, `sprint.remove_story`. Reversible, auditado y por encima del umbral de confianza. |
+| Propósito (de inferencia) | Para qué se pide una decisión o una generación (`agile.story_review`, `agent.chat`…). Decide el motor y el modelo (ADR-021). |
+| Familia de Ollaya | Grupo de modelos JEV con el mismo nombre antes de `:` (`laya`, `winnow`, `kev`…); la guía de uso está en `10_IA/models.md`. |
+| Agente interno | Conversación con el modelo local de Ollama sobre un proyecto, con herramientas de solo lectura (ADR-022). |
+| Hilo (`TH-NNN`) | Conversación persistida con el agente interno; conserva el contexto entre mensajes y solo la ve quien la abrió (y los admin). |
+| Sprint (en el producto) | `SPRINT-NN` de un proyecto gestionado por ACM: objetivo, fechas, capacidad en historias y estados PLANNED → ACTIVE → CLOSED o CANCELLED (EPIC-05). |

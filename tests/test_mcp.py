@@ -16,6 +16,17 @@ pytestmark = pytest.mark.anyio
 
 PROJECT_TOOLS = {"acm_project_open", "acm_project_config_get", "acm_project_config_set"}
 BACKLOG_TOOLS = {
+    "acm_sprint_create",
+    "acm_sprint_list",
+    "acm_sprint_get",
+    "acm_sprint_add_stories",
+    "acm_sprint_remove_story",
+    "acm_sprint_start",
+    "acm_sprint_close",
+    "acm_sprint_cancel",
+    "acm_chat",
+    "acm_chat_threads",
+    "acm_chat_get",
     "acm_requirement_create",
     "acm_requirement_list",
     "acm_requirement_trace",
@@ -43,6 +54,8 @@ BACKLOG_TOOLS = {
     "acm_governance_status",
 }
 GLOBAL_TOOLS = {
+    "acm_models_list",
+    "acm_models_select",
     "acm_project_create",
     "acm_project_list",
     "acm_system_info",

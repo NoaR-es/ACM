@@ -9,6 +9,7 @@ from pathlib import Path
 
 import pytest
 
+from acm.domain.config_schema import PARAMETERS
 from acm.domain.errors import AlreadyExists, Forbidden, InvalidArgument, NotFound, StorageError
 from acm.domain.projects import ProjectService
 from tests.conftest import ADMIN, add_member
@@ -146,7 +147,7 @@ def test_us0102_ca02_abrir_carga_contexto(service: ProjectService) -> None:
         ctx
     )
     assert ctx["description"] == "desc" and ctx["role"] == "admin"
-    assert {p["key"] for p in ctx["config"]} == {"sqlite.synchronous", "context.max_tokens", "decision.engine_order"}
+    assert {p["key"] for p in ctx["config"]} == set(PARAMETERS)  # toda la configuración del proyecto
 
 
 def test_us0102_ca04_proyecto_inexistente_o_sin_base(service: ProjectService, data_dir: Path) -> None:
@@ -206,6 +207,10 @@ def test_us0103_ca02_invalidos_rechazados_sin_guardar(service: ProjectService) -
         ({"decision.engine_order": []}, "decision.engine_order"),
         ({"decision.engine_order": ["rules", "rules"]}, "decision.engine_order"),
         ({"decision.engine_order": ["gpt"]}, "decision.engine_order"),
+        ({"supervisor.mode": "auto"}, "supervisor.mode"),
+        ({"supervisor.min_confidence_pct": 49}, "supervisor.min_confidence_pct"),
+        ({"supervisor.stale_days": 0}, "supervisor.stale_days"),
+        ({"kanban.wip_limit": -1}, "kanban.wip_limit"),
         # petición mixta: uno válido y uno inválido → no se guarda nada
         ({"context.max_tokens": 5000, "sqlite.synchronous": "OFF"}, "sqlite.synchronous"),
     ]
@@ -214,11 +219,7 @@ def test_us0103_ca02_invalidos_rechazados_sin_guardar(service: ProjectService) -
             service.set_config(ADMIN, "alpha", changes)
         assert err.value.field == field
     params = {p["key"]: p["value"] for p in service.get_config(ADMIN, "alpha")["parameters"]}
-    assert params == {
-        "sqlite.synchronous": "FULL",
-        "context.max_tokens": 8000,
-        "decision.engine_order": ["rules", "jev", "ollama"],
-    }
+    assert params == {k: p.default for k, p in PARAMETERS.items()}  # nada guardado: todo sigue por defecto
     service.set_config(ADMIN, "alpha", {"context.max_tokens": 256})  # límites aceptados
     service.set_config(ADMIN, "alpha", {"context.max_tokens": 200000})
 

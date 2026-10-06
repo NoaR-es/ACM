@@ -18,6 +18,7 @@ export type Story = {
   updated_at: string;
   requirement_ids: string[];
   acceptance_criteria: Criterion[];
+  sprint_id: string | null;
 };
 export type StoryDetail = Story & {
   history: { from_status: string; to_status: string; reason: string; changed_at: string; changed_by: string }[];
@@ -53,6 +54,7 @@ export type Finding = {
   message: string;
   source: string;
   engine?: string;
+  confidence?: number | null;
 };
 export type WatchdogRun = {
   id: number;
@@ -67,6 +69,114 @@ export type WatchdogRun = {
   findings: Finding[];
   engines: string[];
   duration_ms: number;
+  report: string;
+  report_engine: string;
+  actions: SupervisorAction[];
+  summary: SupervisorSummary;
+};
+// Supervisor ágil autónomo (SPRINT-008, US-13.14/13.15)
+export type SupervisorAction = {
+  type: string;
+  target: string;
+  reason: string;
+  engine: string;
+  calibrated: boolean;
+  confidence: number | null;
+  safe: boolean;
+  applied: boolean;
+  error?: string;
+  from?: string;
+  to?: string;
+  sprint_id?: string;
+};
+export type SupervisorSummary = {
+  done?: string[];
+  verified?: string[];
+  in_progress?: string[];
+  blocked?: string[];
+  pending?: string[];
+  active_sprint?: {
+    id: string;
+    goal: string;
+    end_date: string;
+    done: number;
+    stories: number;
+    completion_pct: number;
+    risk?: string;
+    risk_engine?: string;
+  } | null;
+  notes?: string[];
+};
+// Sprints (EPIC-05)
+export type Sprint = {
+  id: string;
+  name: string;
+  goal: string;
+  start_date: string;
+  end_date: string;
+  capacity: number | null;
+  status: "PLANNED" | "ACTIVE" | "CLOSED" | "CANCELLED";
+  story_ids: string[];
+  history: { story_id: string; outcome: string; ended_at: string; status: StoryStatus }[];
+  stories_by_status: Partial<Record<StoryStatus, number>>;
+  load: number;
+  overloaded: boolean;
+  summary: {
+    text?: string;
+    done?: string[];
+    not_done?: string[];
+    completion_pct?: number;
+    carried_over_to?: string | null;
+  };
+  created_at: string;
+  started_at: string | null;
+  closed_at: string | null;
+  warnings?: string[];
+};
+// Modelos (US-50.09/10)
+export type ModelGuide = { summary: string; best_for: string; size: string; notes: string; types: string[] };
+export type AvailableModel = {
+  name: string;
+  details: Record<string, unknown>;
+  default?: boolean;
+  purposes?: string[];
+  note?: string;
+  guide?: ModelGuide | null;
+};
+export type ModelCatalog = {
+  purposes: Record<string, string>;
+  seen_purposes: string[];
+  usage: Record<string, string>;
+  ollama: { configured: boolean; hint?: string; endpoint?: string; selected?: string | null; source?: string; available?: AvailableModel[]; error?: string };
+  jev: {
+    configured: boolean;
+    hint?: string;
+    endpoint?: string;
+    default_model?: string | null;
+    source?: string;
+    models_by_purpose?: Record<string, string>;
+    available?: AvailableModel[];
+    error?: string;
+    guide?: { source: string; choosing: string[]; acm_suggestions: Record<string, string> };
+  };
+};
+// Conversación con el modelo local (US-22.10/11)
+export type ChatThread = { id: string; title: string; created_by: string; created_at: string; updated_at: string; messages: number };
+export type ChatMessage = {
+  role: "user" | "assistant" | "tool";
+  content: string;
+  tool_name: string;
+  tool_calls: { function: { name: string; arguments: unknown } }[];
+  model: string;
+  principal: string;
+  created_at: string;
+};
+export type ChatReply = {
+  thread_id: string;
+  reply: string;
+  model: string;
+  tool_calls: { name: string; arguments: Record<string, unknown>; ok: boolean }[];
+  context_messages: number;
 };
 export type Governance = {
   project_id: string;
@@ -99,9 +209,11 @@ export type Card = {
   requirement_ids: string[];
   updated_at: string;
   criteria: number;
+  sprint_id: string | null;
 };
 export type Kanban = {
   projects: string[];
+  sprint?: string | null;
   columns: StoryStatus[];
   transitions: Record<StoryStatus, StoryStatus[]>;
   cards: Card[];

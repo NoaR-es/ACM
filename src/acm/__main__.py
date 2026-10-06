@@ -20,7 +20,7 @@ from acm.config import Settings
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="acm", description="Agile Context Manager")
     sub = parser.add_subparsers(dest="command", required=True)
-    serve = sub.add_parser("serve", help="sirve /api y /mcp por HTTP")
+    serve = sub.add_parser("serve", help="sirve la interfaz web, /api y /mcp por HTTP")
     serve.add_argument("--host")
     serve.add_argument("--port", type=int)
     serve.add_argument("--data-dir")

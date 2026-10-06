@@ -192,7 +192,8 @@ def test_us3511_ca01_watchdog_consume_la_interfaz(service: ProjectService) -> No
     router.registry.register(spy)
     service.set_config(ADMIN, P, {"decision.engine_order": ["jev", "rules"]})
     run = _watchdog(service, router).run(ADMIN, P)
-    assert [r.purpose for r in spy.seen] == ["story.quality"] and run["engines"] == ["jev:test"]
+    # Calidad (gate) y revisión del supervisor ágil: ambas pasan por la interfaz de decisión, ninguna por un motor fijo.
+    assert {r.purpose for r in spy.seen} == {"story.quality", "agile.story_review"} and run["engines"] == ["jev:test"]
 
 
 # ---------------------------------------------------------------- US-13.10 — semáforo

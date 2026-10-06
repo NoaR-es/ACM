@@ -1,4 +1,4 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v4.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v5.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
 
 # Correspondencia de IDs: definición v1.1 (B) → backlog unificado
 
@@ -94,6 +94,7 @@ usan la numeración de B: tradúcelos con esta tabla (notación `B:US-15.09`).
 | FEAT-10.01 | FEAT-13.03 |
 | FEAT-10.02 | FEAT-13.04 |
 | FEAT-10.03 | FEAT-13.05 |
+| FEAT-10.04 | FEAT-13.06 |
 | FEAT-11.01 | FEAT-29.02 |
 | FEAT-11.02 | FEAT-29.03 |
 | FEAT-11.03 | FEAT-29.04 |
@@ -127,6 +128,7 @@ usan la numeración de B: tradúcelos con esta tabla (notación `B:US-15.09`).
 | FEAT-19.04 | FEAT-45.02 |
 | FEAT-19.05 | FEAT-31.03 |
 | FEAT-19.06 | FEAT-06.03 |
+| FEAT-19.07 | FEAT-31.04 |
 | FEAT-20.01 | FEAT-27.02 |
 | FEAT-20.02 | FEAT-27.03 |
 | FEAT-20.03 | FEAT-27.04 |
@@ -143,10 +145,12 @@ usan la numeración de B: tradúcelos con esta tabla (notación `B:US-15.09`).
 | FEAT-23.02 | FEAT-22.03 |
 | FEAT-23.03 | FEAT-22.04 |
 | FEAT-23.04 | FEAT-39.02 |
+| FEAT-23.05 | FEAT-22.05 |
 | FEAT-24.01 | FEAT-50.01 |
 | FEAT-24.02 | FEAT-50.02 |
 | FEAT-24.03 | FEAT-50.03 |
 | FEAT-24.04 | FEAT-50.04 |
+| FEAT-24.05 | FEAT-50.05 |
 | FEAT-25.01 | FEAT-51.01 |
 | FEAT-25.02 | FEAT-51.02 |
 | FEAT-25.03 | FEAT-51.03 |
@@ -316,6 +320,8 @@ usan la numeración de B: tradúcelos con esta tabla (notación `B:US-15.09`).
 | US-10.06 | US-13.11 |
 | US-10.07 | US-13.12 |
 | US-10.08 | US-13.13 |
+| US-10.09 | US-13.14 |
+| US-10.10 | US-13.15 |
 | US-11.01 | US-29.04 |
 | US-11.02 | US-29.05 |
 | US-11.03 | US-29.06 |
@@ -401,6 +407,10 @@ usan la numeración de B: tradúcelos con esta tabla (notación `B:US-15.09`).
 | US-19.11 | US-31.07 |
 | US-19.12 | US-31.08 |
 | US-19.13 | US-06.07 |
+| US-19.14 | US-31.09 |
+| US-19.15 | US-31.10 |
+| US-19.16 | US-31.11 |
+| US-19.17 | US-31.12 |
 | US-20.01 | US-27.04 |
 | US-20.02 | US-27.05 |
 | US-20.03 | US-27.06 |
@@ -439,6 +449,8 @@ usan la numeración de B: tradúcelos con esta tabla (notación `B:US-15.09`).
 | US-23.06 | US-22.09 |
 | US-23.07 | US-39.04 |
 | US-23.08 | US-39.05 |
+| US-23.09 | US-22.10 |
+| US-23.10 | US-22.11 |
 | US-24.01 | US-50.01 |
 | US-24.02 | US-50.02 |
 | US-24.03 | US-50.03 |
@@ -447,6 +459,8 @@ usan la numeración de B: tradúcelos con esta tabla (notación `B:US-15.09`).
 | US-24.06 | US-50.06 |
 | US-24.07 | US-50.07 |
 | US-24.08 | US-50.08 |
+| US-24.09 | US-50.09 |
+| US-24.10 | US-50.10 |
 | US-25.01 | US-51.01 |
 | US-25.02 | US-51.02 |
 | US-25.03 | US-51.03 |

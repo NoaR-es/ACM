@@ -2,17 +2,23 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link, NavLink, Route, Routes, useParams } from "react-router-dom";
-import { api, post } from "../api";
+import { api, del, patch, post, put } from "../api";
 
 import {
   Empty, ErrorBox, fmtDate, Loading, Section, SemaphoreBadge, SeverityBadge, Stat, StatusBadge, StatusBar,
 } from "../components";
+import { Disclosure, Field, FormStatus, submit, useAction } from "../forms";
 import { KanbanBoard } from "../KanbanBoard";
+import { AssistantView } from "./Assistant";
+import { EpicActions, EpicForm, FeatureForm, RequirementForm, SplitForm, StoryForm } from "./BacklogForms";
+import { SprintsView } from "./Sprints";
+import { SupervisorPanel } from "./Supervisor";
 import { STATUS_LABEL, STATUS_ORDER, type StoryStatus } from "../theme";
 import type { Backlog, Governance, Kanban, PortfolioProject, Requirement, Story, WatchdogRun } from "../types";
 
 type ProjectInfo = { project_id: string; name: string; description: string; role: string; schema_version: number };
-type Config = { parameters: { key: string; value: unknown; default: unknown; allowed: string; description: string; consumer: string }[] };
+type Param = { key: string; value: unknown; default: unknown; type: string; allowed: string; description: string; consumer: string };
+type Config = { parameters: Param[] };
 type Members = { members: { principal_id: string; role: string; kind: string; added_at: string }[] };
 
 export function useBacklog(projectId: string) {
@@ -26,7 +32,8 @@ export function ProjectPage() {
   if (info.error) return <ErrorBox error={info.error} />;
   const tabs: [string, string][] = [
     ["", "Resumen"], ["backlog", "Backlog"], ["requirements", "Requisitos"], ["stories", "Historias"],
-    ["kanban", "Kanban"], ["governance", "Gobernanza"], ["members", "Miembros"], ["config", "Configuración"],
+    ["sprints", "Sprints"], ["kanban", "Kanban"], ["governance", "Gobernanza"], ["assistant", "Asistente"],
+    ["members", "Miembros"], ["config", "Configuración"],
   ];
   return (
     <div className="page wide">
@@ -49,10 +56,12 @@ export function ProjectPage() {
         <Route path="backlog" element={<BacklogTree projectId={projectId} />} />
         <Route path="requirements" element={<Requirements projectId={projectId} />} />
         <Route path="stories" element={<Stories projectId={projectId} />} />
+        <Route path="sprints" element={<SprintsView projectId={projectId} />} />
         <Route path="kanban" element={<ProjectKanban projectId={projectId} />} />
         <Route path="governance" element={<GovernanceView projectId={projectId} />} />
-        <Route path="members" element={<MembersView projectId={projectId} />} />
-        <Route path="config" element={<ConfigView projectId={projectId} />} />
+        <Route path="assistant" element={<AssistantView projectId={projectId} />} />
+        <Route path="members" element={<MembersView projectId={projectId} manage={["admin", "owner"].includes(info.data.role)} />} />
+        <Route path="config" element={<ConfigView projectId={projectId} editable={["admin", "owner"].includes(info.data.role)} />} />
       </Routes>
     </div>
   );
@@ -109,9 +118,17 @@ function BacklogTree({ projectId }: { projectId: string }) {
   if (backlog.isPending) return <Loading what="backlog" />;
   if (backlog.error) return <ErrorBox error={backlog.error} />;
   const stories = new Map(backlog.data.stories.map((s) => [s.id, s]));
-  if (backlog.data.epics.length === 0) return <Empty>El backlog está vacío.</Empty>;
+  const forms = (
+    <div className="row">
+      <RequirementForm projectId={projectId} />
+      <EpicForm projectId={projectId} backlog={backlog.data} />
+      <StoryForm projectId={projectId} backlog={backlog.data} />
+    </div>
+  );
+  if (backlog.data.epics.length === 0) return <>{forms}<Empty>El backlog está vacío.</Empty></>;
   return (
     <div className="tree">
+      {forms}
       {backlog.data.epics.map((epic) => (
         <details key={epic.id} open className="panel">
           <summary>
@@ -127,6 +144,8 @@ function BacklogTree({ projectId }: { projectId: string }) {
             <dt>Alcance</dt>
             <dd>{epic.scope}</dd>
           </dl>
+          <EpicActions projectId={projectId} epic={epic} backlog={backlog.data} />
+          <FeatureForm projectId={projectId} epic={epic} />
           {epic.features.map((f) => (
             <details key={f.id} open className="feature">
               <summary>
@@ -134,6 +153,7 @@ function BacklogTree({ projectId }: { projectId: string }) {
                 {f.status === "SPLIT" && <span className="tag">dividida en {f.split_into}</span>}
               </summary>
               {f.description && <p className="muted">{f.description}</p>}
+              <SplitForm projectId={projectId} feature={f} />
               <ul className="story-list">
                 {f.story_ids.map((sid) => {
                   const s = stories.get(sid);
@@ -165,8 +185,10 @@ function Requirements({ projectId }: { projectId: string }) {
   });
   if (backlog.isPending) return <Loading what="requisitos" />;
   if (backlog.error) return <ErrorBox error={backlog.error} />;
-  if (backlog.data.requirements.length === 0) return <Empty>Sin requisitos.</Empty>;
+  if (backlog.data.requirements.length === 0) return <><RequirementForm projectId={projectId} /><Empty>Sin requisitos.</Empty></>;
   return (
+    <>
+    <RequirementForm projectId={projectId} />
     <table className="table">
       <caption className="sr-only">Requisitos del proyecto</caption>
       <thead>
@@ -199,6 +221,7 @@ function Requirements({ projectId }: { projectId: string }) {
         ))}
       </tbody>
     </table>
+    </>
   );
 }
 
@@ -293,6 +316,7 @@ function GovernanceView({ projectId }: { projectId: string }) {
         </div>
         {run.error && <ErrorBox error={run.error} />}
       </Section>
+      <SupervisorPanel projectId={projectId} run={last} />
       <Section title={`Hallazgos de la última auditoría${last ? ` (${fmtDate(last.ts)})` : ""}`}>
         {!last ? (
           <Empty>Todavía no se ha auditado este proyecto.</Empty>
@@ -301,7 +325,7 @@ function GovernanceView({ projectId }: { projectId: string }) {
         ) : (
           <table className="table">
             <thead>
-              <tr><th>Severidad</th><th>Código</th><th>Objetivo</th><th>Mensaje</th><th>Origen</th></tr>
+              <tr><th>Severidad</th><th>Código</th><th>Objetivo</th><th>Mensaje</th><th>Origen</th><th>Confianza</th></tr>
             </thead>
             <tbody>
               {last.findings.map((f, i) => (
@@ -311,6 +335,7 @@ function GovernanceView({ projectId }: { projectId: string }) {
                   <td>{/^US-/.test(f.target) ? <Link to={`/p/${projectId}/s/${f.target}`}>{f.target}</Link> : f.target}</td>
                   <td>{f.message}</td>
                   <td className="small">{f.source}{f.engine ? ` · ${f.engine}` : ""}</td>
+                  <td className="small">{typeof f.confidence === "number" ? `${Math.round(f.confidence * 100)} %` : "—"}</td>
                 </tr>
               ))}
             </tbody>
@@ -340,51 +365,126 @@ function GovernanceView({ projectId }: { projectId: string }) {
   );
 }
 
-function MembersView({ projectId }: { projectId: string }) {
+function MembersView({ projectId, manage }: { projectId: string; manage: boolean }) {
   const members = useQuery({ queryKey: ["members", projectId], queryFn: () => api<Members>(`/projects/${projectId}/members`) });
+  const [principal, setPrincipal] = useState("");
+  const [role, setRole] = useState("member");
+  const k = [["members", projectId]];
+  const add = useAction(() => put(`/projects/${projectId}/members/${principal}`, { role }), k);
+  const change = useAction(({ id, to }: { id: string; to: string }) => put(`/projects/${projectId}/members/${id}`, { role: to }), k);
+  const remove = useAction((id: string) => del(`/projects/${projectId}/members/${id}`), k);
   if (members.isPending) return <Loading what="miembros" />;
   if (members.error) return <ErrorBox error={members.error} />;
   return (
-    <table className="table">
-      <thead>
-        <tr><th>Principal</th><th>Tipo</th><th>Rol en el proyecto</th><th>Desde</th></tr>
-      </thead>
-      <tbody>
-        {members.data.members.map((m) => (
-          <tr key={m.principal_id}>
-            <td>{m.principal_id}</td>
-            <td>{m.kind === "agent" ? "agente" : "usuario"}</td>
-            <td>{m.role}</td>
-            <td>{fmtDate(m.added_at)}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <>
+      {manage && (
+        <Disclosure label="Añadir miembro">
+          <form className="form" aria-label="Añadir miembro" onSubmit={submit(() => add.mutate(undefined, { onSuccess: () => setPrincipal("") }))}>
+            <div className="form-row">
+              <Field label="Principal (usuario o agente)" name="principal_id" error={add.error}>
+                <input value={principal} onChange={(e) => setPrincipal(e.target.value)} required />
+              </Field>
+              <Field label="Rol" name="role" error={add.error}>
+                <select value={role} onChange={(e) => setRole(e.target.value)}>
+                  <option value="member">member</option>
+                  <option value="owner">owner</option>
+                </select>
+              </Field>
+            </div>
+            <button className="primary" disabled={add.isPending}>Añadir</button>
+            <FormStatus error={add.error} done={add.isSuccess} ok="Miembro añadido" />
+          </form>
+        </Disclosure>
+      )}
+      <table className="table">
+        <thead>
+          <tr><th>Principal</th><th>Tipo</th><th>Rol en el proyecto</th><th>Desde</th>{manage && <th>Acciones</th>}</tr>
+        </thead>
+        <tbody>
+          {members.data.members.map((m) => (
+            <tr key={m.principal_id}>
+              <td>{m.principal_id}</td>
+              <td>{m.kind === "agent" ? "agente" : "usuario"}</td>
+              <td>
+                {manage ? (
+                  <select
+                    aria-label={`Rol de ${m.principal_id}`}
+                    value={m.role}
+                    onChange={(e) => change.mutate({ id: m.principal_id, to: e.target.value })}
+                  >
+                    <option value="member">member</option>
+                    <option value="owner">owner</option>
+                  </select>
+                ) : (
+                  m.role
+                )}
+              </td>
+              <td>{fmtDate(m.added_at)}</td>
+              {manage && (
+                <td>
+                  <button type="button" className="link" onClick={() => remove.mutate(m.principal_id)}>
+                    Retirar
+                  </button>
+                </td>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {[change, remove].map((m, i) => m.error && <ErrorBox key={i} error={m.error} />)}
+    </>
   );
 }
 
-function ConfigView({ projectId }: { projectId: string }) {
+function ParamEditor({ projectId, p }: { projectId: string; p: Param }) {
+  const initial = Array.isArray(p.value) ? (p.value as string[]).join(", ") : String(p.value);
+  const [value, setValue] = useState(initial);
+  const save = useAction(() => {
+    const parsed = p.type === "int" ? Number(value) : p.type === "list" ? value.split(",").map((x) => x.trim()).filter(Boolean) : value;
+    return patch(`/projects/${projectId}/config`, { changes: { [p.key]: parsed } });
+  }, [["project", projectId, "config"]]);
+  const options = p.type === "enum" ? p.allowed.split("|").map((o) => o.trim()) : null;
+  return (
+    <form className="form-row" aria-label={`Editar ${p.key}`} onSubmit={submit(() => save.mutate(undefined))}>
+      <Field label={p.key} name={p.key} error={save.error} hint={p.type === "list" ? "Separados por comas" : undefined}>
+        {options ? (
+          <select value={value} onChange={(e) => setValue(e.target.value)}>
+            {options.map((o) => <option key={o} value={o}>{o}</option>)}
+          </select>
+        ) : (
+          <input type={p.type === "int" ? "number" : "text"} value={value} onChange={(e) => setValue(e.target.value)} />
+        )}
+      </Field>
+      <button type="submit" disabled={save.isPending || value === initial}>Guardar</button>
+      <FormStatus error={save.error} done={save.isSuccess} ok="Guardado" />
+    </form>
+  );
+}
+
+function ConfigView({ projectId, editable }: { projectId: string; editable: boolean }) {
   const config = useQuery({ queryKey: ["project", projectId, "config"], queryFn: () => api<Config>(`/projects/${projectId}/config`) });
   if (config.isPending) return <Loading what="configuración" />;
   if (config.error) return <ErrorBox error={config.error} />;
   return (
-    <table className="table">
-      <thead>
-        <tr><th>Parámetro</th><th>Valor</th><th>Por defecto</th><th>Permitido</th><th>Descripción</th><th>Lo usa</th></tr>
-      </thead>
-      <tbody>
-        {config.data.parameters.map((p) => (
-          <tr key={p.key}>
-            <td><code>{p.key}</code></td>
-            <td>{JSON.stringify(p.value)}</td>
-            <td className="muted">{JSON.stringify(p.default)}</td>
-            <td className="small">{p.allowed}</td>
-            <td>{p.description}</td>
-            <td className="small muted">{p.consumer}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <>
+      {!editable && <p className="small muted">Solo el owner del proyecto o un administrador pueden cambiar la configuración.</p>}
+      <table className="table">
+        <thead>
+          <tr><th>Parámetro</th><th>Valor</th><th>Por defecto</th><th>Permitido</th><th>Descripción</th><th>Lo usa</th></tr>
+        </thead>
+        <tbody>
+          {config.data.parameters.map((p) => (
+            <tr key={p.key} data-param={p.key}>
+              <td><code>{p.key}</code></td>
+              <td>{editable ? <ParamEditor key={JSON.stringify(p.value)} projectId={projectId} p={p} /> : JSON.stringify(p.value)}</td>
+              <td className="muted">{JSON.stringify(p.default)}</td>
+              <td className="small">{p.allowed}</td>
+              <td>{p.description}</td>
+              <td className="small muted">{p.consumer}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 }
-

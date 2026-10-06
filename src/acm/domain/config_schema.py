@@ -94,6 +94,47 @@ PARAMETERS: dict[str, Parameter] = {
             "EngineRouter: gate READY, acm_decide y Watchdog (ADR-015)",
             _engine_order,
         ),
+        Parameter(
+            "supervisor.mode",
+            "enum",
+            "apply_safe",
+            "off | propose | apply_safe",
+            False,
+            "Autonomía del supervisor ágil: apagado, solo informar y proponer, o aplicar también los cambios seguros "
+            "y reversibles decididos por un motor calibrado (SPRINT-008, decisión del operador).",
+            "WatchdogService (supervisor ágil): acciones autónomas",
+            _enum("off", "propose", "apply_safe"),
+        ),
+        Parameter(
+            "supervisor.min_confidence_pct",
+            "int",
+            85,
+            "50..100",
+            False,
+            "Confianza mínima (en %) de una decisión calibrada para que el supervisor aplique un cambio por sí solo.",
+            "WatchdogService (supervisor ágil): umbral de las acciones autónomas",
+            _int_range(50, 100),
+        ),
+        Parameter(
+            "supervisor.stale_days",
+            "int",
+            7,
+            "1..365",
+            False,
+            "Días sin cambios tras los que una historia en curso o bloqueada se considera estancada.",
+            "WatchdogService (supervisor ágil): historias estancadas",
+            _int_range(1, 365),
+        ),
+        Parameter(
+            "kanban.wip_limit",
+            "int",
+            0,
+            "0..1000 (0 = sin límite)",
+            False,
+            "Máximo de historias en curso (IN_PROGRESS) a la vez; el supervisor avisa si se supera.",
+            "WatchdogService (supervisor ágil): límite WIP del Kanban",
+            _int_range(0, 1000),
+        ),
     )
 }
 

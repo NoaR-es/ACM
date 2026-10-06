@@ -1,11 +1,41 @@
 // Panel general (US-45.01/45.03): todos los proyectos accesibles, su salud y la actividad en vivo.
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { api } from "../api";
+import { api, post } from "../api";
 import { useAuth } from "../auth";
 import { Empty, ErrorBox, fmtDate, Loading, ProjectChip, Section, SemaphoreBadge, Stat, StatusBar } from "../components";
+import { Disclosure, Field, FormStatus, submit, useAction } from "../forms";
 import { useLive } from "../live";
 import type { PortfolioProject } from "../types";
+
+function NewProject() {
+  const [key, setKey] = useState("");
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const create = useAction(() => post("/projects", { key, name, description }), [["projects"], ["me"]]);
+  return (
+    <Disclosure label="Nuevo proyecto">
+      <form
+        className="form"
+        aria-label="Nuevo proyecto"
+        onSubmit={submit(() => create.mutate(undefined, { onSuccess: () => { setKey(""); setName(""); setDescription(""); } }))}
+      >
+        <Field label="Clave (project_id)" name="key" error={create.error} hint="Minúsculas, números y guiones; empieza por letra">
+          <input value={key} onChange={(e) => setKey(e.target.value)} />
+        </Field>
+        <Field label="Nombre" name="name" error={create.error}>
+          <input value={name} onChange={(e) => setName(e.target.value)} required />
+        </Field>
+        <Field label="Descripción" name="description" error={create.error}>
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
+        </Field>
+        <button className="primary" disabled={create.isPending}>Crear proyecto</button>
+        <FormStatus error={create.error} done={create.isSuccess} ok="Proyecto creado" />
+      </form>
+    </Disclosure>
+  );
+}
 
 export function Dashboard() {
   const projects = useQuery({ queryKey: ["projects"], queryFn: () => api<{ projects: PortfolioProject[] }>("/projects") });
@@ -47,10 +77,11 @@ export function Dashboard() {
             )
           }
         >
+          {me?.role === "admin" && <NewProject />}
           {list.length === 0 ? (
             <Empty>
               {me?.role === "admin"
-                ? "No hay proyectos. Créalos desde un agente con acm_project_create."
+                ? "No hay proyectos. Crea el primero con «+ Nuevo proyecto» o desde un agente (acm_project_create)."
                 : "No perteneces a ningún proyecto todavía."}
             </Empty>
           ) : (

@@ -82,10 +82,30 @@ Consumidores: mcp_server.build_mcp_server, web_api.build_api, app.create_app, __
 - **Invariantes:** la historia y sus criterios nunca se resumen; un resumen que no reduce se descarta; sin modelo se entrega sin resumir con motivo.
 
 ## `WatchdogService` — `src/acm/domain/watchdog.py`
-- **Responsabilidad:** gobernanza (EPIC-13): integridad SQLite, calidad de historias vía interfaz de decisión, estructura, semáforo, histórico, cuarentena, salud por componente.
+- **Responsabilidad:** gobernanza (EPIC-13): integridad SQLite, calidad de historias vía interfaz de decisión, estructura, supervisor ágil (`AgileSupervisor`), semáforo, histórico con informe y acciones, cuarentena, salud por componente.
 - `run(principal, project_id, trigger)`, `run_all(principal, trigger)` (admin), `history(principal, project_id, limit)`, `status(principal, project_id)`, `health(principal, catalog)` (admin).
 - **Efectos:** actualiza `projects.integrity_*`, inserta en `watchdog_runs`, evento `watchdog.run`, llamadas en `inference_calls`.
 - **Invariantes:** no evalúa nada sobre una base corrupta; respuesta no calibrada → REVIEW, nunca WARNING.
+
+## `AgileSupervisor` — `src/acm/domain/supervisor.py` (SPRINT-008, ADR-020)
+- **Responsabilidad:** supervisión autónoma dentro de cada `WatchdogService.run`: revisión de historias vivas (`agile.story_review`: INVEST, criterios verificables, tamaño), reglas de sprints y Kanban, riesgo del sprint activo (`agile.sprint_review`), acciones seguras e informe (`agile.report`).
+- `run(project_id) → {mode, findings, actions, summary, report, report_engine, engines}`.
+- **Efectos:** `supervisor_reviews` (caché por `updated_at`), cambios de estado y de sprint como `acm-supervisor`, `mcp_audit` (`supervisor:*`).
+- **Invariantes:** solo `SAFE_ACTIONS` y solo con motor calibrado y confianza ≥ `supervisor.min_confidence_pct`; nunca DONE, cancelar ni borrar; `supervisor.mode = off` no hace nada.
+
+## `SprintService` — `src/acm/domain/sprints.py` (EPIC-05)
+- `create`, `list`, `get`, `add_stories` (con avisos), `remove_story`, `start(force)`, `close(carry_over_to)`, `cancel`.
+- **Efectos:** `sprints`, `sprint_stories` (nunca se borran filas: historial), eventos `sprint.*`.
+- **Invariantes:** una historia en un solo sprint abierto; un solo sprint ACTIVE; no se inicia sobrecargado sin `force`; el cierre guarda `summary` (US-05.06).
+
+## `ModelService` — `src/acm/domain/models.py` (ADR-021)
+- `catalog(principal)` (cualquier principal conocido) y `select(principal, …)` (admin).
+- **Invariantes:** solo modelos detectados por el runtime; todo se valida antes de guardar nada; evento `models.changed`.
+
+## `ChatService` — `src/acm/domain/chat.py` (ADR-022)
+- `send(principal, project_id, message, thread_id?, title?)`, `threads`, `get`.
+- **Efectos:** `chat_threads`, `chat_messages`; llamadas `agent.chat` en `inference_calls`.
+- **Invariantes:** herramientas solo de lectura y con los permisos de quien pregunta; ≤ `MAX_TOOL_ROUNDS`; un fallo del modelo no deja hilos a medias; hilo visible solo para su autor y admin.
 
 ## `EngineRegistry` / `EngineRouter` — `src/acm/inference/router.py`
 - **Responsabilidad:** motores de inferencia disponibles (US-47.01) y enrutado con fallback (ADR-015).

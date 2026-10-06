@@ -51,3 +51,15 @@ export async function api<T>(path: string, init: RequestInit = {}, token = token
 export function post<T>(path: string, data?: unknown): Promise<T> {
   return api<T>(path, { method: "POST", body: data === undefined ? undefined : JSON.stringify(data) });
 }
+
+export function put<T>(path: string, data?: unknown): Promise<T> {
+  return api<T>(path, { method: "PUT", body: data === undefined ? undefined : JSON.stringify(data) });
+}
+
+export function patch<T>(path: string, data: unknown): Promise<T> {
+  return api<T>(path, { method: "PATCH", body: JSON.stringify(data) });
+}
+
+export function del<T>(path: string): Promise<T> {
+  return api<T>(path, { method: "DELETE" });
+}

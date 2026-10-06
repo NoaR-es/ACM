@@ -349,9 +349,14 @@ def test_us2201_ca04_no_afirma_modelo_no_detectado(service: ProjectService, olla
     assert "inventado:7b" not in row["models"]
 
 
-def test_us2201_configuracion_incompleta_rechazada(service: ProjectService) -> None:
-    with pytest.raises(InvalidArgument, match="deben configurarse juntos"):
-        build_engines(service, Settings(data_dir=service.data_dir, ollama_url="http://127.0.0.1:1"))
+def test_us2201_configuracion_incompleta_rechazada(service: ProjectService, ollama: FakeOllama) -> None:
+    with pytest.raises(InvalidArgument, match="ACM_OLLAMA_MODEL necesita ACM_OLLAMA_URL"):
+        build_engines(service, Settings(data_dir=service.data_dir, ollama_model="qwen2.5:0.5b"))
+    # Solo la URL: ACM detecta los modelos y pide elegir uno (US-50.09), sin inventar ninguno.
+    rows = build_engines(service, Settings(data_dir=service.data_dir, ollama_url=ollama.url)).registry.refresh()
+    row = next(r for r in rows if r["name"] == "ollama:-")
+    assert row["status"] == "error" and "ningún modelo seleccionado" in row["detail"]
+    assert row["models"] == ["llama3.2:1b", "qwen2.5:0.5b"]
 
 
 def _gen(max_tokens: int = 50) -> GenerationRequest:

@@ -1,6 +1,6 @@
 # Interfaz web — arquitectura del código (`web/`)
 
-Actualizado: 2026-09-30 (SPRINT-007). Decisión: ADR-019. Componentes: `components.md`. Hooks: `hooks.md`.
+Actualizado: 2026-10-06 (SPRINT-008). Decisión: ADR-019. Componentes: `components.md`. Hooks: `hooks.md`.
 
 ## Pila
 React 19 + TypeScript 7 (estricto) + Vite 8; `@tanstack/react-query` (caché e invalidación), `react-router-dom` (HashRouter), `marked` + `dompurify` (Markdown seguro); vitest + jsdom para tests unitarios. Versiones fijadas: `dependencies.md`.
@@ -35,6 +35,9 @@ HashRouter: las rutas de la interfaz van tras `#`, así no chocan con `/api` ni 
 
 ## Seguridad en el cliente
 El token está en `sessionStorage` (se borra al cerrar la pestaña). El Markdown se sanea con DOMPurify. La CSP (`script-src 'self'`) impide ejecutar scripts inyectados. La interfaz solo muestra lo que la API autoriza; ocultar enlaces de admin es comodidad, no seguridad.
+
+## Escritura (SPRINT-008)
+Toda operación de escritura usa `useAction` (`forms.tsx`): mutación de react-query que invalida sus claves al terminar bien. `Field` muestra el error del servidor junto al campo que lo causó (`error.field`) sin perder lo escrito; los grupos de checkboxes usan `role="group"` (no `<label>` anidados). La interfaz no valida por su cuenta lo que valida el dominio: así el mensaje es siempre el del servidor (mismo que por MCP). Las vistas de admin esperan a conocer la identidad antes de decidir si redirigen (BUG-002).
 
 ## Cómo añadir una vista
 1. Página en `pages/` y ruta en `App.tsx`.

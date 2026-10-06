@@ -81,22 +81,32 @@ class EngineRegistry:
                 close()
 
     def refresh(self) -> list[dict[str, Any]]:
-        """Comprueba la salud de cada motor y guarda los modelos detectados (US-22.01)."""
-        for engine in (*self.decision, *self.generation):
+        """Comprueba la salud de cada motor y guarda los modelos detectados (US-22.01).
+
+        El nombre de un motor incluye su modelo, que puede cambiar en caliente (US-50.09): la fila se inserta si no
+        existe, y las de modelos anteriores quedan como histórico (`registered: false`).
+        """
+        engines = [("decision", e) for e in self.decision] + [("generation", e) for e in self.generation]
+        for kind, engine in engines:
             try:
                 health = engine.health()
             except Exception as exc:  # un motor mal implementado no debe tumbar el refresco de los demás
                 health = EngineHealth(False, f"{type(exc).__name__}: {exc}")
             with self.projects.global_db.write() as conn:
                 conn.execute(
-                    "UPDATE inference_engines SET status = ?, detail = ?, models_json = ?, checked_at = ? "
-                    "WHERE name = ?",
+                    "INSERT INTO inference_engines(name, kind, provider, endpoint, status, detail, models_json, "
+                    "checked_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(name) DO UPDATE SET kind = excluded.kind, "
+                    "provider = excluded.provider, endpoint = excluded.endpoint, status = excluded.status, "
+                    "detail = excluded.detail, models_json = excluded.models_json, checked_at = excluded.checked_at",
                     (
+                        engine.name,
+                        kind,
+                        engine.provider,
+                        getattr(engine, "endpoint", ""),
                         "ok" if health.ok else "error",
                         health.detail,
                         json.dumps(list(health.models)),
                         _now(),
-                        engine.name,
                     ),
                 )
         return self.list()
@@ -118,6 +128,7 @@ class EngineRouter:
     def __init__(self, projects: ProjectService, registry: EngineRegistry | None = None):
         self.projects = projects
         self.registry = registry if registry is not None else EngineRegistry(projects)
+        self.selection: Any = None  # ModelSelection cuando la app la configura (US-50.09); None en tests aislados
         if not any(e.provider == "rules" for e in self.registry.decision):
             self.registry.register(RulesDecisionEngine())  # US-35.11 CA-02: siempre hay un motor sin modelo
 

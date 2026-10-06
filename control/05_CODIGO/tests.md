@@ -1,6 +1,6 @@
 # Código de tests
 
-Actualizado: 2026-09-30 (SPRINT-007). Estrategia y resultados: `12_TESTING/`. Recuentos: `file_inventory.md`.
+Actualizado: 2026-09-30 (SPRINT-008). Estrategia y resultados: `12_TESTING/`. Recuentos: `file_inventory.md`.
 
 ## Convenciones
 - **Nombre:** `test_usNNNN_caNN_<qué>` — historia y criterio que prueba. Los refinamientos citan cada test y `derive_backlog --check` falla si el test no existe.
@@ -20,7 +20,9 @@ Actualizado: 2026-09-30 (SPRINT-007). Estrategia y resultados: `12_TESTING/`. Re
 | `acm` | `live.py` (plugin registrado en `conftest.py`) | ACM real por HTTP en un hilo + `service`, `identity`, `token()`, `audit()` |
 | `mcp(acm, token)` | `live.py` | cliente MCP por HTTP con token |
 | `browser`, `ui`, `login`, `in_thread` | `test_webui.py` | Chromium (Playwright), página con sesión iniciada, agentes MCP async en otro hilo |
-| `FakeOllama` | `fake_ollama.py` | Ollama simulado como servidor HTTP |
+| `FakeOllama` | `fake_ollama.py` | Ollama simulado como servidor HTTP (generación, decisiones con esquema, guion de *tool calling*) |
+| `FakeOllaya` | `fake_ollaya.py` | Ollaya simulado con el contrato documentado (`/api/tags`, `/api/decide`, errores, clave) |
+| `running_acm(data_dir, **settings)` | `live.py` | ACM real por HTTP con configuración propia (p. ej. motores simulados); la usan `acm` y los e2e de `test_webui_ops.py` |
 
 ## Ejecución
 - `.venv/bin/pytest -q` — toda la suite de Python, incluidos los e2e si hay Chromium (local: `/opt/pw-browsers/chromium`).

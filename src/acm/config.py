@@ -9,7 +9,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-DEFAULT_HOST = "127.0.0.1"  # sin autenticación hasta EPIC-20: solo interfaz local por defecto
+DEFAULT_HOST = "127.0.0.1"  # solo interfaz local por defecto: exponer tras un proxy TLS (VULN-002)
 DEFAULT_PORT = 8765
 
 
@@ -21,7 +21,10 @@ class Settings:
     port: int = DEFAULT_PORT
     sqlite_synchronous: str = "FULL"  # ADR-013: FULL por defecto en la base global
     ollama_url: str | None = None  # EPIC-22: sin URL no se registra ningún motor Ollama
-    ollama_model: str | None = None  # modelo de generación (contexto compacto, US-35.08)
+    ollama_model: str | None = None  # modelo local: resume el contexto (US-35.08) y decide sin calibrar (ADR-015)
+    jev_url: str | None = None  # EPIC-50: servidor Ollaya con modelos de decisión JEV; sin URL no se registra
+    jev_model: str | None = None  # modelo de decisión de Ollaya (p. ej. `laya`)
+    jev_api_key: str | None = None  # clave Bearer si el servidor Ollaya usa OLLAYA_API_KEY
     events_keep: int = 10_000  # ADR-018: eventos conservados para reanudar clientes WebSocket
     watchdog_interval_s: float = 600.0  # US-13.06: auditoría periódica de todos los proyectos; 0 la desactiva
     allowed_hosts: tuple[
@@ -38,6 +41,9 @@ class Settings:
             "sqlite_synchronous": os.environ.get("ACM_SQLITE_SYNCHRONOUS", "FULL"),
             "ollama_url": os.environ.get("ACM_OLLAMA_URL") or None,
             "ollama_model": os.environ.get("ACM_OLLAMA_MODEL") or None,
+            "jev_url": os.environ.get("ACM_JEV_URL") or None,
+            "jev_model": os.environ.get("ACM_JEV_MODEL") or None,
+            "jev_api_key": os.environ.get("ACM_JEV_API_KEY") or None,
             "events_keep": int(os.environ.get("ACM_EVENTS_KEEP", 10_000)),
             "watchdog_interval_s": float(os.environ.get("ACM_WATCHDOG_INTERVAL_S", 600)),
             "allowed_hosts": tuple(h.strip() for h in os.environ.get("ACM_ALLOWED_HOSTS", "").split(",") if h.strip()),

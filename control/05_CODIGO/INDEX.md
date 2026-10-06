@@ -2,7 +2,7 @@
 
 **Responde a:** Dónde está implementado y cómo está organizado el código.
 
-**Salud:** OK — 75 archivos de código, todos con fila en `file_inventory.md` y cabecera; `code_inventory.py --check` en la CI lo exige (SPRINT-007).
+**Salud:** OK — 95 archivos de código, todos con fila en `file_inventory.md` y cabecera; `code_inventory.py --check` en la CI lo exige (SPRINT-008).
 
 ## Cómo mantenerlo
 Archivo nuevo → fila en `file_inventory.md` + cabecera + `python3 control/tools/code_inventory.py`. Qué más actualizar según el cambio: `file_documentation.md`.

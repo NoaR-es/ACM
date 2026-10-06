@@ -21,7 +21,11 @@ Producción / despliegue: MISSING (sin definir; EPIC-18/CI-CD).
 | `ACM_PRINCIPAL` | `local-admin` | Admin local: identidad en stdio y en el CLI; se da de alta como admin. En HTTP la identidad sale del token (ADR-017) |
 | `ACM_HOST` / `ACM_PORT` | `127.0.0.1` / `8765` | Escucha de `acm serve` |
 | `ACM_SQLITE_SYNCHRONOUS` | `FULL` | Durabilidad de la base global (ADR-013) |
-| `ACM_OLLAMA_URL` / `ACM_OLLAMA_MODEL` | sin valor | Motor de generación Ollama (EPIC-22). Deben ir juntos; sin ellos, solo reglas |
+| `ACM_OLLAMA_URL` | sin valor | Servidor Ollama (EPIC-22). Sin URL no se registra ningún motor Ollama |
+| `ACM_OLLAMA_MODEL` | sin valor | Modelo de Ollama por defecto. Opcional desde SPRINT-008: el elegido en Sistema → Modelos (`inference_settings`) tiene prioridad (ADR-021) |
+| `ACM_JEV_URL` | sin valor | Servidor Ollaya con modelos de decisión JEV (EPIC-50, puerto habitual 11435). Sin URL no se registra |
+| `ACM_JEV_MODEL` | sin valor | Modelo JEV por defecto (p. ej. `winnow:e4b` o `laya`); los elegidos por propósito en la interfaz tienen prioridad |
+| `ACM_JEV_API_KEY` | sin valor | Clave Bearer si Ollaya usa `OLLAYA_API_KEY`. **Solo por entorno**: nunca se guarda en la base ni se muestra (ADR-021) |
 | `ACM_EVENTS_KEEP` | `10000` | Eventos conservados para reanudar clientes WebSocket (ADR-018) |
 | `ACM_WATCHDOG_INTERVAL_S` | `600` | Intervalo de la auditoría periódica de todos los proyectos en `acm serve` (US-13.06); `0` la desactiva |
 | `ACM_ALLOWED_HOSTS` | sin valor | Nombres extra aceptados en la cabecera Host (p. ej. `acm.midominio.com` tras un proxy TLS). Sin él, otro Host → 421 (TD-002) |

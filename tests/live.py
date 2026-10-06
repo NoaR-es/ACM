@@ -5,7 +5,7 @@ from __future__ import annotations
 import threading
 import time
 from collections.abc import AsyncIterator, Iterator
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -43,13 +43,14 @@ class Acm:
             ]
 
 
-@pytest.fixture
-def acm(tmp_path: Path) -> Iterator[Acm]:
+@contextmanager
+def running_acm(data_dir: Path, **settings: object) -> Iterator[Acm]:
+    """ACM real por HTTP en un hilo; `settings` sobrescribe la configuración (p. ej. motores simulados)."""
     port = free_port()
-    settings = Settings.from_env(data_dir=tmp_path / "data", port=port)
-    service = build_service(settings)
+    config = Settings.from_env(data_dir=data_dir, port=port, **settings)
+    service = build_service(config)
     identity = IdentityService(service)
-    server = uvicorn.Server(uvicorn.Config(create_app(settings), host="127.0.0.1", port=port, log_level="warning"))
+    server = uvicorn.Server(uvicorn.Config(create_app(config), host="127.0.0.1", port=port, log_level="warning"))
     thread = threading.Thread(target=server.run, daemon=True)
     thread.start()
     deadline = time.monotonic() + 10
@@ -57,11 +58,17 @@ def acm(tmp_path: Path) -> Iterator[Acm]:
         assert time.monotonic() < deadline, "ACM no arrancó"
         time.sleep(0.02)
     try:
-        yield Acm(f"http://127.0.0.1:{port}", settings.data_dir, service, identity)
+        yield Acm(f"http://127.0.0.1:{port}", config.data_dir, service, identity)
     finally:
         server.should_exit = True
         thread.join(timeout=10)
         service.close()
+
+
+@pytest.fixture
+def acm(tmp_path: Path) -> Iterator[Acm]:
+    with running_acm(tmp_path / "data") as instance:
+        yield instance
 
 
 @asynccontextmanager

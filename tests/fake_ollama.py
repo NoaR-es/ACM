@@ -6,6 +6,7 @@ verdad queda pendiente de SPIKE-005.
 
 from __future__ import annotations
 
+import json
 import socket
 import threading
 import time
@@ -22,6 +23,12 @@ class FakeOllamaState:
     models: list[str] = field(default_factory=lambda: ["qwen2.5:0.5b", "llama3.2:1b"])
     mode: str = "ok"  # ok | empty | not_done | error500 | not_json
     reply: str = "Resumen conservando REQ-001."
+    # Decisiones (petición con `format`): opción elegida por pregunta; si falta, la primera del `enum` del esquema.
+    decisions: dict[str, str] = field(default_factory=dict)
+    # Conversación con herramientas (petición con `tools`): mensajes que devuelve en orden; cada uno es
+    # {"tool_calls": [...]} (formato de Ollama) o {"content": "..."}. Vacío: responde `reply`.
+    script: list[dict[str, Any]] = field(default_factory=list)
+    script_always: bool = False  # el modelo sigue pidiendo herramientas aunque no se le ofrezcan
     requests: list[dict[str, Any]] = field(default_factory=list)
 
 
@@ -31,7 +38,8 @@ def _app(state: FakeOllamaState) -> FastAPI:
     @app.get("/api/tags")
     def tags() -> dict[str, Any]:
         state.requests.append({"path": "/api/tags"})
-        return {"models": [{"name": m, "model": m, "size": 1} for m in state.models]}
+        details = {"format": "gguf", "family": "qwen2", "parameter_size": "494M", "quantization_level": "Q4_K_M"}
+        return {"models": [{"name": m, "model": m, "size": 1, "details": details} for m in state.models]}
 
     @app.post("/api/chat")
     async def chat(request: Request) -> Any:
@@ -43,7 +51,18 @@ def _app(state: FakeOllamaState) -> FastAPI:
             return JSONResponse({"error": "llama runner process has terminated"}, status_code=500)
         if state.mode == "not_json":
             return JSONResponse(content="no es un objeto", status_code=200)
-        content = "" if state.mode == "empty" else state.reply
+        if (body.get("tools") or state.script_always) and state.script and state.mode == "ok":
+            step = state.script.pop(0)
+            message = {"role": "assistant", "content": step.get("content", "")}
+            if "tool_calls" in step:
+                message["tool_calls"] = step["tool_calls"]
+            return {"model": body["model"], "message": message, "done": True, "prompt_eval_count": 50, "eval_count": 5}
+        schema = body.get("format")
+        if isinstance(schema, dict) and state.mode == "ok":
+            props = schema.get("properties", {})
+            content = json.dumps({k: state.decisions.get(k, p["enum"][0]) for k, p in props.items()})
+        else:
+            content = "" if state.mode == "empty" else state.reply
         return {
             "model": body["model"],
             "message": {"role": "assistant", "content": content},

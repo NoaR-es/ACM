@@ -44,7 +44,9 @@ export function affectedKeys(e: AcmEvent): string[][] {
     if (e.entity_type === "story") keys.push(["story", e.project_id, e.entity_id]);
     if (e.type === "watchdog.run") keys.push(["governance", e.project_id]);
     if (e.type === "member.changed") keys.push(["members", e.project_id], ["me"]);
+    if (e.entity_type === "sprint") keys.push(["sprints", e.project_id]);
   }
   if (e.type === "principal.changed") keys.push(["principals"], ["me"]);
+  if (e.type === "models.changed") keys.push(["models"], ["engines"]);
   return keys;
 }

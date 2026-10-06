@@ -127,3 +127,18 @@
 - Nunca escribir cifras en `control/` sin la orden que las mide al lado.
 - En e2e, localizar controles por rol y nombre exacto.
 
+
+## SPRINT-008 (2026-10-06)
+**Bien**
+- Los e2e de escritura destaparon un bug real (BUG-002) que ningún test de backend podía ver.
+- Las mutaciones encontraron un hueco real: nada probaba el límite de rondas de herramientas del chat. Se añadió `script_always` al Ollama simulado y su test. También se protegió `_apply` frente a tipos de acción desconocidos.
+- Sin runtimes reales, los adaptadores se escribieron contra el contrato documentado de Ollaya (`docs/api.md`) y de Ollama (*tool calling*). Los estados se quedaron en IMPLEMENTED en vez de inflarlos.
+
+**Mal**
+- Varios tests tenían conjuntos de parámetros y propósitos escritos a mano y se rompieron al añadir configuración. Ahora comparan contra `PARAMETERS`.
+- Un hallazgo informativo (supervisor sin motor) ensuciaba el semáforo de gobernanza; pasó a `summary.notes`.
+- Una función de ruta (`activity`) tapaba la función auxiliar del mismo nombre y los cambios por REST no emitían actividad. Lo detectó `test_realtime`.
+
+**Acciones**
+- Al añadir rutas o herramientas, añadirlas en la misma iteración a `test_realtime.ENDPOINTS`, a `test_mcp` y a la skill acm-schema (práctica ya cubierta por tests).
+- Ejecutar SPIKE-005 con Ollama y Ollaya reales en cuanto el operador disponga de una máquina con ellos (IMP-004).

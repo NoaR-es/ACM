@@ -55,10 +55,14 @@ class DecisionRequest:
     questions: dict[str, Question]
     purpose: str
     project_id: str
+    # Modelo concreto pedido por el agente (US-50.10), para motores que sirven varios (Ollaya). Los demás lo ignoran.
+    model: str | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.purpose, str) or not self.purpose.strip():
             raise InvalidArgument("no puede estar vacío", field="purpose")
+        if self.model is not None and (not isinstance(self.model, str) or not 1 <= len(self.model) <= 200):
+            raise InvalidArgument("debe ser el nombre de un modelo", field="model")
         if not isinstance(self.state, (str, dict)):
             raise InvalidArgument("debe ser texto o un objeto JSON", field="state")
         if not self.questions or len(self.questions) > MAX_QUESTIONS:
@@ -81,7 +85,9 @@ class DecisionRequest:
                 raise InvalidArgument("noul solo admite criteria {'true': ..., 'false': ...}", field=where)
 
     @classmethod
-    def from_json(cls, project_id: str, purpose: str, state: Any, questions: Any) -> DecisionRequest:
+    def from_json(
+        cls, project_id: str, purpose: str, state: Any, questions: Any, model: str | None = None
+    ) -> DecisionRequest:
         """Construye la petición desde la forma JSON que recibe la herramienta MCP `acm_decide`."""
         if not isinstance(questions, dict):
             raise InvalidArgument("debe ser un objeto {clave: pregunta}", field="questions")
@@ -90,7 +96,7 @@ class DecisionRequest:
             if not isinstance(q, dict) or not isinstance(q.get("type"), str):
                 raise InvalidArgument("cada pregunta necesita 'type'", field=f"questions.{key}")
             parsed[key] = Question(q["type"], str(q.get("instructions", "")), q.get("criteria"))
-        return cls(state=state, questions=parsed, purpose=purpose, project_id=project_id)
+        return cls(state=state, questions=parsed, purpose=purpose, project_id=project_id, model=model)
 
 
 @dataclass(frozen=True)

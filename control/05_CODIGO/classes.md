@@ -35,7 +35,9 @@ Actualizado: 2026-09-30 (SPRINT-007). Los servicios de dominio están en `servic
 | `GenerationRequest`, `GenerationResult`, `EngineHealth` | `ports.py` | Contrato de generación y salud | — |
 | `DecisionEngine`, `GenerationEngine` (Protocol) | `ports.py` | Puertos síncronos (ADR-016) | `runtime_checkable` |
 | `Rule` (dataclass), `RulesDecisionEngine` | `rules.py` | Reglas deterministas por `purpose` (hoy `story.quality`) | respuestas exactas, `calibrated=True` |
-| `OllamaClient`, `OllamaGenerationEngine` | `ollama.py` | HTTP a Ollama y motor de generación | sano solo si el modelo está instalado; respuesta vacía = ENGINE_ERROR |
+| `OllamaClient`, `OllamaGenerationEngine`, `OllamaDecisionEngine` | `ollama.py` | HTTP a Ollama (tags con detalles, chat con esquema y tools); generación; decisión eligiendo solo entre opciones | sano solo si el modelo elegido está instalado; decisiones `calibrated=False`; respuesta vacía o fuera de opciones = ENGINE_ERROR |
+| `OllayaClient`, `JevDecisionEngine` | `jev.py` | HTTP a Ollaya (`/api/decide`, Bearer) y motor de decisión JEV | traducción 1:1 del contrato; `score` 0..n-1 → 1..n; 422 = ENGINE_ERROR; 404/503/500/401 = ENGINE_UNAVAILABLE |
+| `ModelSelection` | `selection.py` | Modelos elegidos en ACM (base global) | prioridad sobre el entorno; caché de 1 s |
 | `Routed` (dataclass) | `router.py` | Resultado + `call_id` | — |
 
 ## Skills (`skills_catalog.py`)
@@ -50,7 +52,8 @@ Actualizado: 2026-09-30 (SPRINT-007). Los servicios de dominio están en `servic
 
 | Clase | Archivo | Qué simula |
 |-------|---------|-----------|
-| `FakeOllama`, `FakeOllamaState` | `fake_ollama.py` | Ollama como servidor HTTP real (modos `ok`, `empty`, `not_done`, `error500`, `not_json`) |
+| `FakeOllama`, `FakeOllamaState` | `fake_ollama.py` | Ollama como servidor HTTP real (modos `ok`, `empty`, `not_done`, `error500`, `not_json`; decisiones con `format`; guion de *tool calling*) |
+| `FakeOllaya`, `FakeOllayaState` | `fake_ollaya.py` | Ollaya como servidor HTTP real con el contrato documentado (respuestas fijables por pregunta o por estado, errores 422/404/503/500, clave Bearer) |
 | `Acm` | `live.py` | ACM real por HTTP con acceso a los datos (`token()`, `audit()`) |
 | `FakeJev` | `test_inference.py` | Motor de decisión con el contrato de JEV (calibrado o no, que falla o no) |
 | `SpyGen` | `test_context.py` | Motor de generación que registra peticiones |

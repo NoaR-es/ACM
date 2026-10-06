@@ -2,7 +2,7 @@
 
 **Responde a:** Cómo se prueba
 
-**Salud:** OK — 275 tests Python (24 e2e con Chromium) + 25 vitest + integridad del backlog y del control del código (SPRINT-007)
+**Salud:** OK — 381 tests Python (37 e2e con Chromium) + 26 vitest + integridad del backlog y del control del código (SPRINT-008); motores de IA solo contra servidores simulados (IMP-004)
 
 | Documento | Estado |
 |-----------|--------|
@@ -21,6 +21,8 @@
 | `sprint_004_evidence.md` | ACTIVE (evidencia CA ↔ test) |
 | `sprint_005_evidence.md` | ACTIVE (evidencia CA ↔ test) |
 | `sprint_006_evidence.md` | ACTIVE (evidencia CA ↔ test) |
+| `sprint_007_evidence.md` | ACTIVE (evidencia CA ↔ test) |
+| `sprint_008_evidence.md` | ACTIVE (evidencia CA ↔ test; SPRINT-008) |
 
 Documentos históricos: ninguno (ver `99_ARCHIVO/`).
 Relaciones: `../RELATIONSHIPS.md`.

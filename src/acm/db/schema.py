@@ -1,8 +1,10 @@
 """Catálogos de migraciones de ACM (ADR-011: SQLite es la fuente de verdad del producto; ADR-013).
 
 - GLOBAL: base de plataforma `<data_dir>/acm.db` — principales, proyectos, pertenencias, auditoría MCP, inferencia (v3)
-  tokens de acceso (v4), Watchdog (v5) y eventos (v6).
-- PROJECT: base de cada proyecto `<data_dir>/projects/<id>/project.db` — metadatos, configuración y backlog (v2).
+  tokens de acceso (v4), Watchdog (v5), eventos (v6), informe y acciones del supervisor ágil (v7) y selección de
+  modelos (v8).
+- PROJECT: base de cada proyecto `<data_dir>/projects/<id>/project.db` — metadatos, configuración, backlog (v2),
+  historial de estados (v3), sprints y revisiones del supervisor (v4) y conversaciones con el modelo local (v5).
 
 Una migración publicada no se modifica: los cambios van en migraciones nuevas (US-18.03).
 """
@@ -180,6 +182,32 @@ GLOBAL: tuple[Migration, ...] = (
         )""",
         ),
     ),
+    Migration(
+        7,
+        "supervisor",
+        (
+            # SPRINT-008: supervisor ágil autónomo. Cada ejecución del Watchdog guarda su informe (redactado por un
+            # modelo local o compuesto sin modelo) y las acciones propuestas o aplicadas con su motor y confianza.
+            "ALTER TABLE watchdog_runs ADD COLUMN report TEXT NOT NULL DEFAULT ''",
+            "ALTER TABLE watchdog_runs ADD COLUMN report_engine TEXT NOT NULL DEFAULT ''",
+            "ALTER TABLE watchdog_runs ADD COLUMN actions_json TEXT NOT NULL DEFAULT '[]'",
+            "ALTER TABLE watchdog_runs ADD COLUMN summary_json TEXT NOT NULL DEFAULT '{}'",
+        ),
+    ),
+    Migration(
+        8,
+        "inference_settings",
+        (
+            # US-50.09 / US-22.06: modelos elegidos desde ACM (tienen prioridad sobre las variables de arranque).
+            # Claves: `ollama.model`, `jev.default_model`, `jev.models_by_purpose`, `jev.model_notes`.
+            """CREATE TABLE inference_settings (
+            key TEXT PRIMARY KEY,
+            value_json TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            updated_by TEXT NOT NULL
+        )""",
+        ),
+    ),
 )
 
 PROJECT: tuple[Migration, ...] = (
@@ -285,6 +313,79 @@ PROJECT: tuple[Migration, ...] = (
             changed_by TEXT NOT NULL
         )""",
             "CREATE INDEX idx_story_status_history_story ON story_status_history(story_id, id)",
+        ),
+    ),
+    Migration(
+        4,
+        "sprints_supervisor",
+        (
+            # EPIC-05 (US-05.02..05.09): sprints con objetivo, fechas y capacidad (en historias). Estados PLANNED →
+            # ACTIVE → CLOSED, o CANCELLED. `summary_json` conserva las métricas del cierre (US-05.06).
+            """CREATE TABLE sprints (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL CHECK (length(trim(name)) BETWEEN 1 AND 120),
+            goal TEXT NOT NULL CHECK (length(trim(goal)) > 0),
+            start_date TEXT NOT NULL,
+            end_date TEXT NOT NULL,
+            capacity INTEGER CHECK (capacity IS NULL OR capacity >= 1),
+            status TEXT NOT NULL DEFAULT 'PLANNED' CHECK (status IN ('PLANNED', 'ACTIVE', 'CLOSED', 'CANCELLED')),
+            summary_json TEXT NOT NULL DEFAULT '{}',
+            created_at TEXT NOT NULL,
+            created_by TEXT NOT NULL,
+            started_at TEXT,
+            started_by TEXT,
+            closed_at TEXT,
+            closed_by TEXT,
+            CHECK (end_date >= start_date)
+        )""",
+            # Pertenencia de historias a sprints. Las filas no se borran: al retirar o cerrar se anota el resultado,
+            # así el historial del sprint se conserva (US-05.03 CA-04).
+            """CREATE TABLE sprint_stories (
+            sprint_id TEXT NOT NULL REFERENCES sprints(id),
+            story_id TEXT NOT NULL REFERENCES stories(id),
+            added_at TEXT NOT NULL,
+            added_by TEXT NOT NULL,
+            ended_at TEXT,
+            outcome TEXT CHECK (outcome IS NULL OR outcome IN ('done', 'carried_over', 'returned', 'removed')),
+            PRIMARY KEY (sprint_id, story_id)
+        )""",
+            "CREATE INDEX idx_sprint_stories_story ON sprint_stories(story_id)",
+            # Supervisor ágil: última revisión de cada historia por un motor de decisión. Se reutiliza mientras la
+            # historia no cambie (`story_updated_at`), para no volver a preguntar lo mismo en cada ejecución.
+            """CREATE TABLE supervisor_reviews (
+            story_id TEXT PRIMARY KEY REFERENCES stories(id),
+            story_updated_at TEXT NOT NULL,
+            engine TEXT NOT NULL,
+            answers_json TEXT NOT NULL,
+            reviewed_at TEXT NOT NULL
+        )""",
+        ),
+    ),
+    Migration(
+        5,
+        "chat",
+        (
+            # US-22.10 / US-22.11: hilos de conversación con el modelo local, por proyecto y por quien los abre.
+            """CREATE TABLE chat_threads (
+            id TEXT PRIMARY KEY,
+            title TEXT NOT NULL,
+            created_by TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )""",
+            # role: user | assistant | tool. `tool_calls_json` guarda las herramientas que pidió el modelo.
+            """CREATE TABLE chat_messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            thread_id TEXT NOT NULL REFERENCES chat_threads(id),
+            role TEXT NOT NULL CHECK (role IN ('user', 'assistant', 'tool')),
+            content TEXT NOT NULL,
+            tool_name TEXT NOT NULL DEFAULT '',
+            tool_calls_json TEXT NOT NULL DEFAULT '[]',
+            model TEXT NOT NULL DEFAULT '',
+            principal TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )""",
+            "CREATE INDEX idx_chat_messages_thread ON chat_messages(thread_id, id)",
         ),
     ),
 )

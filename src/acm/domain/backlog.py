@@ -484,6 +484,13 @@ class BacklogService:
                 "SELECT code, text FROM acceptance_criteria WHERE story_id = ? ORDER BY code", (story_id,)
             )
         ]
+        # Sprint abierto (PLANNED o ACTIVE) al que pertenece ahora, si lo hay (EPIC-05).
+        open_sprint = conn.execute(
+            "SELECT ss.sprint_id FROM sprint_stories ss JOIN sprints s ON s.id = ss.sprint_id "
+            "WHERE ss.story_id = ? AND ss.ended_at IS NULL AND s.status IN ('PLANNED', 'ACTIVE')",
+            (story_id,),
+        ).fetchone()
+        story["sprint_id"] = open_sprint[0] if open_sprint else None
         return story
 
     def get_story(self, principal: str, project_id: str, story_id: str) -> dict[str, Any]:

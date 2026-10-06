@@ -1,7 +1,9 @@
 """API REST v1 y WebSocket de eventos de ACM (EPIC-30, EPIC-21; ADR-018).
 
-- `/api/v1/...`: lectura de todo lo que guarda ACM y las mutaciones que necesita la interfaz web (cambiar el estado
-  de una historia, pasarla a READY, auditar un proyecto). Autenticación: el mismo token Bearer que `/mcp` (ADR-017).
+- `/api/v1/...`: lectura de todo lo que guarda ACM y todas sus operaciones de escritura (SPRINT-008: la interfaz web
+  opera ACM por completo): proyectos, configuración, backlog, criterios, sprints, miembros, principales, tokens,
+  motores y auditorías. Cada escritura se audita como `rest:*` con las mismas reglas que MCP.
+  Autenticación: el mismo token Bearer que `/mcp` (ADR-017).
   Errores con formato único `{"error": {"code", "message", "field"}}` y código HTTP según el código de dominio.
   Contrato publicado en `/api/v1/openapi.json` (US-30.02); versión en la ruta (US-30.03).
 - `/api/v1/ws`: eventos en tiempo real. El navegador no puede enviar cabeceras en un WebSocket, así que el primer
@@ -27,10 +29,13 @@ from acm import __version__
 from acm.auth import request_principal, request_token
 from acm.domain.audit import AuditService
 from acm.domain.backlog import STORY_STATUSES, STORY_TRANSITIONS, BacklogService
+from acm.domain.chat import ChatService
 from acm.domain.context import ContextService
 from acm.domain.errors import AcmError, Forbidden, InvalidArgument, NotFound, Unauthenticated
 from acm.domain.identity import IdentityService
+from acm.domain.models import ModelService
 from acm.domain.projects import ProjectService
+from acm.domain.sprints import SprintService
 from acm.domain.watchdog import WatchdogService
 from acm.events import ADMIN_ONLY_TYPES, REPLAY_MAX
 from acm.inference.router import EngineRouter
@@ -90,6 +95,107 @@ class StatusChange(BaseModel):
     reason: str = ""
 
 
+# Cuerpos de escritura (SPRINT-008). Los tipos son laxos a propósito: la validación la hace el dominio, con el mismo
+# formato de error que MCP (campo y motivo), en lugar de dos validaciones que podrían divergir.
+class ProjectIn(BaseModel):
+    key: str
+    name: str
+    description: str = ""
+
+
+class ConfigIn(BaseModel):
+    changes: dict[str, Any]
+
+
+class RequirementIn(BaseModel):
+    title: str
+    description: str = ""
+
+
+class EpicIn(BaseModel):
+    title: str
+    objective: str
+    scope: str
+    requirement_ids: list[str] = []
+
+
+class RequirementIds(BaseModel):
+    requirement_ids: list[str]
+
+
+class FeatureIn(BaseModel):
+    epic_id: str
+    title: str
+    description: str = ""
+
+
+class SplitIn(BaseModel):
+    parts: list[dict[str, Any]]
+
+
+class StoryIn(BaseModel):
+    feature_id: str
+    as_a: str
+    i_want: str
+    so_that: str
+    requirement_ids: list[str] = []
+    acceptance_criteria: list[str] = []
+    kind: str = "user_story"
+    technical_reason: str = ""
+
+
+class CriteriaIn(BaseModel):
+    criteria: list[str]
+
+
+class SprintIn(BaseModel):
+    name: str
+    goal: str
+    start_date: str
+    end_date: str
+    capacity: int | None = None
+
+
+class StoryIds(BaseModel):
+    story_ids: list[str]
+
+
+class StartIn(BaseModel):
+    force: bool = False
+
+
+class CloseIn(BaseModel):
+    carry_over_to: str | None = None
+
+
+class RoleIn(BaseModel):
+    role: str
+
+
+class PrincipalIn(BaseModel):
+    principal_id: str
+    kind: str
+    role: str = "user"
+
+
+class TokenIn(BaseModel):
+    principal_id: str
+    name: str
+
+
+class ModelsIn(BaseModel):
+    ollama_model: str | None = None
+    jev_default_model: str | None = None
+    jev_models_by_purpose: dict[str, str] | None = None
+    jev_model_notes: dict[str, str] | None = None
+
+
+class ChatIn(BaseModel):
+    message: str
+    thread_id: str | None = None
+    title: str | None = None
+
+
 def error_response(exc: AcmError) -> JSONResponse:
     return JSONResponse(
         {"error": {"code": exc.code, "message": exc.message, "field": exc.field}},
@@ -106,6 +212,9 @@ def build_api(
     backlog = BacklogService(service, engines)
     context = ContextService(service, backlog, engines)
     watchdog = WatchdogService(service, backlog, engines)
+    sprints = SprintService(backlog)
+    models = ModelService(service, engines)
+    chat = ChatService(service, backlog, engines)
     identity = IdentityService(service)
     audit = AuditService(service)
 
@@ -125,6 +234,18 @@ def build_api(
         field = ".".join(str(p) for p in first.get("loc", ())[1:]) or None
         return error_response(InvalidArgument(first.get("msg", "entrada inválida"), field=field))
 
+    def emit_activity(who: str, operation: str, arguments: dict[str, Any], status: str, error: str) -> None:
+        """Evento `activity` (solo admin), igual que en MCP: las escrituras por REST también se ven en vivo."""
+        project_id = arguments.get("project_id") if isinstance(arguments.get("project_id"), str) else None
+        service.events.append(
+            "activity",
+            principal=who,
+            project_id=project_id,
+            entity_type="operation",
+            entity_id=operation,
+            data={"status": status, "error": error[:300]},
+        )
+
     def mutate(operation: str, arguments: dict[str, Any], fn: Callable[[], T]) -> T:
         """Mutaciones por REST: mismas reglas de auditoría que MCP (US-14.11) y evento de actividad (ADR-018)."""
         who, token = request_principal(), request_token()
@@ -141,6 +262,7 @@ def build_api(
                 duration_ms=(time.perf_counter() - start) * 1000,
                 error=str(exc),
             )
+            emit_activity(who, operation, arguments, "error", str(exc))
             raise
         audit.record(
             principal=who,
@@ -151,6 +273,7 @@ def build_api(
             duration_ms=(time.perf_counter() - start) * 1000,
             result=result,
         )
+        emit_activity(who, operation, arguments, "ok", "")
         return result
 
     # ------------------------------------------------------------------ identidad y metadatos
@@ -271,14 +394,24 @@ def build_api(
 
     # ------------------------------------------------------------------ Kanban (US-06.01; uno o varios proyectos)
     @r.get("/kanban")
-    def kanban(projects: str | None = Query(default=None, description="project_id separados por comas")) -> dict:
-        """Tablero Kanban de uno o varios proyectos: columnas, transiciones y tarjetas."""
+    def kanban(
+        projects: str | None = Query(default=None, description="project_id separados por comas"),
+        sprint: str | None = Query(default=None, description="solo las historias de este sprint (un proyecto)"),
+    ) -> dict:
+        """Tablero Kanban de uno o varios proyectos (o de un sprint): columnas, transiciones y tarjetas."""
         who = request_principal()
         accessible = [p["project_id"] for p in service.list_for(who)]
         wanted = accessible if not projects else [p.strip() for p in projects.split(",") if p.strip()]
+        in_sprint: set[str] | None = None
+        if sprint is not None:
+            if len(wanted) != 1:
+                raise InvalidArgument("el filtro por sprint exige un único proyecto", field="sprint")
+            in_sprint = set(sprints.get(who, wanted[0], sprint)["story_ids"])
         cards = []
         for pid in wanted:
             for st in backlog.list_stories(who, pid)["stories"]:  # NOT_FOUND si alguno no es accesible
+                if in_sprint is not None and st["id"] not in in_sprint:
+                    continue
                 cards.append(
                     {
                         "project_id": pid,
@@ -295,6 +428,7 @@ def build_api(
                                 "epic_id",
                                 "requirement_ids",
                                 "updated_at",
+                                "sprint_id",
                             )
                         },
                         "criteria": len(st["acceptance_criteria"]),
@@ -302,11 +436,316 @@ def build_api(
                 )
         return {
             "projects": wanted,
+            "sprint": sprint,
             "columns": list(KANBAN_COLUMNS),
             "transitions": {k: list(v) for k, v in STORY_TRANSITIONS.items()},
             "cards": cards,
             "latest_event_seq": service.events.latest_seq(),
         }
+
+    # ------------------------------------------------------------------ escritura (SPRINT-008, FEAT-31.04)
+    def write(operation: str, arguments: dict[str, Any], fn: Callable[..., T], *args: Any) -> T:
+        return mutate(f"rest:{operation}", arguments, lambda: fn(request_principal(), *args))
+
+    @r.post("/projects", status_code=201)
+    def project_create(body: ProjectIn) -> dict[str, Any]:
+        """Crea un proyecto con su propia base SQLite (`key` = project_id)."""
+        return write("project_create", body.model_dump(), service.create, body.key, body.name, body.description)
+
+    @r.patch("/projects/{project_id}/config")
+    def config_set(project_id: str, body: ConfigIn) -> dict[str, Any]:
+        """Cambia parámetros de configuración; valida todos antes de guardar ninguno."""
+        return write(
+            "project_config_set",
+            {"project_id": project_id, **body.model_dump()},
+            service.set_config,
+            project_id,
+            body.changes,
+        )
+
+    @r.post("/projects/{project_id}/requirements", status_code=201)
+    def requirement_create(project_id: str, body: RequirementIn) -> dict[str, Any]:
+        """Registra un requisito REQ-NNN."""
+        return write(
+            "requirement_create",
+            {"project_id": project_id, **body.model_dump()},
+            backlog.create_requirement,
+            project_id,
+            body.title,
+            body.description,
+        )
+
+    @r.post("/projects/{project_id}/epics", status_code=201)
+    def epic_create(project_id: str, body: EpicIn) -> dict[str, Any]:
+        """Crea una épica con objetivo, alcance y requisitos."""
+        return write(
+            "epic_create",
+            {"project_id": project_id, **body.model_dump()},
+            backlog.create_epic,
+            project_id,
+            body.title,
+            body.objective,
+            body.scope,
+            body.requirement_ids,
+        )
+
+    @r.post("/projects/{project_id}/epics/{epic_id}/requirements")
+    def epic_link(project_id: str, epic_id: str, body: RequirementIds) -> dict[str, Any]:
+        """Asocia más requisitos a una épica."""
+        return write(
+            "epic_link_requirements",
+            {"project_id": project_id, "epic_id": epic_id, **body.model_dump()},
+            backlog.link_epic_requirements,
+            project_id,
+            epic_id,
+            body.requirement_ids,
+        )
+
+    @r.post("/projects/{project_id}/epics/{epic_id}/confirm-coverage")
+    def epic_confirm(project_id: str, epic_id: str) -> dict[str, Any]:
+        """Confirma que las features activas cubren el objetivo de la épica."""
+        return write(
+            "epic_confirm_coverage",
+            {"project_id": project_id, "epic_id": epic_id},
+            backlog.confirm_epic_coverage,
+            project_id,
+            epic_id,
+        )
+
+    @r.post("/projects/{project_id}/features", status_code=201)
+    def feature_create(project_id: str, body: FeatureIn) -> dict[str, Any]:
+        """Crea una feature dentro de una épica."""
+        return write(
+            "feature_create",
+            {"project_id": project_id, **body.model_dump()},
+            backlog.create_feature,
+            project_id,
+            body.epic_id,
+            body.title,
+            body.description,
+        )
+
+    @r.post("/projects/{project_id}/features/{feature_id}/split")
+    def feature_split(project_id: str, feature_id: str, body: SplitIn) -> dict[str, Any]:
+        """Divide una feature en ≥2 features nuevas repartiendo todas sus historias."""
+        return write(
+            "feature_split",
+            {"project_id": project_id, "feature_id": feature_id, **body.model_dump()},
+            backlog.split_feature,
+            project_id,
+            feature_id,
+            body.parts,
+        )
+
+    @r.post("/projects/{project_id}/stories", status_code=201)
+    def story_create(project_id: str, body: StoryIn) -> dict[str, Any]:
+        """Crea una historia (de usuario o técnica) enlazada a requisitos, con sus criterios."""
+        return write(
+            "story_create",
+            {"project_id": project_id, **body.model_dump()},
+            backlog.create_story,
+            project_id,
+            body.feature_id,
+            body.as_a,
+            body.i_want,
+            body.so_that,
+            body.requirement_ids,
+            body.acceptance_criteria,
+            body.kind,
+            body.technical_reason,
+        )
+
+    @r.post("/projects/{project_id}/stories/{story_id}/criteria")
+    def story_criteria(project_id: str, story_id: str, body: CriteriaIn) -> dict[str, Any]:
+        """Añade criterios de aceptación a una historia."""
+        return write(
+            "story_add_criteria",
+            {"project_id": project_id, "story_id": story_id, **body.model_dump()},
+            backlog.add_criteria,
+            project_id,
+            story_id,
+            body.criteria,
+        )
+
+    # ------------------------------------------------------------------ sprints (EPIC-05)
+    @r.get("/projects/{project_id}/sprints")
+    def sprint_list(project_id: str) -> dict[str, Any]:
+        """Sprints con estado, historias, carga, capacidad y resumen de cierre."""
+        return sprints.list(request_principal(), project_id)
+
+    @r.get("/projects/{project_id}/sprints/{sprint_id}")
+    def sprint_get(project_id: str, sprint_id: str) -> dict[str, Any]:
+        """Un sprint con sus historias e historial de pertenencia."""
+        return sprints.get(request_principal(), project_id, sprint_id)
+
+    @r.post("/projects/{project_id}/sprints", status_code=201)
+    def sprint_create(project_id: str, body: SprintIn) -> dict[str, Any]:
+        """Crea un sprint PLANNED con objetivo, fechas y capacidad opcional (en historias)."""
+        return write(
+            "sprint_create",
+            {"project_id": project_id, **body.model_dump()},
+            sprints.create,
+            project_id,
+            body.name,
+            body.goal,
+            body.start_date,
+            body.end_date,
+            body.capacity,
+        )
+
+    @r.post("/projects/{project_id}/sprints/{sprint_id}/stories")
+    def sprint_add(project_id: str, sprint_id: str, body: StoryIds) -> dict[str, Any]:
+        """Planifica historias en un sprint abierto."""
+        return write(
+            "sprint_add_stories",
+            {"project_id": project_id, "sprint_id": sprint_id, **body.model_dump()},
+            sprints.add_stories,
+            project_id,
+            sprint_id,
+            body.story_ids,
+        )
+
+    @r.delete("/projects/{project_id}/sprints/{sprint_id}/stories/{story_id}")
+    def sprint_remove(project_id: str, sprint_id: str, story_id: str) -> dict[str, Any]:
+        """Retira una historia de un sprint abierto."""
+        return write(
+            "sprint_remove_story",
+            {"project_id": project_id, "sprint_id": sprint_id, "story_id": story_id},
+            sprints.remove_story,
+            project_id,
+            sprint_id,
+            story_id,
+        )
+
+    @r.post("/projects/{project_id}/sprints/{sprint_id}/start")
+    def sprint_start(project_id: str, sprint_id: str, body: StartIn) -> dict[str, Any]:
+        """Inicia un sprint PLANNED (rechaza la sobrecarga salvo force)."""
+        return write(
+            "sprint_start",
+            {"project_id": project_id, "sprint_id": sprint_id, **body.model_dump()},
+            sprints.start,
+            project_id,
+            sprint_id,
+            body.force,
+        )
+
+    @r.post("/projects/{project_id}/sprints/{sprint_id}/close")
+    def sprint_close(project_id: str, sprint_id: str, body: CloseIn) -> dict[str, Any]:
+        """Cierra el sprint activo con resumen; lo no terminado se traslada o vuelve al backlog."""
+        return write(
+            "sprint_close",
+            {"project_id": project_id, "sprint_id": sprint_id, **body.model_dump()},
+            sprints.close,
+            project_id,
+            sprint_id,
+            body.carry_over_to,
+        )
+
+    @r.post("/projects/{project_id}/sprints/{sprint_id}/cancel")
+    def sprint_cancel(project_id: str, sprint_id: str) -> dict[str, Any]:
+        """Cancela un sprint abierto; sus historias vuelven al backlog."""
+        return write(
+            "sprint_cancel", {"project_id": project_id, "sprint_id": sprint_id}, sprints.cancel, project_id, sprint_id
+        )
+
+    # ------------------------------------------------------------------ acceso (EPIC-20)
+    @r.put("/projects/{project_id}/members/{principal_id}")
+    def member_set(project_id: str, principal_id: str, body: RoleIn) -> dict[str, Any]:
+        """(admin/owner) Añade un miembro al proyecto o cambia su rol."""
+        return write(
+            "member_set",
+            {"project_id": project_id, "principal_id": principal_id, **body.model_dump()},
+            identity.set_member,
+            project_id,
+            principal_id,
+            body.role,
+        )
+
+    @r.delete("/projects/{project_id}/members/{principal_id}")
+    def member_remove(project_id: str, principal_id: str) -> dict[str, Any]:
+        """(admin/owner) Retira a un miembro del proyecto."""
+        return write(
+            "member_remove",
+            {"project_id": project_id, "principal_id": principal_id},
+            identity.remove_member,
+            project_id,
+            principal_id,
+        )
+
+    @r.post("/principals", status_code=201)
+    def principal_create(body: PrincipalIn) -> dict[str, Any]:
+        """(admin) Alta de un usuario o agente."""
+        return write(
+            "principal_create", body.model_dump(), identity.create_principal, body.principal_id, body.kind, body.role
+        )
+
+    @r.put("/principals/{principal_id}/role")
+    def principal_role(principal_id: str, body: RoleIn) -> dict[str, Any]:
+        """(admin) Cambia el rol global de un principal."""
+        return write(
+            "principal_set_role",
+            {"principal_id": principal_id, **body.model_dump()},
+            identity.set_global_role,
+            principal_id,
+            body.role,
+        )
+
+    @r.post("/tokens", status_code=201)
+    def token_create(body: TokenIn) -> dict[str, Any]:
+        """(admin) Crea un token; el secreto (`token`) solo aparece en esta respuesta y nunca se audita."""
+        return write("token_create", body.model_dump(), identity.create_token, body.principal_id, body.name)
+
+    @r.delete("/tokens/{token_id}")
+    def token_revoke(token_id: str) -> dict[str, Any]:
+        """Revoca un token al instante (los propios, o cualquiera si eres admin)."""
+        return write("token_revoke", {"token_id": token_id}, identity.revoke_token, token_id)
+
+    @r.post("/engines/refresh")
+    def engines_refresh() -> dict[str, Any]:
+        """(admin) Comprueba de nuevo la salud y los modelos de cada motor, sin reiniciar ACM."""
+
+        def refresh(who: str) -> dict[str, Any]:
+            with service.global_db.read() as conn:
+                if service._principal_role(conn, who) != "admin":
+                    raise Forbidden("solo un admin puede refrescar los motores de inferencia")
+            return {"engines": engines.registry.refresh()}
+
+        return write("engines_refresh", {}, refresh)
+
+    # ------------------------------------------------------------------ modelos y conversación
+    @r.get("/models")
+    def models_catalog() -> dict[str, Any]:
+        """Catálogo de modelos de Ollama y Ollaya: disponibles, elegidos, propósitos, notas y cómo usarlos."""
+        return models.catalog(request_principal())
+
+    @r.put("/models")
+    def models_select(body: ModelsIn) -> dict[str, Any]:
+        """(admin) Elige el modelo de Ollama y los de Ollaya (por defecto y por propósito); sin reiniciar."""
+        args = body.model_dump()
+        return mutate("rest:models_select", args, lambda: models.select(request_principal(), **args))
+
+    @r.get("/projects/{project_id}/chat/threads")
+    def chat_threads(project_id: str) -> dict[str, Any]:
+        """Tus hilos de conversación con el modelo local (un admin ve todos)."""
+        return chat.threads(request_principal(), project_id)
+
+    @r.get("/projects/{project_id}/chat/threads/{thread_id}")
+    def chat_thread(project_id: str, thread_id: str) -> dict[str, Any]:
+        """Un hilo con sus mensajes y las herramientas que usó el modelo."""
+        return chat.get(request_principal(), project_id, thread_id)
+
+    @r.post("/projects/{project_id}/chat")
+    def chat_send(project_id: str, body: ChatIn) -> dict[str, Any]:
+        """Envía un mensaje al asistente local (Ollama) del proyecto; ACM conserva el hilo."""
+        return write(
+            "chat",
+            {"project_id": project_id, **body.model_dump()},
+            chat.send,
+            project_id,
+            body.message,
+            body.thread_id,
+            body.title,
+        )
 
     # ------------------------------------------------------------------ plataforma
     @r.get("/activity")

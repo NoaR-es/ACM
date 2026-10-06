@@ -6,7 +6,7 @@ import type { Card } from "./types";
 
 const card = (project_id: string, id: string, status: StoryStatus, i_want = "hacer algo"): Card => ({
   project_id, id, status, i_want, as_a: "operador", so_that: "valor", kind: "user_story", feature_id: "FEAT-01.01",
-  epic_id: "EPIC-01", requirement_ids: ["REQ-001"], updated_at: "t", criteria: 1,
+  epic_id: "EPIC-01", requirement_ids: ["REQ-001"], updated_at: "t", criteria: 1, sprint_id: null,
 });
 const TRANSITIONS = {
   PLANNED: ["CANCELLED"], READY: ["IN_PROGRESS", "PLANNED", "CANCELLED"], IN_PROGRESS: ["IMPLEMENTED", "BLOCKED"],

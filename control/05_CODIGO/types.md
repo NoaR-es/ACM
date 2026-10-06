@@ -1,6 +1,6 @@
 # Interfaces y tipos
 
-Actualizado: 2026-09-30 (SPRINT-007).
+Actualizado: 2026-09-30 (SPRINT-008).
 
 ## Contratos entre backend y frontend
 El frontend (TypeScript) y el backend (Python) comparten el contrato de la API REST v1, no el código (ADR-005: lenguajes distintos).
@@ -14,6 +14,10 @@ El frontend (TypeScript) y el backend (Python) comparten el contrato de la API R
 | `Kanban`, `Card` | `GET /kanban` | `web_api.kanban` |
 | `WatchdogRun`, `Finding`, `Semaphore` | `GET /projects/{p}/governance` | `WatchdogService.run/history` |
 | `AcmEvent` | `WS /ws`, `GET /events` | `EventStore.after` |
+| `Sprint` | `GET/POST /projects/{p}/sprints…` | `SprintService._sprint` |
+| `SupervisorAction`, `SupervisorSummary` (en `WatchdogRun`) | `GET /projects/{p}/governance` | `AgileSupervisor.run`, `WatchdogService.history` |
+| `ModelCatalog`, `AvailableModel`, `ModelGuide` | `GET/PUT /models` | `ModelService.catalog` |
+| `ChatThread`, `ChatMessage`, `ChatReply` | `/projects/{p}/chat…` | `ChatService` |
 
 **Riesgo registrado:** no hay generación automática de tipos desde OpenAPI. Un cambio de forma en la API que no se refleje en `types.ts` lo detectan los e2e, no el compilador (candidato a deuda técnica si crece la API).
 
