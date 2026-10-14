@@ -26,6 +26,13 @@ def _now() -> str:
     return datetime.now(UTC).isoformat()
 
 
+def _not_member(request: dict[str, Any]) -> dict[str, Any]:
+    """Una petición APROBADA de quien ya no es miembro es una retirada: el agente no debe creer que aún tiene acceso."""
+    if request["status"] == "APPROVED":
+        return {**request, "status": "REMOVED"}
+    return request
+
+
 def _request(row: sqlite3.Row) -> dict[str, Any]:
     return {
         "request_id": row["id"],
@@ -77,7 +84,7 @@ class AccessService:
                     "created_by": r["created_by"],
                     "created_at": r["created_at"],
                     "your_role": role,
-                    "join_request": _request(request) if request is not None and role is None else None,
+                    "join_request": _not_member(_request(request)) if request is not None and role is None else None,
                 }
             )
         return {
@@ -149,13 +156,15 @@ class AccessService:
 
     @staticmethod
     def _status(row: sqlite3.Row) -> dict[str, Any]:
-        result = _request(row)
+        """Estado de una petición de quien aún no es miembro (los miembros se responden como MEMBER)."""
+        result = _not_member(_request(row))
         result["next"] = {
+            "REMOVED": "Una persona te retiró del proyecto: pregúntale antes de volver a pedir acceso con "
+            "acm_project_join.",
             "PENDING": "Espera: una persona debe aprobarla en la interfaz de ACM (Panel → Solicitudes). Consulta con "
             "acm_project_join_status; mientras tanto el proyecto no es accesible.",
-            "APPROVED": f"Ya eres {row['granted_role']} del proyecto: empieza con acm_next_work.",
             "REJECTED": "La petición fue rechazada; pregunta a la persona antes de volver a pedirlo.",
-        }[row["status"]]
+        }[result["status"]]
         return result
 
     def _must_project(self, conn: sqlite3.Connection, project_id: str) -> None:

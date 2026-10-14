@@ -27,6 +27,7 @@ from pydantic import BaseModel
 
 from acm import __version__
 from acm.auth import request_principal, request_token
+from acm.domain.access import AccessService
 from acm.domain.audit import AuditService
 from acm.domain.backlog import STORY_STATUSES, STORY_TRANSITIONS, BacklogService
 from acm.domain.chat import ChatService
@@ -37,6 +38,7 @@ from acm.domain.models import ModelService
 from acm.domain.projects import ProjectService
 from acm.domain.sprints import SprintService
 from acm.domain.watchdog import WatchdogService
+from acm.domain.work import WorkService
 from acm.events import ADMIN_ONLY_TYPES, REPLAY_MAX
 from acm.inference.router import EngineRouter
 from acm.skills_catalog import SkillCatalog
@@ -190,6 +192,10 @@ class ModelsIn(BaseModel):
     jev_model_notes: dict[str, str] | None = None
 
 
+class ApproveIn(BaseModel):
+    role: str | None = None  # member | viewer; sin él, el acceso que pidió el agente
+
+
 class ChatIn(BaseModel):
     message: str
     thread_id: str | None = None
@@ -216,6 +222,8 @@ def build_api(
     models = ModelService(service, engines)
     chat = ChatService(service, backlog, engines)
     identity = IdentityService(service)
+    access = AccessService(service)
+    work = WorkService(backlog)
     audit = AuditService(service)
 
     api = FastAPI(title="ACM API", version=__version__, openapi_url="/openapi.json", docs_url="/docs", redoc_url=None)
@@ -409,6 +417,7 @@ def build_api(
             in_sprint = set(sprints.get(who, wanted[0], sprint)["story_ids"])
         cards = []
         for pid in wanted:
+            holders = {c["item"]: c["agent"] for c in work.claims(who, pid)["claims"]}
             for st in backlog.list_stories(who, pid)["stories"]:  # NOT_FOUND si alguno no es accesible
                 if in_sprint is not None and st["id"] not in in_sprint:
                     continue
@@ -432,6 +441,7 @@ def build_api(
                             )
                         },
                         "criteria": len(st["acceptance_criteria"]),
+                        "assigned_to": holders.get(st["id"]),
                     }
                 )
         return {
@@ -442,6 +452,40 @@ def build_api(
             "cards": cards,
             "latest_event_seq": service.events.latest_seq(),
         }
+
+    # ------------------------------------------------------------------ agentes (SPRINT-009, FEAT-14.06/14.07)
+    @r.get("/join-requests")
+    def join_requests(status: str = "PENDING") -> dict[str, Any]:
+        """Peticiones de agentes para unirse a proyectos que puedes decidir (admin: todas; owner: las suyas)."""
+        return access.list_requests(request_principal(), status)
+
+    @r.post("/join-requests/{request_id}/approve")
+    def join_approve(request_id: int, body: ApproveIn) -> dict[str, Any]:
+        """Aprueba la petición (solo una persona): `role` member (escritura) o viewer (lectura)."""
+        return mutate(
+            "rest:join_approve",
+            {"request_id": request_id, "role": body.role},
+            lambda: access.decide(request_principal(), request_id, True, body.role),
+        )
+
+    @r.post("/join-requests/{request_id}/reject")
+    def join_reject(request_id: int) -> dict[str, Any]:
+        """Rechaza la petición (solo una persona); el agente lo sabrá al consultar su estado."""
+        return mutate(
+            "rest:join_reject",
+            {"request_id": request_id},
+            lambda: access.decide(request_principal(), request_id, False),
+        )
+
+    @r.get("/projects/{project_id}/work")
+    def project_work(project_id: str) -> dict[str, Any]:
+        """Quién trabaja ahora en qué dentro del proyecto (asignaciones vigentes de `acm_next_work`)."""
+        return work.claims(request_principal(), project_id)
+
+    @r.delete("/projects/{project_id}/work/{item}")
+    def work_release(project_id: str, item: str) -> dict[str, Any]:
+        """Libera una asignación (una persona puede liberar cualquiera)."""
+        return write("work_release", {"project_id": project_id, "item": item}, work.release, project_id, item)
 
     # ------------------------------------------------------------------ escritura (SPRINT-008, FEAT-31.04)
     def write(operation: str, arguments: dict[str, Any], fn: Callable[..., T], *args: Any) -> T:

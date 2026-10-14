@@ -8,13 +8,15 @@ Actualizado: 2026-09-30 (SPRINT-007). **Regla:** todo archivo de código (`src/a
 |------|-----------|------|------------|---------|-------|--------|
 | `src/acm/__init__.py` | Versión del paquete (`__version__`) | paquete | — | app, MCP, API | — | ACTIVE |
 | `src/acm/__main__.py` | CLI: `acm serve`, `acm mcp-stdio`, `acm principal create`, `acm token create` | entrada | config, app, identity, audit | operador | `test_app.py`, `test_auth.py::test_cli_*` | IMPLEMENTED |
-| `src/acm/config.py` | `Settings`: configuración del proceso desde variables `ACM_*` | configuración | — | app, CLI | `test_app.py`, `test_watchdog.py` | IMPLEMENTED |
+| `src/acm/config.py` | `Settings`: configuración del proceso desde variables `ACM_*` (estado por defecto en `~/.acm`, `ACM_AGENT`, `ACM_UI`) | configuración | — | app, CLI | `test_app.py`, `test_watchdog.py` | IMPLEMENTED |
 | `src/acm/app.py` | Composición ASGI: FastAPI + `/api/health` + `/api/v1` + `/api/v1/ws` + `/mcp` + interfaz en `/`; tareas de fondo (Watchdog, purga de eventos) | composición | todos los servicios, auth, web_api, webui_app, mcp_server | `acm serve`, tests | `test_app.py`, `test_auth.py`, `test_realtime.py`, `test_webui.py` | IMPLEMENTED |
 | `src/acm/auth.py` | `BearerAuth`: autenticación HTTP por token y contexto de identidad por petición (ADR-017) | seguridad | identity, audit | app | `test_auth.py` | IMPLEMENTED |
 | `src/acm/events.py` | `EventStore`: eventos de dominio persistidos (ADR-018) | mensajería | db.connection | ProjectService (y por él todos los servicios), web_api, mcp_server | `test_realtime.py` | IMPLEMENTED |
 | `src/acm/web_api.py` | API REST v1 (24 rutas), WebSocket de eventos, `Access` | API | servicios de dominio, events, auth | app | `test_realtime.py`, `test_webui.py` | IMPLEMENTED |
 | `src/acm/webui_app.py` | `SecureStatic`: sirve la interfaz compilada con cabeceras de seguridad (ADR-019) | web | starlette | app | `test_webui.py` | IMPLEMENTED |
-| `src/acm/mcp_server.py` | Servidor MCP: 59 herramientas, extensión Skills, auditoría y eventos `activity` | API (agentes) | servicios de dominio, skills_catalog, inference | app, CLI stdio | `test_mcp.py`, `test_skills.py`, `test_audit.py`, `test_auth.py` | IMPLEMENTED |
+| `src/acm/mcp_server.py` | Servidor MCP: 65 herramientas, 2 prompts (skills), extensión Skills, cliente y sesión de cada conexión, auditoría y eventos `activity` | API (agentes) | servicios de dominio, skills_catalog, inference | app, CLI stdio | `test_mcp.py`, `test_skills.py`, `test_audit.py`, `test_auth.py` | IMPLEMENTED |
+| `src/acm/sessions.py` | Identidad de los agentes locales: principal `<cliente>.<equipo>` y sesión por conexión (ADR-023) | identidad | — | mcp_server, local, backlog, work | `test_local_mode.py`, `test_work.py` | IMPLEMENTED |
+| `src/acm/local.py` | Modo local: principal del agente, interfaz y supervisor en segundo plano (`acm serve --local`), sesión local de la interfaz y `acm stop` (ADR-023) | proceso | config, sessions, projects | `__main__`, app | `test_local_mode.py`, `test_webui_agents.py` | IMPLEMENTED |
 | `src/acm/skills_catalog.py` | `SkillCatalog`: carga, valida y sirve las skills (US-15.01) | catálogo | — | mcp_server, web_api, watchdog.health | `test_skills.py` | IMPLEMENTED |
 | `src/acm/db/connection.py` | `Database`: conexión SQLite por hilo, PRAGMAs, `write()`/`read()` con reintentos (ADR-013) | datos | sqlite3 | ProjectService, EventStore | `test_db.py` | IMPLEMENTED |
 | `src/acm/db/migrations.py` | `Migration`, `migrate`: migraciones versionadas (US-18.03) | datos | connection | ProjectService | `test_migrations.py` | IMPLEMENTED |
@@ -28,8 +30,8 @@ Actualizado: 2026-09-30 (SPRINT-007). **Regla:** todo archivo de código (`src/a
 | `src/acm/domain/context.py` | `ContextService`: contexto compacto y ahorro de tokens | dominio | backlog, inference.router | mcp_server, web_api | `test_context.py` | IMPLEMENTED |
 | `src/acm/domain/watchdog.py` | `WatchdogService`: integridad, calidad, supervisor ágil, semáforo, histórico (con informe y acciones), salud | dominio | backlog, supervisor, inference.router, projects | mcp_server, web_api, app, chat | `test_watchdog.py`, `test_supervisor.py` | IMPLEMENTED |
 | `src/acm/domain/supervisor.py` | `AgileSupervisor`: revisión de historias (JEV/Ollama, con caché), reglas de sprints y Kanban, acciones seguras como `acm-supervisor`, informe (ADR-020) | dominio | backlog, sprints, audit, inference.router, inference.rules | watchdog | `test_supervisor.py`, `test_webui_ops.py` | IMPLEMENTED |
-| `src/acm/domain/access.py` | `AccessService`: directorio de proyectos, petición de unión de un agente y aprobación o rechazo por una persona (FEAT-14.06, ADR-024) | dominio | projects | mcp_server | pendiente de tests (SPRINT-009 en curso) | IN_PROGRESS |
-| `src/acm/domain/work.py` | `WorkService`: `acm_next_work`, asignaciones con caducidad y reparto sin solapes entre agentes (FEAT-14.07, ADR-025) | dominio | backlog | mcp_server, backlog (`_guard_claim`) | pendiente de tests (SPRINT-009 en curso) | IN_PROGRESS |
+| `src/acm/domain/access.py` | `AccessService`: directorio de proyectos, petición de unión de un agente y aprobación o rechazo por una persona (FEAT-14.06, ADR-024) | dominio | projects | mcp_server | `test_access.py`, `test_webui_agents.py` | IMPLEMENTED |
+| `src/acm/domain/work.py` | `WorkService`: `acm_next_work`, asignaciones con caducidad y reparto sin solapes entre agentes (FEAT-14.07, ADR-025) | dominio | backlog | mcp_server, backlog (`_guard_claim`) | `test_work.py`, `test_local_mode.py`, `test_webui_agents.py` | IMPLEMENTED |
 | `src/acm/domain/sprints.py` | `SprintService`: crear, planificar, retirar, iniciar (sobrecarga), cerrar con traslado y resumen, cancelar (EPIC-05) | dominio | backlog | mcp_server, web_api, supervisor, chat | `test_sprints.py`, `test_rest_write.py`, `test_webui_ops.py` | IMPLEMENTED |
 | `src/acm/domain/models.py` | `ModelService`: catálogo de modelos (con guía de Ollaya) y selección (ADR-021) | dominio | inference.router, inference.jev, inference.ollaya_models | mcp_server, web_api | `test_models_chat.py`, `test_webui_ops.py` | IMPLEMENTED |
 | `src/acm/domain/chat.py` | `ChatService`: hilos con el modelo local y agente interno con herramientas de solo lectura (ADR-022) | dominio | backlog, sprints, context, watchdog, inference.router | mcp_server, web_api | `test_models_chat.py`, `test_webui_ops.py` | IMPLEMENTED (sin Ollama real, IMP-004) |
@@ -41,7 +43,7 @@ Actualizado: 2026-09-30 (SPRINT-007). **Regla:** todo archivo de código (`src/a
 | `src/acm/inference/jev.py` | Adaptador JEV sobre Ollaya (`/api/tags`, `/api/decide`, Bearer opcional): decisiones calibradas, modelo por propósito o explícito | inferencia | httpx, ports | app.build_engines, models | `test_second_brain.py`, `test_models_chat.py` (Ollaya simulado) | IMPLEMENTED (sin Ollaya real, IMP-004) |
 | `src/acm/inference/selection.py` | `ModelSelection`: modelos elegidos en ACM (base global) con prioridad sobre el entorno | inferencia | projects | app.build_engines, models | `test_models_chat.py` | IMPLEMENTED |
 | `src/acm/inference/ollaya_models.py` | Guía de modelos de Ollaya (fuente: README del proyecto) y sugerencias de ACM | inferencia | — | models | `test_models_chat.py` | IMPLEMENTED |
-| `src/acm/skills/*/SKILL.md` | Skills oficiales (acm-schema 1.4.0, acm-invest 1.0.0, acm-discovery 1.0.0) | contenido | — | SkillCatalog | `test_skills.py` | ACTIVE |
+| `src/acm/skills/*/SKILL.md` | Skills oficiales (acm-schema 1.6.0, acm-workflow 1.0.0, acm-invest 1.0.0, acm-discovery 1.0.0) | contenido | — | SkillCatalog | `test_skills.py` | ACTIVE |
 | `src/acm/webui/**` | **Generado**: interfaz compilada por `npm run build` (no editar) | web | web/src | SecureStatic | job `web` de CI (bundle al día) | GENERATED |
 
 ## Frontend — `web/` (React 19 + TypeScript 7 + Vite 8; ADR-019)
@@ -77,6 +79,7 @@ Actualizado: 2026-09-30 (SPRINT-007). **Regla:** todo archivo de código (`src/a
 | `web/src/pages/Models.tsx` | Modelos: detectados, guía de Ollaya, elegir el de Ollama y los de Ollaya por propósito, notas | página | api, forms | System | `test_webui_ops.py` | IMPLEMENTED |
 | `web/src/pages/BacklogForms.tsx` | Formularios de requisito, épica, feature, historia, criterios, enlazar, confirmar cobertura, dividir | página | api, forms | Project, Story | `test_webui_ops.py` | IMPLEMENTED |
 | `web/src/pages/Sprints.tsx` | Sprints: crear, planificar, iniciar (sobrecarga), cerrar con traslado, cancelar, tablero del sprint | página | api, forms, KanbanBoard | Project | `test_webui_ops.py` | IMPLEMENTED |
+| `web/src/pages/JoinRequests.tsx` | Solicitudes de acceso de agentes: aprobar con escritura, solo lectura o rechazar (US-14.15) | página | api, forms | Dashboard | `test_webui_agents.py` | IMPLEMENTED |
 | `web/src/pages/Supervisor.tsx` | Informe del supervisor, acciones aplicadas con «Deshacer», propuestas | página | api, forms | Project (Gobernanza) | `test_webui_ops.py` | IMPLEMENTED |
 | `web/src/pages/Assistant.tsx` | Asistente: hilos y conversación con el modelo local (agente interno) | página | api, forms | Project | `test_webui_ops.py` | IMPLEMENTED |
 | `web/src/theme.test.ts` | Contraste WCAG AA de toda la paleta en ambos temas | test | theme | vitest | — | ACTIVE |
@@ -102,7 +105,7 @@ Recuentos medidos con `pytest --collect-only` el 2026-10-06 (casos = funciones �
 | `tests/test_backlog.py` | US-03.03, US-04.01..03 | 19 / 23 | ACTIVE |
 | `tests/test_isolation.py` | US-24.01, US-24.03 | 6 / 6 | ACTIVE |
 | `tests/test_audit.py` | US-14.10, US-14.11 | 7 / 7 | ACTIVE |
-| `tests/test_skills.py` | US-15.01, US-15.04..10 | 25 / 29 | ACTIVE |
+| `tests/test_skills.py` | US-15.01, US-15.04..10 | 31 / 35 | ACTIVE |
 | `tests/test_inference.py` | US-35.10/11, US-47.01, US-22.01/03 | 25 / 32 | ACTIVE |
 | `tests/test_context.py` | US-35.08/09 | 13 / 17 | ACTIVE |
 | `tests/test_auth.py` | EPIC-20, TD-002 | 24 / 26 | ACTIVE |
@@ -115,6 +118,10 @@ Recuentos medidos con `pytest --collect-only` el 2026-10-06 (casos = funciones �
 | `tests/test_second_brain.py` | US-50.01..04, US-22.04 (JEV y Ollama como motores de decisión) | 16 / 19 | ACTIVE |
 | `tests/test_models_chat.py` | US-50.09, 50.10, 22.06, 22.07, 22.10, 22.11 (modelos y chat) | 17 / 17 | ACTIVE |
 | `tests/test_rest_write.py` | US-31.09..31.12 (servidor), US-05.05 CA-06, actividad de escrituras REST | 13 / 14 | ACTIVE |
+| `tests/test_access.py` | US-14.14, US-14.15 (unión de agentes con aprobación) | 13 / 13 | ACTIVE |
+| `tests/test_work.py` | US-14.16, US-14.17 (reparto de trabajo, asignación y caducidad) | 16 / 16 | ACTIVE |
+| `tests/test_local_mode.py` | US-14.12 (agentes reales por stdio, interfaz en segundo plano, identidad y sesión) | 10 / 10 | ACTIVE |
+| `tests/test_webui_agents.py` | US-14.12 CA-04, US-14.15, US-14.17 CA-03 en la interfaz (e2e) | 5 / 5 | ACTIVE |
 | `tests/test_webui_ops.py` | US-31.09..31.12, sprints, supervisor, modelos y asistente en la interfaz (e2e) | 13 / 13 | ACTIVE |
 
 ## Herramientas de control — `control/tools/`

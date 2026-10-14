@@ -388,6 +388,7 @@ function MembersView({ projectId, manage }: { projectId: string; manage: boolean
                 <select value={role} onChange={(e) => setRole(e.target.value)}>
                   <option value="member">member</option>
                   <option value="owner">owner</option>
+                  <option value="viewer">viewer (solo lectura)</option>
                 </select>
               </Field>
             </div>
@@ -414,6 +415,7 @@ function MembersView({ projectId, manage }: { projectId: string; manage: boolean
                   >
                     <option value="member">member</option>
                     <option value="owner">owner</option>
+                  <option value="viewer">viewer (solo lectura)</option>
                   </select>
                 ) : (
                   m.role

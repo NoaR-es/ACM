@@ -424,3 +424,51 @@ Motivo: El modelo solo ve lo que el usuario podría ver y no puede modificar nad
 Consecuencias: Herramientas MCP `acm_chat`, `acm_chat_threads`, `acm_chat_get`; pestaña Asistente en la interfaz.
 Trade-offs: Calidad dependiente del modelo local y de su soporte de tool calling (sin verificar con un Ollama real, IMP-004).
 
+
+## ADR-023 — Modo local: una entrada MCP estándar, estado por usuario e identidad por agente y sesión
+Fecha: 2026-10-14
+Estado: ACCEPTED
+Contexto: El operador pide que ACM se configure en cualquier agente (Claude Code, Cursor, Codex, Antigravity, Hermes…) con su interfaz de configuración MCP y que no tenga que hacer nada más. Investigación (2026-10-06): los cinco aceptan una entrada MCP `command` + `args` (stdio); el modo HTTP con token no es común (Codex lee el token de una variable de entorno, Antigravity usa `serverUrl` con OAuth, Cursor tiene un fallo reportado al enviar cabeceras).
+Problema: Cómo conectar cualquier agente sin instalar, clonar ni crear tokens, identificando a cada agente sin confundir dos sesiones del mismo cliente (ni dos equipos).
+Alternativas consideradas:
+(a) HTTP con token por agente (pasos manuales, sintaxis distinta en cada agente);
+(b) stdio con una única identidad admin (`ACM_PRINCIPAL`, comportamiento anterior): sin atribución por agente;
+(c) stdio estándar con estado por usuario, identidad deducida y sesión por conexión.
+Decisión: (c).
+- Entrada única: `uvx --from git+https://github.com/NoaR-es/ACM acm mcp-stdio`.
+- Estado por defecto en `~/.acm` (`ACM_DATA_DIR` lo cambia).
+- **Principal** (permisos) = `<cliente>.<equipo>` deducido de `clientInfo.name` y del equipo, o `ACM_AGENT`; tipo `agent`, rol `user`. **Sesión** (trabajo) = sufijo aleatorio por conexión (`sessions.py`).
+- En modo local cualquier agente crea proyectos (owner) y ve el directorio (`ProjectService.local_mode`).
+- La interfaz y el supervisor corren en un proceso aparte (`acm serve --local`, lanzado por el primer agente, parado con `acm stop`) que sobrevive a los agentes. Su token se entrega por `/api/local-session` solo a peticiones del mismo equipo con la cabecera `X-ACM-Local` y un `Host` local.
+- `ACM_PRINCIPAL` explícito conserva el comportamiento anterior (una identidad admin, sin modo local).
+Motivo: stdio es lo único que los cinco agentes comparten. Separar principal y sesión permite aprobar a un agente una sola vez y, a la vez, repartir trabajo entre dos sesiones del mismo cliente.
+Consecuencias: `~/.acm` es de un equipo: compartir proyectos entre equipos exige un `acm serve` con tokens. Todos los agentes se ejecutan como el usuario del sistema: la aprobación de acceso es una salvaguarda, no una barrera frente a un agente malicioso (documentado en el README y `11_SEGURIDAD`).
+Trade-offs: Un proceso en segundo plano que el usuario no arrancó explícitamente (`ACM_UI=0` lo evita; `acm stop` lo para). No se pudo verificar el formato de configuración de cada agente con los propios agentes (solo con un cliente MCP real por stdio y `uvx`).
+
+## ADR-024 — Unirse a proyectos con aprobación de una persona
+Fecha: 2026-10-14
+Estado: ACCEPTED
+Contexto: El operador pide que el agente pregunte a ACM qué proyectos hay y elija entre crear uno o unirse a uno, y que él deba dar permiso en la interfaz.
+Problema: Cómo evitar que un agente entre en un proyecto sin permiso, sin pasos manuales previos.
+Alternativas consideradas:
+(a) deducir el proyecto de la carpeta o el repositorio (entra solo, sin permiso);
+(b) que el agente pida unirse y una persona apruebe en la interfaz;
+(c) el agente da acceso a otros agentes.
+Decisión: (b). Peticiones `join_requests` (esquema global v9) con rol concedible `member` (escritura) o `viewer` (lectura, rol nuevo); como mucho una pendiente por agente y proyecto. Decide solo una persona (principal `user`) que sea admin u owner del proyecto; un agente nunca da ni quita acceso, ni siendo owner (`IdentityService.set_member/remove_member`). Hasta la aprobación el proyecto es `NOT_FOUND` para el agente. Una aprobación antigua de quien fue retirado se informa como `REMOVED`.
+Motivo: El operador decide quién entra; un proyecto ajeno sigue sin revelarse.
+Consecuencias: Herramientas `acm_project_directory`, `acm_project_join`, `acm_project_join_status`; REST `/join-requests`; panel «Solicitudes de acceso» en tiempo real; eventos `join.requested` y `join.decided`.
+Trade-offs: En modo local el directorio muestra los nombres de todos los proyectos a todos los agentes (en servidor con tokens, solo los propios).
+
+## ADR-025 — ACM reparte el trabajo: `acm_next_work` con asignación y caducidad
+Fecha: 2026-10-14
+Estado: ACCEPTED
+Contexto: Varios agentes colaboran en un proyecto. Hasta ahora podían coger la misma historia porque ACM no registraba quién trabajaba en qué.
+Problema: Quién lleva el proceso ágil cuando hay varios agentes.
+Alternativas consideradas:
+(a) un agente coordinador (se pierde si desaparece);
+(b) los agentes se coordinan entre sí;
+(c) ACM, que ya guarda el estado, decide qué toca y lo asigna.
+Decisión: (c). `WorkService.next_work` devuelve la siguiente acción (`implement`, `verify`, `refine`, `plan_sprint`, `start_sprint`, `close_sprint`, `build_backlog` o `idle`) con motivo y pasos y la asigna (`work_claims`, esquema de proyecto v6) a la sesión que la pide. Caduca a los `work.claim_ttl_minutes` (30) sin actividad; tocar la historia la renueva. Una historia asignada a otra sesión solo la cambia una persona (`BacklogService._guard_claim`).
+Motivo: Cero coordinación entre agentes y sin puntos únicos de fallo; con un solo agente, ese agente lo hace todo.
+Consecuencias: Herramientas `acm_next_work`, `acm_work_release`, `acm_work_list`; REST `/projects/{p}/work`; el Kanban muestra el agente asignado; skill `acm-workflow`.
+Trade-offs: El orden de las acciones es una política fija de ACM (no configurable por proyecto todavía). Sin dependencias entre historias (US-05.02 CA-03).

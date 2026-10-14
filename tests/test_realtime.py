@@ -248,7 +248,9 @@ async def test_us0603_agente_por_stdio_en_otro_proceso(acm: Acm) -> None:
     b = _seed(acm)
     await anyio.to_thread.run_sync(b.mark_ready, ADMIN, P, "US-01.02")
     params = StdioServerParameters(
-        command=sys.executable, args=["-m", "acm", "mcp-stdio", "--data-dir", str(acm.data_dir)]
+        command=sys.executable,
+        args=["-m", "acm", "mcp-stdio", "--data-dir", str(acm.data_dir)],
+        env={"ACM_PRINCIPAL": ADMIN},  # identidad admin única (comportamiento anterior de stdio, ADR-023)
     )
     async with ws(acm, acm.token(ADMIN)) as (ui, _):
         async with Client(params) as agent:  # otro proceso, misma base: ADR-018
@@ -422,6 +424,12 @@ ENDPOINTS = {
     ("get", "/projects/{project_id}/chat/threads"),
     ("get", "/projects/{project_id}/chat/threads/{thread_id}"),
     ("post", "/projects/{project_id}/chat"),
+    # SPRINT-009: unión de agentes con aprobación y reparto de trabajo
+    ("get", "/join-requests"),
+    ("post", "/join-requests/{request_id}/approve"),
+    ("post", "/join-requests/{request_id}/reject"),
+    ("get", "/projects/{project_id}/work"),
+    ("delete", "/projects/{project_id}/work/{item}"),
 }
 
 

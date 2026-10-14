@@ -54,7 +54,7 @@ requirements, epics, features, user stories with acceptance criteria, sprints, t
 | Identity | Opaque per-principal tokens, admin/user roles, owner/member project roles, instant revocation |
 | Audit | Every MCP call and REST write recorded (who, which token, arguments with secrets redacted, result, duration) |
 | Web UI | Everything above, live over WebSocket, WCAG AA contrast in light and dark themes |
-| APIs | MCP (59 tools + Skills extension), REST v1 with OpenAPI (`/api/v1/docs`), WebSocket events |
+| APIs | MCP (65 tools + Skills extension), REST v1 with OpenAPI (`/api/v1/docs`), WebSocket events |
 
 ### How it works
 ```text
@@ -75,34 +75,66 @@ requirements, epics, features, user stories with acceptance criteria, sprints, t
   3. Ollama.
   Each call is logged with the model that answered.
 
-Design decisions and the full operational record live in [`control/`](control/INDEX.md) (ADR-001…022).
+Design decisions and the full operational record live in [`control/`](control/INDEX.md) (ADR-001…025).
 
 ### Quick start
-Requirements: Python ≥ 3.11. Node is **not** needed to run ACM (the web UI ships pre-built).
+Requirements: [`uv`](https://docs.astral.sh/uv/) (it runs ACM; install it with `curl -LsSf https://astral.sh/uv/install.sh | sh`,
+or `pip install uv`). Node is **not** needed: the web UI ships pre-built.
 
+There is nothing to install, clone or configure. Add **one MCP server entry** to your agent and that is all:
+
+```json
+{ "mcpServers": { "acm": { "command": "uvx", "args": ["--from", "git+https://github.com/NoaR-es/ACM", "acm", "mcp-stdio"] } } }
+```
+
+ACM starts when the agent connects, keeps its data in `~/.acm` and opens its web UI at `http://127.0.0.1:8765/`
+(no token needed on your own computer). From there the agent works by itself; you only approve who may join a project.
+
+### Connecting AI agents (MCP)
+Every agent uses the **same entry** (`uvx --from git+https://github.com/NoaR-es/ACM acm mcp-stdio`). Only the file and the syntax change:
+
+| Agent | Where | Entry |
+|-------|-------|-------|
+| **Claude Code** | its CLI | `claude mcp add acm -- uvx --from git+https://github.com/NoaR-es/ACM acm mcp-stdio` |
+| **Cursor** | `~/.cursor/mcp.json` (or `.cursor/mcp.json`) | JSON above |
+| **Antigravity** | `~/.gemini/config/mcp_config.json` | JSON above |
+| **Codex** | `~/.codex/config.toml` | `[mcp_servers.acm]` with `command = "uvx"` and `args = ["--from", "git+https://github.com/NoaR-es/ACM", "acm", "mcp-stdio"]` |
+| **Hermes** | `~/.hermes/config.yaml` | `mcp_servers:` → `acm:` → `command: "uvx"` and `args: [--from, git+https://github.com/NoaR-es/ACM, acm, mcp-stdio]` |
+
+Add `@<tag-or-branch>` after the repository URL to pin a version. If your agent's configuration format changed, use its
+documentation for "add an MCP server (stdio)": the command and arguments are always the same.
+
+**How agents and people work together**
+1. **Who is who.** Each agent is a principal named after its client and computer (`claude-code.laptop`), or after
+   `ACM_AGENT` if you set it. Each connection is also its own *session* (`claude-code.laptop#3f9a`), so two Claude Code
+   windows are two different workers.
+2. **Projects.** The agent calls `acm_project_directory`, asks you whether to create a project or join an existing one,
+   and either creates it (no approval needed) or asks to join (`acm_project_join`). **A request stays pending until you
+   approve it** in the UI (Dashboard → *Access requests*: with write access, read-only, or reject). Until then the agent
+   cannot see the project. Agents can never give access to other agents. You can remove an agent at any time (Members).
+3. **Teamwork.** The agent reads the `acm-workflow` skill (ACM serves it by tool, resource, MCP prompt or the skills
+   extension) and loops on `acm_next_work`. ACM decides what comes next (refine, plan the sprint, implement, verify,
+   close the sprint), assigns it to that agent and never gives the same work to another one. Assignments expire after
+   30 minutes without activity. The Kanban shows who holds each story.
+
+**Several computers.** `~/.acm` belongs to one computer. To share projects between computers, run one server
+(`acm serve`, see below) and connect every agent to it over HTTP with its own token.
+
+Useful variables in an agent's entry: `ACM_AGENT` (agent name), `ACM_DATA_DIR` (state folder), `ACM_UI=0` (no background UI).
+`acm stop` stops the background web UI. Setting `ACM_PRINCIPAL` keeps the old behaviour: one admin identity.
+
+**Server with tokens (teams, shared machines).**
 ```bash
 git clone https://github.com/NoaR-es/ACM.git && cd ACM
 python3 -m venv .venv && .venv/bin/pip install -e .
 .venv/bin/acm token create local-admin --name my-laptop --data-dir ./.acm-data   # prints the token ONCE
 .venv/bin/acm serve --data-dir ./.acm-data                                      # http://127.0.0.1:8765/
-```
-Open `http://127.0.0.1:8765/`, paste the token and create your first project from the dashboard (**+ New project**).
-
-### Connecting AI agents (MCP)
-Give each agent its own principal and token, so everything it does is attributable and revocable:
-```bash
-.venv/bin/acm principal create claude --kind agent --data-dir ./.acm-data
+.venv/bin/acm principal create claude --kind agent --role admin --data-dir ./.acm-data
 .venv/bin/acm token create claude --name claude-code --data-dir ./.acm-data
-```
-Claude Code over HTTP:
-```bash
 claude mcp add --transport http acm http://127.0.0.1:8765/mcp/ --header "Authorization: Bearer acm_…"
 ```
-Or over stdio. There is no network in this mode; the identity is `ACM_PRINCIPAL`:
-```bash
-claude mcp add acm -- /path/to/ACM/.venv/bin/acm mcp-stdio --data-dir /path/to/ACM/.acm-data
-```
-The agent should first read the `acm-schema` skill (served by ACM itself). It explains the data model, the workflow and which of the 59 tools to use. Every project tool takes an explicit `project_id`.
+Here the web UI asks for a token and every HTTP request needs one. The agent's role is `admin` only because projects can
+only be created by admins in this mode.
 
 ### Local models: Ollama and JEV (Ollaya)
 Both are optional; without them ACM works with its deterministic rules.
@@ -186,9 +218,11 @@ Log in with a token. What you get:
 ### Configuration
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `ACM_DATA_DIR` | `./.acm-data` | SQLite databases |
+| `ACM_DATA_DIR` | `~/.acm` | SQLite databases (one state per user) |
+| `ACM_AGENT` | — | Agent name in local mode (default: its MCP client and this computer) |
+| `ACM_UI` | `1` | `0`: do not start the background web UI in local mode |
 | `ACM_HOST` / `ACM_PORT` | `127.0.0.1` / `8765` | Listen address |
-| `ACM_PRINCIPAL` | `local-admin` | Local admin (stdio and CLI identity) |
+| `ACM_PRINCIPAL` | `local-admin` | Local admin for the CLI. If set explicitly for stdio: one admin identity, no local mode |
 | `ACM_OLLAMA_URL` / `ACM_OLLAMA_MODEL` | — | Ollama runtime / initial model (choose in the UI) |
 | `ACM_JEV_URL` / `ACM_JEV_MODEL` / `ACM_JEV_API_KEY` | — | Ollaya runtime / initial default model / bearer key |
 | `ACM_WATCHDOG_INTERVAL_S` | `600` | Periodic governance + supervisor run (`0` disables) |
@@ -210,6 +244,11 @@ Per-project settings, editable in the UI:
 - **Network:** ACM listens on `127.0.0.1` by default. **ACM does not terminate TLS**: expose it only behind a TLS proxy
   and set `ACM_ALLOWED_HOSTS`.
 - **Local models:** Ollama/Ollaya URLs and keys come only from the environment, never from the web UI.
+- **Local mode:** with the `uvx` entry, every agent runs as *your* operating-system user, so the approval of project
+  access is a safeguard (it stops an agent from entering a project by mistake or on its own initiative), **not** a
+  security boundary against a malicious agent that can read `~/.acm` or run commands. For real isolation use the server
+  with tokens. The local UI gets its token from `/api/local-session`, which only answers requests from the same computer
+  that carry a custom header and a local host name (so a web page or a DNS-rebinding attack cannot obtain it).
 
 ### Development
 ```bash
@@ -225,7 +264,7 @@ CI (GitHub Actions) runs all of the above.
 - The committed web bundle must match the sources.
 
 ### Project status
-Pre-release (`0.8.0.dev0`). The product definition, backlog, sprints, architecture decisions, test evidence and known
+Pre-release (`0.9.0.dev0`). The product definition, backlog, sprints, architecture decisions, test evidence and known
 issues are kept in [`control/`](control/INDEX.md), which is the operational source of truth of the project.
 
 Current state and next steps: [`control/03_ESTADO/current_state.md`](control/03_ESTADO/current_state.md).
@@ -286,7 +325,7 @@ requisitos, épicas, features, historias con criterios de aceptación, sprints, 
 | Identidad | Tokens opacos por principal, roles admin/user y owner/member, revocación inmediata |
 | Auditoría | Cada llamada MCP y escritura REST registrada (quién, con qué token, argumentos sin secretos, resultado, duración) |
 | Interfaz web | Todo lo anterior, en vivo por WebSocket, con contraste WCAG AA en tema claro y oscuro |
-| APIs | MCP (59 herramientas + extensión Skills), REST v1 con OpenAPI (`/api/v1/docs`), eventos por WebSocket |
+| APIs | MCP (65 herramientas + extensión Skills), REST v1 con OpenAPI (`/api/v1/docs`), eventos por WebSocket |
 
 ### Cómo funciona
 ```text
@@ -307,34 +346,67 @@ requisitos, épicas, features, historias con criterios de aceptación, sprints, 
   3. Ollama.
   Cada llamada queda registrada con el modelo que respondió.
 
-Las decisiones de diseño y el registro operativo completo están en [`control/`](control/INDEX.md) (ADR-001…022).
+Las decisiones de diseño y el registro operativo completo están en [`control/`](control/INDEX.md) (ADR-001…025).
 
 ### Inicio rápido
-Requisitos: Python ≥ 3.11. **No** hace falta Node para usar ACM: la interfaz viene compilada.
+Requisitos: [`uv`](https://docs.astral.sh/uv/) (es lo que ejecuta ACM; se instala con `curl -LsSf https://astral.sh/uv/install.sh | sh`
+o `pip install uv`). **No** hace falta Node: la interfaz viene compilada.
 
+No hay nada que instalar, clonar ni configurar. Añade **una entrada de servidor MCP** a tu agente y ya está:
+
+```json
+{ "mcpServers": { "acm": { "command": "uvx", "args": ["--from", "git+https://github.com/NoaR-es/ACM", "acm", "mcp-stdio"] } } }
+```
+
+ACM arranca cuando el agente se conecta, guarda sus datos en `~/.acm` y abre su interfaz web en `http://127.0.0.1:8765/`
+(sin token en tu propio equipo). Desde ahí el agente trabaja solo; tú solo apruebas quién puede unirse a un proyecto.
+
+### Conectar agentes IA (MCP)
+Todos los agentes usan la **misma entrada** (`uvx --from git+https://github.com/NoaR-es/ACM acm mcp-stdio`). Solo cambian el archivo y la sintaxis:
+
+| Agente | Dónde | Entrada |
+|--------|-------|---------|
+| **Claude Code** | su CLI | `claude mcp add acm -- uvx --from git+https://github.com/NoaR-es/ACM acm mcp-stdio` |
+| **Cursor** | `~/.cursor/mcp.json` (o `.cursor/mcp.json`) | el JSON de arriba |
+| **Antigravity** | `~/.gemini/config/mcp_config.json` | el JSON de arriba |
+| **Codex** | `~/.codex/config.toml` | `[mcp_servers.acm]` con `command = "uvx"` y `args = ["--from", "git+https://github.com/NoaR-es/ACM", "acm", "mcp-stdio"]` |
+| **Hermes** | `~/.hermes/config.yaml` | `mcp_servers:` → `acm:` → `command: "uvx"` y `args: [--from, git+https://github.com/NoaR-es/ACM, acm, mcp-stdio]` |
+
+Añade `@<etiqueta-o-rama>` tras la URL del repositorio para fijar una versión. Si el formato de configuración de tu agente
+ha cambiado, usa su documentación de «añadir un servidor MCP (stdio)»: el comando y los argumentos son siempre los mismos.
+
+**Cómo trabajan juntos agentes y personas**
+1. **Quién es quién.** Cada agente es un principal con el nombre de su cliente y su equipo (`claude-code.portatil`), o el de
+   `ACM_AGENT` si lo fijas. Cada conexión es además su propia *sesión* (`claude-code.portatil#3f9a`): dos ventanas de
+   Claude Code son dos trabajadores distintos.
+2. **Proyectos.** El agente llama a `acm_project_directory`, te pregunta si crear un proyecto o unirse a uno existente, y
+   lo crea (sin aprobación) o pide unirse (`acm_project_join`). **La petición queda pendiente hasta que la apruebes** en
+   la interfaz (Panel → *Solicitudes de acceso*: con escritura, solo lectura o rechazar). Hasta entonces el agente no ve
+   el proyecto. Un agente nunca puede dar acceso a otros agentes. Puedes retirar a un agente cuando quieras (Miembros).
+3. **Trabajo en equipo.** El agente lee la skill `acm-workflow` (ACM la sirve por herramienta, recurso, prompt MCP o la
+   extensión de skills) y repite `acm_next_work`. ACM decide qué toca (refinar, planificar el sprint, implementar,
+   verificar, cerrar el sprint), se lo asigna a ese agente y nunca da el mismo trabajo a otro. Las asignaciones caducan a
+   los 30 minutos sin actividad. El Kanban muestra quién tiene cada historia.
+
+**Varios equipos.** `~/.acm` es de un solo equipo. Para compartir proyectos entre equipos, deja un servidor (`acm serve`,
+más abajo) y conecta cada agente a él por HTTP con su propio token.
+
+Variables útiles en la entrada de un agente: `ACM_AGENT` (nombre del agente), `ACM_DATA_DIR` (carpeta de estado),
+`ACM_UI=0` (sin interfaz en segundo plano). `acm stop` para la interfaz web en segundo plano. Con `ACM_PRINCIPAL` se
+conserva el comportamiento anterior: una única identidad admin.
+
+**Servidor con tokens (equipos, máquinas compartidas).**
 ```bash
 git clone https://github.com/NoaR-es/ACM.git && cd ACM
 python3 -m venv .venv && .venv/bin/pip install -e .
 .venv/bin/acm token create local-admin --name mi-portatil --data-dir ./.acm-data   # muestra el token UNA vez
 .venv/bin/acm serve --data-dir ./.acm-data                                        # http://127.0.0.1:8765/
-```
-Abre `http://127.0.0.1:8765/`, pega el token y crea tu primer proyecto desde el panel (**+ Nuevo proyecto**).
-
-### Conectar agentes IA (MCP)
-Da a cada agente su propio principal y token: todo lo que haga será atribuible y revocable.
-```bash
-.venv/bin/acm principal create claude --kind agent --data-dir ./.acm-data
+.venv/bin/acm principal create claude --kind agent --role admin --data-dir ./.acm-data
 .venv/bin/acm token create claude --name claude-code --data-dir ./.acm-data
-```
-Claude Code por HTTP:
-```bash
 claude mcp add --transport http acm http://127.0.0.1:8765/mcp/ --header "Authorization: Bearer acm_…"
 ```
-O por stdio. En este modo no hay red y la identidad es `ACM_PRINCIPAL`:
-```bash
-claude mcp add acm -- /ruta/a/ACM/.venv/bin/acm mcp-stdio --data-dir /ruta/a/ACM/.acm-data
-```
-Lo primero que debe hacer el agente es leer la skill `acm-schema`, que sirve el propio ACM. Explica el modelo de datos, el flujo de trabajo y cuál de las 59 herramientas usar en cada momento. Toda herramienta de proyecto recibe un `project_id` explícito.
+Aquí la interfaz pide un token y toda petición HTTP lo necesita. El agente tiene rol `admin` solo porque en este modo
+únicamente los admin crean proyectos.
 
 ### Modelos locales: Ollama y JEV (Ollaya)
 Ambos son opcionales: sin ellos ACM funciona con sus reglas deterministas.
@@ -418,9 +490,11 @@ Entras con un token. Esto es lo que ofrece:
 ### Configuración
 | Variable | Por defecto | Uso |
 |----------|-------------|-----|
-| `ACM_DATA_DIR` | `./.acm-data` | Bases SQLite |
+| `ACM_DATA_DIR` | `~/.acm` | Bases SQLite (un estado por usuario) |
+| `ACM_AGENT` | — | Nombre del agente en modo local (por defecto: su cliente MCP y este equipo) |
+| `ACM_UI` | `1` | `0`: no arrancar la interfaz web en segundo plano en modo local |
 | `ACM_HOST` / `ACM_PORT` | `127.0.0.1` / `8765` | Dirección de escucha |
-| `ACM_PRINCIPAL` | `local-admin` | Admin local (identidad en stdio y CLI) |
+| `ACM_PRINCIPAL` | `local-admin` | Admin local de la CLI. Si se fija explícitamente en stdio: una sola identidad admin, sin modo local |
 | `ACM_OLLAMA_URL` / `ACM_OLLAMA_MODEL` | — | Runtime Ollama / modelo inicial (se elige en la interfaz) |
 | `ACM_JEV_URL` / `ACM_JEV_MODEL` / `ACM_JEV_API_KEY` | — | Runtime Ollaya / modelo por defecto inicial / clave Bearer |
 | `ACM_WATCHDOG_INTERVAL_S` | `600` | Auditoría y supervisor periódicos (`0` los desactiva) |
@@ -441,6 +515,12 @@ Parámetros por proyecto, editables en la interfaz:
 - **Interfaz web:** CSP estricta, Markdown saneado y token guardado en `sessionStorage`.
 - **Red:** ACM escucha en `127.0.0.1` por defecto. **ACM no termina TLS**: exponlo solo detrás de un proxy TLS y declara `ACM_ALLOWED_HOSTS`.
 - **Modelos locales:** las URL y claves de Ollama/Ollaya solo se configuran en el entorno, nunca desde la web.
+- **Modo local:** con la entrada `uvx`, todos los agentes se ejecutan como *tu* usuario del sistema, así que la
+  aprobación de acceso a proyectos es una salvaguarda (evita que un agente entre en un proyecto por error o por iniciativa
+  propia), **no** una barrera de seguridad frente a un agente malicioso que pueda leer `~/.acm` o ejecutar comandos. Para
+  aislamiento real usa el servidor con tokens. La interfaz local obtiene su token de `/api/local-session`, que solo
+  responde a peticiones de este mismo equipo con una cabecera propia y un nombre de servidor local (una página web o un
+  ataque de DNS rebinding no pueden conseguirlo).
 
 ### Desarrollo
 ```bash
@@ -456,7 +536,7 @@ La CI (GitHub Actions) ejecuta todo lo anterior.
 - El bundle web versionado debe coincidir con las fuentes.
 
 ### Estado del proyecto
-Versión previa (`0.8.0.dev0`). La definición de producto, el backlog, los sprints, las decisiones de arquitectura, la
+Versión previa (`0.9.0.dev0`). La definición de producto, el backlog, los sprints, las decisiones de arquitectura, la
 evidencia de tests y los problemas conocidos están en [`control/`](control/INDEX.md), la fuente de verdad operativa del
 proyecto.
 

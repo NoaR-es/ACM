@@ -13,7 +13,6 @@
 
 from __future__ import annotations
 
-import contextvars
 import time
 from collections.abc import Callable
 from functools import partial
@@ -44,6 +43,7 @@ from acm.domain.watchdog import WatchdogService
 from acm.domain.work import WorkService
 from acm.inference.ports import DecisionRequest
 from acm.inference.router import EngineRouter
+from acm.sessions import PROCESS_SESSION, current_client, current_session
 from acm.skills_catalog import SKILL_PREFIX, SkillCatalog
 
 T = TypeVar("T")
@@ -60,21 +60,34 @@ INSTRUCTIONS = (
     "Los errores empiezan por un código (INVALID_ARGUMENT, NOT_FOUND, FORBIDDEN, FAILED_PRECONDITION…) y su motivo."
 )
 
-# Nombre que declara el cliente MCP al conectarse (`clientInfo.name`): Claude Code, Cursor, Codex… (US-14.12 CA-03).
-current_client: contextvars.ContextVar[str | None] = contextvars.ContextVar("acm_mcp_client", default=None)
-
 
 class AcmMCPServer(MCPServer):
-    """MCPServer que deja el nombre del cliente de cada petición en `current_client` antes de atenderla."""
+    """MCPServer que deja el cliente y la sesión de cada petición en `current_client` y `current_session`.
 
-    @staticmethod
-    def _remember_client(context: Any) -> None:
+    Por stdio hay una conexión por proceso: su sesión es `PROCESS_SESSION`. Por HTTP es el `Mcp-Session-Id` de la
+    conexión (si el modo sin estado no lo da, queda vacía y el trabajo se reparte por principal).
+    """
+
+    def __init__(self, *args: Any, stdio: bool = False, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+        self._stdio = stdio
+
+    def _remember_client(self, context: Any) -> None:
         try:
-            info = context.request_context.session.client_params.client_info
+            session = context.request_context.session
+            info = session.client_params.client_info if session.client_params is not None else None
         except (AttributeError, ValueError):
             return
         if info is not None and getattr(info, "name", None):
             current_client.set(str(info.name))
+        if self._stdio:
+            current_session.set(PROCESS_SESSION)
+            return
+        try:  # el SDK no expone el id de la conexión públicamente
+            sid = session._connection.session_id
+        except AttributeError:
+            sid = None
+        current_session.set(str(sid)[:8] if sid else "")
 
     async def call_tool(self, name: str, arguments: dict[str, Any], context: Any = None) -> Any:
         if context is not None:
@@ -106,6 +119,7 @@ def build_mcp_server(
     catalog: SkillCatalog | None = None,
     engines: EngineRouter | None = None,
     token_id: Callable[[], str | None] = lambda: None,
+    stdio: bool = False,
 ) -> MCPServer:
     """Crea el servidor MCP.
 
@@ -208,7 +222,12 @@ def build_mcp_server(
             return {"resultType": "complete", "skill": entry, "ttlMs": 300000, "cacheScope": "public"}
 
     server = AcmMCPServer(
-        name="acm", version=__version__, instructions=INSTRUCTIONS, extensions=[AcmSkillsExtension()], subscriptions=bus
+        stdio=stdio,
+        name="acm",
+        version=__version__,
+        instructions=INSTRUCTIONS,
+        extensions=[AcmSkillsExtension()],
+        subscriptions=bus,
     )
 
     @server.resource(f"{SKILL_PREFIX}/{{skill}}/{{filename}}", name="acm-skill-file", mime_type="text/markdown")

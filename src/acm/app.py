@@ -11,7 +11,8 @@ from collections.abc import AsyncIterator
 from typing import Any
 
 import anyio
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from mcp.server.transport_security import TransportSecuritySettings
 
 from acm import __version__
@@ -27,6 +28,7 @@ from acm.inference.jev import JevDecisionEngine, OllayaClient
 from acm.inference.ollama import OllamaClient, OllamaDecisionEngine, OllamaGenerationEngine
 from acm.inference.router import EngineRouter
 from acm.inference.selection import ModelSelection
+from acm.local import LOCAL_SESSION_NAME, is_local_request, write_pid
 from acm.mcp_server import build_mcp_server
 from acm.skills_catalog import SkillCatalog
 from acm.web_api import build_api
@@ -90,6 +92,16 @@ async def scheduled_watchdog(watchdog: WatchdogService, settings: Settings) -> N
             logger.exception("ronda periódica del Watchdog fallida")
 
 
+def _local_session_token(service: ProjectService, settings: Settings) -> str:
+    """Token efímero del admin local para la interfaz del propio equipo. Cada arranque revoca los anteriores."""
+    identity = IdentityService(service)
+    for t in identity.list_tokens(settings.principal, settings.principal)["tokens"]:
+        if t["name"] == LOCAL_SESSION_NAME and t["active"]:
+            identity.revoke_token(settings.principal, t["token_id"])
+    write_pid(settings)
+    return str(identity.create_token(settings.principal, settings.principal, LOCAL_SESSION_NAME)["token"])
+
+
 async def prune_events(service: ProjectService, settings: Settings) -> None:
     """ADR-018: conserva los últimos `ACM_EVENTS_KEEP` eventos; un cliente más atrasado recibe `resync`."""
     while True:
@@ -115,6 +127,7 @@ def create_app(settings: Settings) -> FastAPI:
     )
 
     watchdog = WatchdogService(service, BacklogService(service, engines), engines)
+    local_token = _local_session_token(service, settings) if settings.local_mode else None
 
     @contextlib.asynccontextmanager
     async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
@@ -136,6 +149,16 @@ def create_app(settings: Settings) -> FastAPI:
         info = service.system_info()
         ok = info["sqlite"]["foreign_keys"] and str(info["sqlite"]["journal_mode"]).lower() == "wal"
         return {"status": "ok" if ok else "degraded", "acm_version": __version__, **info}
+
+    @app.get("/api/local-session", include_in_schema=False)
+    def local_session(request: Request) -> JSONResponse:
+        """US-14.12 CA-04: la interfaz de este equipo obtiene su token sin que la persona lo pegue (solo modo local)."""
+        client = request.client.host if request.client else None
+        if local_token is None or not is_local_request(
+            client, request.headers.get("host", ""), request.headers.get("x-acm-local")
+        ):
+            return JSONResponse({"error": "no disponible"}, status_code=404, headers={"cache-control": "no-store"})
+        return JSONResponse({"token": local_token}, headers={"cache-control": "no-store"})
 
     api, ws = build_api(service, engines, catalog)
     app.include_router(ws)  # WebSocket con autenticación propia (primer mensaje), antes del montaje de /api/v1

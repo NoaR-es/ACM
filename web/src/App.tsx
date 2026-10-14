@@ -77,8 +77,8 @@ function Header() {
 }
 
 export function App() {
-  const { token, isAdmin, me } = useAuth();
-  if (!token) return <Login />;
+  const { token, isAdmin, me, bootstrapping } = useAuth();
+  if (!token) return bootstrapping ? <p className="empty" role="status">Conectando con ACM…</p> : <Login />;
   // Las vistas de admin esperan a conocer la identidad: redirigir antes de cargar `/me` sacaba al admin al recargar.
   const adminOnly = (page: ReactNode) => (me ? isAdmin ? page : <Navigate to="/" /> : <Loading what="identidad" />);
   return (

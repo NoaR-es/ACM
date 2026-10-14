@@ -46,6 +46,8 @@ export function affectedKeys(e: AcmEvent): string[][] {
     if (e.type === "member.changed") keys.push(["members", e.project_id], ["me"]);
     if (e.entity_type === "sprint") keys.push(["sprints", e.project_id]);
   }
+  if (e.type === "join.requested" || e.type === "join.decided") keys.push(["join-requests"]);
+  if (e.type === "work.claimed" || e.type === "work.released") keys.push(["work", e.project_id ?? ""]);
   if (e.type === "principal.changed") keys.push(["principals"], ["me"]);
   if (e.type === "models.changed") keys.push(["models"], ["engines"]);
   return keys;

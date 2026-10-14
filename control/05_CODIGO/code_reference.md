@@ -2,7 +2,7 @@
 
 # Referencia de código (generada)
 
-97 archivos. Documentación narrativa (responsabilidades, invariantes, efectos): `modules.md`, `services.md`, `classes.md`, `functions.md`, `components.md`, `hooks.md`, `frontend.md`, `tests.md`.
+104 archivos. Documentación narrativa (responsabilidades, invariantes, efectos): `modules.md`, `services.md`, `classes.md`, `functions.md`, `components.md`, `hooks.md`, `frontend.md`, `tests.md`.
 
 ## Backend (`src/acm`)
 
@@ -16,8 +16,9 @@ CLI de ACM.
 
 | Tipo | Nombre | Línea | Descripción |
 |------|--------|-------|-------------|
-| función | `main(argv)` | 20 |  |
-| función | `_admin_command(args)` | 70 |  |
+| función | `main(argv)` | 23 |  |
+| función | `_run_stdio(settings)` | 72 | Servidor MCP por stdio. Con `ACM_PRINCIPAL` explícito, una única identidad admin (comportamiento anterior). |
+| función | `_admin_command(args)` | 96 |  |
 
 ### `src/acm/app.py`
 
@@ -25,19 +26,21 @@ Composición del proceso ACM (ADR-014): FastAPI con `/api` y el servidor MCP mon
 
 | Tipo | Nombre | Línea | Descripción |
 |------|--------|-------|-------------|
-| función | `build_service(settings)` | 36 |  |
-| función | `build_engines(service, settings)` | 43 | Router de inferencia (ADR-015). Reglas siempre. JEV (Ollaya) si hay `ACM_JEV_URL`: decisiones calibradas. |
-| constante | `LOCAL_HOSTS` | 67 | |
-| función | `transport_security(settings)` | 71 | Protección contra DNS rebinding del SDK MCP: solo se aceptan los Host locales y los de `ACM_ALLOWED_HOSTS`. |
-| función | `async scheduled_watchdog(watchdog, settings)` | 83 | US-13.06: audita todos los proyectos cada `ACM_WATCHDOG_INTERVAL_S` segundos como el admin local. |
-| función | `async prune_events(service, settings)` | 93 | ADR-018: conserva los últimos `ACM_EVENTS_KEEP` eventos; un cliente más atrasado recibe `resync`. |
-| función | `create_app(settings)` | 103 |  |
+| función | `build_service(settings)` | 38 |  |
+| función | `build_engines(service, settings)` | 45 | Router de inferencia (ADR-015). Reglas siempre. JEV (Ollaya) si hay `ACM_JEV_URL`: decisiones calibradas. |
+| constante | `LOCAL_HOSTS` | 69 | |
+| función | `transport_security(settings)` | 73 | Protección contra DNS rebinding del SDK MCP: solo se aceptan los Host locales y los de `ACM_ALLOWED_HOSTS`. |
+| función | `async scheduled_watchdog(watchdog, settings)` | 85 | US-13.06: audita todos los proyectos cada `ACM_WATCHDOG_INTERVAL_S` segundos como el admin local. |
+| función | `_local_session_token(service, settings)` | 95 | Token efímero del admin local para la interfaz del propio equipo. Cada arranque revoca los anteriores. |
+| función | `async prune_events(service, settings)` | 105 | ADR-018: conserva los últimos `ACM_EVENTS_KEEP` eventos; un cliente más atrasado recibe `resync`. |
+| función | `create_app(settings)` | 115 |  |
 
-Rutas (1, relativas a su montaje):
+Rutas (2, relativas a su montaje):
 
 | Método | Ruta | Función | Línea | Descripción |
 |--------|------|---------|-------|-------------|
-| GET | `/api/health` | `health` | 134 | Salud básica: versión y PRAGMAs de la base global (ADR-013: foreign_keys activo). |
+| GET | `/api/health` | `health` | 147 | Salud básica: versión y PRAGMAs de la base global (ADR-013: foreign_keys activo). |
+| GET | `/api/local-session` | `local_session` | 154 | US-14.12 CA-04: la interfaz de este equipo obtiene su token sin que la persona lo pegue (solo modo local). |
 
 ### `src/acm/auth.py`
 
@@ -121,14 +124,15 @@ Unirse a proyectos con aprobación de una persona (FEAT-14.06: US-14.14, US-14.1
 | constante | `GRANTABLE_ROLES` | 21 | |
 | constante | `MESSAGE_MAX` | 22 | |
 | función | `_now()` | 25 |  |
-| función | `_request(row)` | 29 |  |
-| clase | `AccessService` (—) | 44 |  |
-| método | `AccessService.__init__(projects)` | 45 |  |
-| método | `AccessService.directory(principal)` | 49 | Proyectos que el principal puede ver, con su pertenencia y su última petición (US-14.14 CA-01). |
-| método | `AccessService.request_join(principal, project_id, access, message)` | 92 | US-14.14 CA-03: petición pendiente; si ya es miembro o ya hay una pendiente, la devuelve sin duplicarla. |
-| método | `AccessService.join_status(principal, project_id)` | 131 | US-14.14 CA-04: estado de la última petición del principal (o MEMBER si ya está dentro). |
-| método | `AccessService.list_requests(actor, status)` | 173 | US-14.15 CA-01: peticiones que el actor puede decidir (admin: todas; owner: las de sus proyectos). |
-| método | `AccessService.decide(actor, request_id, approve, role)` | 200 | US-14.15 CA-02/CA-03: aprobar (con rol member o viewer) o rechazar una petición pendiente. |
+| función | `_not_member(request)` | 29 | Una petición APROBADA de quien ya no es miembro es una retirada: el agente no debe creer que aún tiene acceso. |
+| función | `_request(row)` | 36 |  |
+| clase | `AccessService` (—) | 51 |  |
+| método | `AccessService.__init__(projects)` | 52 |  |
+| método | `AccessService.directory(principal)` | 56 | Proyectos que el principal puede ver, con su pertenencia y su última petición (US-14.14 CA-01). |
+| método | `AccessService.request_join(principal, project_id, access, message)` | 99 | US-14.14 CA-03: petición pendiente; si ya es miembro o ya hay una pendiente, la devuelve sin duplicarla. |
+| método | `AccessService.join_status(principal, project_id)` | 138 | US-14.14 CA-04: estado de la última petición del principal (o MEMBER si ya está dentro). |
+| método | `AccessService.list_requests(actor, status)` | 182 | US-14.15 CA-01: peticiones que el actor puede decidir (admin: todas; owner: las de sus proyectos). |
+| método | `AccessService.decide(actor, request_id, approve, role)` | 209 | US-14.15 CA-02/CA-03: aprobar (con rol member o viewer) o rechazar una petición pendiente. |
 
 ### `src/acm/domain/audit.py`
 
@@ -153,41 +157,42 @@ Backlog del proyecto: requisitos, épicas, features, historias y criterios de ac
 
 | Tipo | Nombre | Línea | Descripción |
 |------|--------|-------|-------------|
-| constante | `READY_GATE_QUESTIONS` | 25 | |
-| constante | `STORY_TRANSITIONS` | 33 | |
-| constante | `STORY_STATUSES` | 46 | |
-| constante | `READY_GATE_GAPS` | 48 | |
-| constante | `REQ_RE` | 55 | |
-| constante | `EPIC_RE` | 56 | |
-| constante | `FEAT_RE` | 57 | |
-| constante | `US_RE` | 58 | |
-| constante | `TITLE_MAX` | 59 | |
-| constante | `KINDS` | 60 | |
-| función | `_now()` | 63 |  |
-| función | `_text(value, field, *, required, max_len)` | 67 |  |
-| función | `_id_list(value, field, pattern)` | 80 |  |
-| función | `_num(n)` | 90 |  |
-| clase | `BacklogService` (—) | 94 |  |
-| método | `BacklogService.__init__(projects, decisions)` | 95 |  |
-| método | `BacklogService.create_requirement(principal, project_id, title, description, requirement_id)` | 136 |  |
-| método | `BacklogService.get_requirement(principal, project_id, requirement_id)` | 160 |  |
-| método | `BacklogService.list_requirements(principal, project_id)` | 165 |  |
-| método | `BacklogService.trace_requirement(principal, project_id, requirement_id)` | 170 | US-03.03: requisito → épicas → features → historias, y las historias que lo implementan. |
-| método | `BacklogService.create_epic(principal, project_id, title, objective, scope, requirement_ids, epic_id)` | 196 |  |
-| método | `BacklogService.link_epic_requirements(principal, project_id, epic_id, requirement_ids)` | 227 |  |
-| método | `BacklogService.get_epic(principal, project_id, epic_id)` | 265 |  |
-| método | `BacklogService.list_epics(principal, project_id)` | 269 |  |
-| método | `BacklogService.confirm_epic_coverage(principal, project_id, epic_id)` | 274 | US-04.02 CA-03: el Product Owner confirma que las features activas cubren el objetivo de la épica. |
-| método | `BacklogService.create_feature(principal, project_id, epic_id, title, description, feature_id)` | 293 |  |
-| método | `BacklogService.split_feature(principal, project_id, feature_id, parts)` | 333 | US-04.02 CA-04: divide una feature en ≥2 features nuevas repartiendo todas sus historias. |
-| método | `BacklogService.create_story(principal, project_id, feature_id, as_a, i_want, so_that, requirement_ids, acceptance_criteria, kind, technical_reason, story_id)` | 381 |  |
-| método | `BacklogService.add_criteria(principal, project_id, story_id, criteria)` | 460 |  |
-| método | `BacklogService.get_story(principal, project_id, story_id)` | 497 |  |
-| método | `BacklogService.mark_ready(principal, project_id, story_id)` | 501 | US-04.03 CA-04: una historia incompleta no puede pasar a READY. |
-| método | `BacklogService.set_status(principal, project_id, story_id, status, reason)` | 570 | US-06.02: mueve una historia a otro estado si la transición está permitida (`STORY_TRANSITIONS`). |
-| método | `BacklogService.list_stories(principal, project_id)` | 604 | Todas las historias con sus requisitos y criterios (vista completa para la interfaz y el Kanban). |
-| método | `BacklogService.status_history(principal, project_id, story_id)` | 610 |  |
-| método | `BacklogService.audit(principal, project_id)` | 621 | Huecos de trazabilidad del backlog (US-03.03 CA-05 y verificación de estructura). |
+| función | `_holder(row)` | 26 | Quién tiene un trabajo asignado: el principal y, si hay, su sesión (`claude-code.portatil#3f9a`). |
+| constante | `READY_GATE_QUESTIONS` | 32 | |
+| constante | `STORY_TRANSITIONS` | 40 | |
+| constante | `STORY_STATUSES` | 53 | |
+| constante | `READY_GATE_GAPS` | 55 | |
+| constante | `REQ_RE` | 62 | |
+| constante | `EPIC_RE` | 63 | |
+| constante | `FEAT_RE` | 64 | |
+| constante | `US_RE` | 65 | |
+| constante | `TITLE_MAX` | 66 | |
+| constante | `KINDS` | 67 | |
+| función | `_now()` | 70 |  |
+| función | `_text(value, field, *, required, max_len)` | 74 |  |
+| función | `_id_list(value, field, pattern)` | 87 |  |
+| función | `_num(n)` | 97 |  |
+| clase | `BacklogService` (—) | 101 |  |
+| método | `BacklogService.__init__(projects, decisions)` | 102 |  |
+| método | `BacklogService.create_requirement(principal, project_id, title, description, requirement_id)` | 143 |  |
+| método | `BacklogService.get_requirement(principal, project_id, requirement_id)` | 167 |  |
+| método | `BacklogService.list_requirements(principal, project_id)` | 172 |  |
+| método | `BacklogService.trace_requirement(principal, project_id, requirement_id)` | 177 | US-03.03: requisito → épicas → features → historias, y las historias que lo implementan. |
+| método | `BacklogService.create_epic(principal, project_id, title, objective, scope, requirement_ids, epic_id)` | 203 |  |
+| método | `BacklogService.link_epic_requirements(principal, project_id, epic_id, requirement_ids)` | 234 |  |
+| método | `BacklogService.get_epic(principal, project_id, epic_id)` | 272 |  |
+| método | `BacklogService.list_epics(principal, project_id)` | 276 |  |
+| método | `BacklogService.confirm_epic_coverage(principal, project_id, epic_id)` | 281 | US-04.02 CA-03: el Product Owner confirma que las features activas cubren el objetivo de la épica. |
+| método | `BacklogService.create_feature(principal, project_id, epic_id, title, description, feature_id)` | 300 |  |
+| método | `BacklogService.split_feature(principal, project_id, feature_id, parts)` | 340 | US-04.02 CA-04: divide una feature en ≥2 features nuevas repartiendo todas sus historias. |
+| método | `BacklogService.create_story(principal, project_id, feature_id, as_a, i_want, so_that, requirement_ids, acceptance_criteria, kind, technical_reason, story_id)` | 388 |  |
+| método | `BacklogService.add_criteria(principal, project_id, story_id, criteria)` | 467 |  |
+| método | `BacklogService.get_story(principal, project_id, story_id)` | 504 |  |
+| método | `BacklogService.mark_ready(principal, project_id, story_id)` | 508 | US-04.03 CA-04: una historia incompleta no puede pasar a READY. |
+| método | `BacklogService.set_status(principal, project_id, story_id, status, reason)` | 576 | US-06.02: mueve una historia a otro estado si la transición está permitida (`STORY_TRANSITIONS`). |
+| método | `BacklogService.list_stories(principal, project_id)` | 610 | Todas las historias con sus requisitos y criterios (vista completa para la interfaz y el Kanban). |
+| método | `BacklogService.status_history(principal, project_id, story_id)` | 616 |  |
+| método | `BacklogService.audit(principal, project_id)` | 627 | Huecos de trazabilidad del backlog (US-03.03 CA-05 y verificación de estructura). |
 
 ### `src/acm/domain/chat.py`
 
@@ -409,17 +414,17 @@ Colaboración de agentes en un proyecto: ACM reparte el trabajo (FEAT-14.07: US-
 
 | Tipo | Nombre | Línea | Descripción |
 |------|--------|-------|-------------|
-| constante | `SPRINT_PLANNING` | 31 | |
-| constante | `SPRINT_CLOSING` | 32 | |
-| constante | `BACKLOG` | 33 | |
-| constante | `TERMINAL` | 34 | |
-| constante | `STEPS` | 36 | |
-| función | `_now()` | 70 |  |
-| clase | `WorkService` (—) | 74 |  |
-| método | `WorkService.__init__(backlog)` | 75 |  |
-| método | `WorkService.next_work(principal, project_id, claim)` | 164 | US-14.16 CA-01/CA-02: lo siguiente que toca, asignado al agente que lo pide. |
-| método | `WorkService.release(principal, project_id, item)` | 235 | US-14.17 CA-02: el agente libera su trabajo; una persona puede liberar cualquiera. |
-| método | `WorkService.claims(principal, project_id)` | 255 | US-14.17 CA-03: quién trabaja en qué ahora mismo (las caducadas no aparecen). |
+| constante | `SPRINT_PLANNING` | 32 | |
+| constante | `SPRINT_CLOSING` | 33 | |
+| constante | `BACKLOG` | 34 | |
+| constante | `TERMINAL` | 35 | |
+| constante | `STEPS` | 37 | |
+| función | `_now()` | 71 |  |
+| clase | `WorkService` (—) | 75 |  |
+| método | `WorkService.__init__(backlog)` | 76 |  |
+| método | `WorkService.next_work(principal, project_id, claim)` | 165 | US-14.16 CA-01/CA-02: lo siguiente que toca, asignado al agente que lo pide. |
+| método | `WorkService.release(principal, project_id, item)` | 242 | US-14.17 CA-02: el agente libera su trabajo; una persona puede liberar cualquiera. |
+| método | `WorkService.claims(principal, project_id)` | 263 | US-14.17 CA-03: quién trabaja en qué ahora mismo (las caducadas no aparecen). |
 
 ### `src/acm/events.py`
 
@@ -612,6 +617,23 @@ Modelos elegidos en ACM (US-50.09, US-22.06, US-22.07): un modelo de Ollama y, e
 | método | `ModelSelection.ollama_model()` | 66 |  |
 | método | `ModelSelection.jev_model(purpose)` | 69 | US-22.07: el modelo de Ollaya asignado al propósito o, si no hay, el modelo por defecto. |
 
+### `src/acm/local.py`
+
+Modo local de ACM (ADR-023): un agente conectado por stdio sin instalar ni configurar nada más.
+
+| Tipo | Nombre | Línea | Descripción |
+|------|--------|-------|-------------|
+| constante | `LOCAL_SESSION_NAME` | 30 | |
+| constante | `LOCAL_HOST_HEADERS` | 31 | |
+| función | `local_principal(service, settings)` | 34 | Principal del agente que habla por esta conexión; se crea al usarlo por primera vez. |
+| función | `port_in_use(host, port)` | 49 |  |
+| función | `start_local_ui(settings)` | 55 | Arranca la interfaz local en segundo plano. Devuelve True si lanzó un proceso nuevo. |
+| función | `_host_name(host_header)` | 80 |  |
+| función | `is_local_request(client_host, host_header, marker)` | 86 | ¿La petición viene de este equipo, a un nombre local y con la cabecera propia de la interfaz? |
+| función | `pid_file(settings)` | 91 |  |
+| función | `write_pid(settings)` | 95 |  |
+| función | `stop_local_ui(settings)` | 99 | `acm stop`: para la interfaz local que arrancó un agente. Devuelve lo que hizo, para mostrarlo. |
+
 ### `src/acm/mcp_server.py`
 
 Servidor MCP propio de ACM (ADR-008, ADR-014).
@@ -620,83 +642,95 @@ Servidor MCP propio de ACM (ADR-008, ADR-014).
 |------|--------|-------|-------------|
 | constante | `SKILLS_EXTENSION` | 50 | |
 | constante | `INSTRUCTIONS` | 52 | |
-| clase | `AcmMCPServer` (MCPServer) | 67 | MCPServer que deja el nombre del cliente de cada petición en `current_client` antes de atenderla. |
-| método | `AcmMCPServer.async call_tool(name, arguments, context)` | 79 |  |
-| método | `AcmMCPServer.async read_resource(uri, context)` | 84 |  |
-| método | `AcmMCPServer.async get_prompt(name, arguments, context)` | 89 |  |
-| clase | `SkillsListParams` (RequestParams) | 95 |  |
-| clase | `SkillsGetParams` (RequestParams) | 99 |  |
-| función | `build_mcp_server(service, principal, catalog, engines, token_id)` | 103 | Crea el servidor MCP. |
+| clase | `AcmMCPServer` (MCPServer) | 64 | MCPServer que deja el cliente y la sesión de cada petición en `current_client` y `current_session`. |
+| método | `AcmMCPServer.__init__(*args, stdio, **kwargs)` | 71 |  |
+| método | `AcmMCPServer.async call_tool(name, arguments, context)` | 92 |  |
+| método | `AcmMCPServer.async read_resource(uri, context)` | 97 |  |
+| método | `AcmMCPServer.async get_prompt(name, arguments, context)` | 102 |  |
+| clase | `SkillsListParams` (RequestParams) | 108 |  |
+| clase | `SkillsGetParams` (RequestParams) | 112 |  |
+| función | `build_mcp_server(service, principal, catalog, engines, token_id, stdio)` | 116 | Crea el servidor MCP. |
 
 Herramientas MCP (65):
 
 | Herramienta | Línea | Descripción |
 |-------------|-------|-------------|
-| `acm_skills_list` | 254 | Lista las skills de ACM (uri, frontmatter con versión, digest y tamaño de cada archivo). |
-| `acm_skill_get` | 259 | Devuelve todos los archivos de una skill de ACM (respaldo de skills/get + resources/read). |
-| `acm_skills_reload` | 271 | (admin) Relee el catálogo de skills; si cambia, notifica resources/list_changed a los suscritos. |
-| `acm_project_create` | 288 | Crea un proyecto ACM con su propia base SQLite. `key` es el project_id: ^[a-z][a-z0-9-]{1,39}$. |
-| `acm_project_directory` | 294 | EMPIEZA AQUÍ. Proyectos de ACM con tu rol en cada uno y tus peticiones para unirte. Pregunta a la persona si |
-| `acm_project_join` | 300 | Pide unirte a un proyecto existente (`access_level`: write / read). Queda PENDING hasta que una persona la |
-| `acm_project_join_status` | 307 | Estado de tu petición para unirte a un proyecto: NONE, PENDING, APPROVED, REJECTED o MEMBER. |
-| `acm_project_list` | 313 | Lista los proyectos a los que tienes acceso (con su project_id). |
-| `acm_project_open` | 318 | Abre un proyecto: devuelve metadatos, tu rol, versión de esquema y configuración efectiva. |
-| `acm_project_config_get` | 323 | Devuelve cada parámetro de configuración del proyecto con su valor actual, por defecto y permitido. |
-| `acm_project_config_set` | 329 | Modifica parámetros ({parámetro: valor}). Valida todo antes de guardar; indica cuáles requieren recarga. |
-| `acm_system_info` | 335 | Estado de la plataforma: versión, esquema global, nº de proyectos, PRAGMAs y skills activas/rechazadas. |
-| `acm_audit_list` | 349 | (admin) Últimas invocaciones MCP auditadas: quién, operación, argumentos, resultado, estado, duración. |
-| `acm_requirement_create` | 366 | Registra un requisito (REQ-NNN). `requirement_id` opcional para importar IDs existentes. |
-| `acm_requirement_list` | 383 | Lista los requisitos del proyecto. |
-| `acm_requirement_trace` | 389 | Trazabilidad de un requisito: sus épicas, las features de esas épicas y las historias que lo implementan. |
-| `acm_epic_create` | 397 | Crea una épica (EPIC-NN) con objetivo y alcance obligatorios, opcionalmente asociada a requisitos. |
-| `acm_epic_link_requirements` | 428 | Asocia requisitos existentes a una épica. |
-| `acm_epic_get` | 442 | Devuelve una épica con sus requisitos y sus features (y las historias de cada feature). |
-| `acm_epic_list` | 448 | Lista las épicas del proyecto con sus features e historias. |
-| `acm_epic_confirm_coverage` | 453 | Confirma que las features activas de la épica cubren su objetivo (requiere al menos una feature activa). |
-| `acm_feature_create` | 461 | Crea una feature (FEAT-NN.MM) dentro de una épica. |
-| `acm_feature_split` | 485 | Divide una feature en ≥2: parts=[{title, description?, story_ids}] repartiendo todas sus historias. |
-| `acm_story_create` | 491 | Crea una historia (US-NN.MM): actor (as_a), acción (i_want), valor (so_that), ≥1 requisito de origen y |
-| `acm_story_add_criteria` | 535 | Añade criterios de aceptación (CA-NN) a una historia. |
-| `acm_story_get` | 543 | Devuelve una historia con sus requisitos de origen y criterios de aceptación. |
-| `acm_story_mark_ready` | 549 | Pasa una historia de PLANNED a READY si tiene actor, acción, valor, requisito y criterios. |
-| `acm_story_set_status` | 555 | Mueve una historia de estado (Kanban) si la transición está permitida. PLANNED → READY: acm_story_mark_ready. |
-| `acm_story_history` | 564 | Historial de cambios de estado de una historia (quién, cuándo, de qué a qué y por qué). |
-| `acm_backlog_audit` | 570 | Huecos de trazabilidad: requisitos huérfanos, épicas/features vacías, historias sin CA. |
-| `acm_sprint_create` | 576 | Crea un sprint SPRINT-NN (PLANNED) con objetivo, fechas AAAA-MM-DD y capacidad opcional en historias. |
-| `acm_sprint_list` | 592 | Sprints del proyecto con estado, historias, carga, capacidad y resumen de cierre. |
-| `acm_sprint_get` | 597 | Un sprint con sus historias actuales, historial de pertenencia y métricas. |
-| `acm_sprint_add_stories` | 603 | Planifica historias en un sprint abierto (una historia, un sprint abierto); avisa si no están READY. |
-| `acm_sprint_remove_story` | 610 | Retira una historia de un sprint abierto (queda en su historial como retirada). |
-| `acm_sprint_start` | 617 | Inicia un sprint PLANNED. Rechaza si ya hay uno activo o si supera su capacidad (salvo force=true). |
-| `acm_sprint_close` | 623 | Cierra el sprint activo: lo DONE queda hecho; el resto pasa a `carry_over_to` o vuelve al backlog. |
-| `acm_sprint_cancel` | 630 | Cancela un sprint PLANNED o ACTIVE: sus historias vuelven al backlog sin cambiar de estado. |
-| `acm_next_work` | 637 | Qué toca ahora en el proyecto, ya asignado a ti: `action` (implement, verify, refine, plan_sprint, |
-| `acm_work_release` | 645 | Libera un trabajo que tienes asignado (al abandonarlo); queda libre para otro agente. |
-| `acm_work_list` | 651 | Quién trabaja ahora en qué dentro del proyecto (asignaciones vigentes). |
-| `acm_decide` | 658 | Delega una decisión tipada (noul = sí/no, choice = clasificar, score = puntuar) en el motor de decisión. |
-| `acm_context_compact` | 681 | Contexto compacto de una historia (historia, CA, requisitos, feature, épica, historias hermanas). |
-| `acm_engines_list` | 692 | Motores de inferencia registrados, su último estado, modelos detectados y preguntas que cubren las reglas. |
-| `acm_engines_refresh` | 702 | (admin) Comprueba la salud de cada motor y detecta los modelos disponibles en su runtime. |
-| `acm_savings_report` | 714 | (admin) Tokens ahorrados por el contexto compacto, agregados por agente y proyecto, con el método usado. |
-| `acm_models_list` | 722 | Modelos disponibles: Ollaya (JEV, decisiones) con detalles, propósitos asignados y nota; Ollama (local) |
-| `acm_models_select` | 728 | (admin) Elige el modelo de Ollama y, en Ollaya, el de por defecto, uno por propósito y notas de uso. |
-| `acm_chat` | 746 | Habla con el modelo local de Ollama en un hilo que ACM conserva: envía solo el mensaje nuevo (y `thread_id` |
-| `acm_chat_threads` | 757 | Tus hilos de conversación con el modelo local en el proyecto (un admin ve todos). |
-| `acm_chat_get` | 762 | Un hilo con todos sus mensajes, herramientas usadas y modelo. |
-| `acm_whoami` | 769 | Tu identidad: principal, tipo (user/agent), rol global, proyectos con su rol y tokens activos. |
-| `acm_principal_create` | 774 | (admin) Da de alta un usuario o un agente (kind: user / agent; role global: admin / user). |
-| `acm_principal_list` | 782 | (admin) Principales con su tipo y rol global, y los roles disponibles. |
-| `acm_principal_set_role` | 787 | (admin) Cambia el rol global (admin / user). Nunca deja el sistema sin admin. |
-| `acm_member_set` | 793 | (persona admin u owner del proyecto) Añade un miembro o cambia su rol (owner / member / viewer). Un agente no |
-| `acm_member_remove` | 800 | (admin u owner del proyecto) Retira a un miembro. Nunca deja el proyecto sin owner. |
-| `acm_member_list` | 806 | Miembros del proyecto con su rol y tipo. |
-| `acm_token_create` | 811 | (admin) Crea un token para un principal. El token completo se muestra SOLO en esta respuesta: guárdalo. |
-| `acm_token_list` | 817 | Tokens (sin el secreto: solo prefijo, estado y uso). Los tuyos, o los de cualquiera si eres admin. |
-| `acm_token_revoke` | 823 | Revoca un token al instante (los tuyos; los ajenos, solo un admin). |
-| `acm_watchdog_run` | 829 | Auditoría de gobernanza del proyecto: integridad SQLite, calidad de historias (vía el motor de decisión) y |
-| `acm_watchdog_history` | 836 | Histórico de auditorías del proyecto (más recientes primero), con sus hallazgos. |
-| `acm_governance_status` | 842 | Indicadores de gobernanza: semáforo y recuentos de la última auditoría, integridad y si admite escrituras. |
-| `acm_health` | 848 | (admin) Salud de cada componente: bases SQLite, catálogo de skills y motores de inferencia. |
+| `acm_skills_list` | 273 | Lista las skills de ACM (uri, frontmatter con versión, digest y tamaño de cada archivo). |
+| `acm_skill_get` | 278 | Devuelve todos los archivos de una skill de ACM (respaldo de skills/get + resources/read). |
+| `acm_skills_reload` | 290 | (admin) Relee el catálogo de skills; si cambia, notifica resources/list_changed a los suscritos. |
+| `acm_project_create` | 307 | Crea un proyecto ACM con su propia base SQLite. `key` es el project_id: ^[a-z][a-z0-9-]{1,39}$. |
+| `acm_project_directory` | 313 | EMPIEZA AQUÍ. Proyectos de ACM con tu rol en cada uno y tus peticiones para unirte. Pregunta a la persona si |
+| `acm_project_join` | 319 | Pide unirte a un proyecto existente (`access_level`: write / read). Queda PENDING hasta que una persona la |
+| `acm_project_join_status` | 326 | Estado de tu petición para unirte a un proyecto: NONE, PENDING, APPROVED, REJECTED o MEMBER. |
+| `acm_project_list` | 332 | Lista los proyectos a los que tienes acceso (con su project_id). |
+| `acm_project_open` | 337 | Abre un proyecto: devuelve metadatos, tu rol, versión de esquema y configuración efectiva. |
+| `acm_project_config_get` | 342 | Devuelve cada parámetro de configuración del proyecto con su valor actual, por defecto y permitido. |
+| `acm_project_config_set` | 348 | Modifica parámetros ({parámetro: valor}). Valida todo antes de guardar; indica cuáles requieren recarga. |
+| `acm_system_info` | 354 | Estado de la plataforma: versión, esquema global, nº de proyectos, PRAGMAs y skills activas/rechazadas. |
+| `acm_audit_list` | 368 | (admin) Últimas invocaciones MCP auditadas: quién, operación, argumentos, resultado, estado, duración. |
+| `acm_requirement_create` | 385 | Registra un requisito (REQ-NNN). `requirement_id` opcional para importar IDs existentes. |
+| `acm_requirement_list` | 402 | Lista los requisitos del proyecto. |
+| `acm_requirement_trace` | 408 | Trazabilidad de un requisito: sus épicas, las features de esas épicas y las historias que lo implementan. |
+| `acm_epic_create` | 416 | Crea una épica (EPIC-NN) con objetivo y alcance obligatorios, opcionalmente asociada a requisitos. |
+| `acm_epic_link_requirements` | 447 | Asocia requisitos existentes a una épica. |
+| `acm_epic_get` | 461 | Devuelve una épica con sus requisitos y sus features (y las historias de cada feature). |
+| `acm_epic_list` | 467 | Lista las épicas del proyecto con sus features e historias. |
+| `acm_epic_confirm_coverage` | 472 | Confirma que las features activas de la épica cubren su objetivo (requiere al menos una feature activa). |
+| `acm_feature_create` | 480 | Crea una feature (FEAT-NN.MM) dentro de una épica. |
+| `acm_feature_split` | 504 | Divide una feature en ≥2: parts=[{title, description?, story_ids}] repartiendo todas sus historias. |
+| `acm_story_create` | 510 | Crea una historia (US-NN.MM): actor (as_a), acción (i_want), valor (so_that), ≥1 requisito de origen y |
+| `acm_story_add_criteria` | 554 | Añade criterios de aceptación (CA-NN) a una historia. |
+| `acm_story_get` | 562 | Devuelve una historia con sus requisitos de origen y criterios de aceptación. |
+| `acm_story_mark_ready` | 568 | Pasa una historia de PLANNED a READY si tiene actor, acción, valor, requisito y criterios. |
+| `acm_story_set_status` | 574 | Mueve una historia de estado (Kanban) si la transición está permitida. PLANNED → READY: acm_story_mark_ready. |
+| `acm_story_history` | 583 | Historial de cambios de estado de una historia (quién, cuándo, de qué a qué y por qué). |
+| `acm_backlog_audit` | 589 | Huecos de trazabilidad: requisitos huérfanos, épicas/features vacías, historias sin CA. |
+| `acm_sprint_create` | 595 | Crea un sprint SPRINT-NN (PLANNED) con objetivo, fechas AAAA-MM-DD y capacidad opcional en historias. |
+| `acm_sprint_list` | 611 | Sprints del proyecto con estado, historias, carga, capacidad y resumen de cierre. |
+| `acm_sprint_get` | 616 | Un sprint con sus historias actuales, historial de pertenencia y métricas. |
+| `acm_sprint_add_stories` | 622 | Planifica historias en un sprint abierto (una historia, un sprint abierto); avisa si no están READY. |
+| `acm_sprint_remove_story` | 629 | Retira una historia de un sprint abierto (queda en su historial como retirada). |
+| `acm_sprint_start` | 636 | Inicia un sprint PLANNED. Rechaza si ya hay uno activo o si supera su capacidad (salvo force=true). |
+| `acm_sprint_close` | 642 | Cierra el sprint activo: lo DONE queda hecho; el resto pasa a `carry_over_to` o vuelve al backlog. |
+| `acm_sprint_cancel` | 649 | Cancela un sprint PLANNED o ACTIVE: sus historias vuelven al backlog sin cambiar de estado. |
+| `acm_next_work` | 656 | Qué toca ahora en el proyecto, ya asignado a ti: `action` (implement, verify, refine, plan_sprint, |
+| `acm_work_release` | 664 | Libera un trabajo que tienes asignado (al abandonarlo); queda libre para otro agente. |
+| `acm_work_list` | 670 | Quién trabaja ahora en qué dentro del proyecto (asignaciones vigentes). |
+| `acm_decide` | 677 | Delega una decisión tipada (noul = sí/no, choice = clasificar, score = puntuar) en el motor de decisión. |
+| `acm_context_compact` | 700 | Contexto compacto de una historia (historia, CA, requisitos, feature, épica, historias hermanas). |
+| `acm_engines_list` | 711 | Motores de inferencia registrados, su último estado, modelos detectados y preguntas que cubren las reglas. |
+| `acm_engines_refresh` | 721 | (admin) Comprueba la salud de cada motor y detecta los modelos disponibles en su runtime. |
+| `acm_savings_report` | 733 | (admin) Tokens ahorrados por el contexto compacto, agregados por agente y proyecto, con el método usado. |
+| `acm_models_list` | 741 | Modelos disponibles: Ollaya (JEV, decisiones) con detalles, propósitos asignados y nota; Ollama (local) |
+| `acm_models_select` | 747 | (admin) Elige el modelo de Ollama y, en Ollaya, el de por defecto, uno por propósito y notas de uso. |
+| `acm_chat` | 765 | Habla con el modelo local de Ollama en un hilo que ACM conserva: envía solo el mensaje nuevo (y `thread_id` |
+| `acm_chat_threads` | 776 | Tus hilos de conversación con el modelo local en el proyecto (un admin ve todos). |
+| `acm_chat_get` | 781 | Un hilo con todos sus mensajes, herramientas usadas y modelo. |
+| `acm_whoami` | 788 | Tu identidad: principal, tipo (user/agent), rol global, proyectos con su rol y tokens activos. |
+| `acm_principal_create` | 793 | (admin) Da de alta un usuario o un agente (kind: user / agent; role global: admin / user). |
+| `acm_principal_list` | 801 | (admin) Principales con su tipo y rol global, y los roles disponibles. |
+| `acm_principal_set_role` | 806 | (admin) Cambia el rol global (admin / user). Nunca deja el sistema sin admin. |
+| `acm_member_set` | 812 | (persona admin u owner del proyecto) Añade un miembro o cambia su rol (owner / member / viewer). Un agente no |
+| `acm_member_remove` | 819 | (admin u owner del proyecto) Retira a un miembro. Nunca deja el proyecto sin owner. |
+| `acm_member_list` | 825 | Miembros del proyecto con su rol y tipo. |
+| `acm_token_create` | 830 | (admin) Crea un token para un principal. El token completo se muestra SOLO en esta respuesta: guárdalo. |
+| `acm_token_list` | 836 | Tokens (sin el secreto: solo prefijo, estado y uso). Los tuyos, o los de cualquiera si eres admin. |
+| `acm_token_revoke` | 842 | Revoca un token al instante (los tuyos; los ajenos, solo un admin). |
+| `acm_watchdog_run` | 848 | Auditoría de gobernanza del proyecto: integridad SQLite, calidad de historias (vía el motor de decisión) y |
+| `acm_watchdog_history` | 855 | Histórico de auditorías del proyecto (más recientes primero), con sus hallazgos. |
+| `acm_governance_status` | 861 | Indicadores de gobernanza: semáforo y recuentos de la última auditoría, integridad y si admite escrituras. |
+| `acm_health` | 867 | (admin) Salud de cada componente: bases SQLite, catálogo de skills y motores de inferencia. |
+
+### `src/acm/sessions.py`
+
+Identidad de los agentes locales: quién es y qué sesión es (ADR-023).
+
+| Tipo | Nombre | Línea | Descripción |
+|------|--------|-------|-------------|
+| constante | `PROCESS_SESSION` | 26 | |
+| función | `_slug(text)` | 31 |  |
+| función | `agent_principal(client, host)` | 35 | `<cliente>.<equipo>` válido como identificador de principal (^[a-z0-9][a-z0-9._-]{1,63}$). |
+| función | `session_id()` | 42 | Sesión de la conexión en curso; vacía fuera de una conexión MCP (REST, interfaz, tests). |
 
 ### `src/acm/skills_catalog.py`
 
@@ -731,97 +765,103 @@ API REST v1 y WebSocket de eventos de ACM (EPIC-30, EPIC-21; ADR-018).
 
 | Tipo | Nombre | Línea | Descripción |
 |------|--------|-------|-------------|
-| constante | `HTTP_STATUS` | 45 | |
-| constante | `KANBAN_COLUMNS` | 57 | |
-| constante | `WS_POLL_S` | 70 | |
-| constante | `WS_AUTH_TIMEOUT_S` | 71 | |
-| constante | `WS_ACCESS_REFRESH_S` | 72 | |
-| función | `_error_doc(description)` | 75 |  |
-| constante | `ERROR_RESPONSES` | 84 | |
-| clase | `StatusChange` (BaseModel) | 93 |  |
-| clase | `ProjectIn` (BaseModel) | 100 |  |
-| clase | `ConfigIn` (BaseModel) | 106 |  |
-| clase | `RequirementIn` (BaseModel) | 110 |  |
-| clase | `EpicIn` (BaseModel) | 115 |  |
-| clase | `RequirementIds` (BaseModel) | 122 |  |
-| clase | `FeatureIn` (BaseModel) | 126 |  |
-| clase | `SplitIn` (BaseModel) | 132 |  |
-| clase | `StoryIn` (BaseModel) | 136 |  |
-| clase | `CriteriaIn` (BaseModel) | 147 |  |
-| clase | `SprintIn` (BaseModel) | 151 |  |
-| clase | `StoryIds` (BaseModel) | 159 |  |
-| clase | `StartIn` (BaseModel) | 163 |  |
-| clase | `CloseIn` (BaseModel) | 167 |  |
-| clase | `RoleIn` (BaseModel) | 171 |  |
-| clase | `PrincipalIn` (BaseModel) | 175 |  |
-| clase | `TokenIn` (BaseModel) | 181 |  |
-| clase | `ModelsIn` (BaseModel) | 186 |  |
-| clase | `ChatIn` (BaseModel) | 193 |  |
-| función | `error_response(exc)` | 199 |  |
-| función | `build_api(service, engines, catalog)` | 206 | Devuelve la sub-app REST (a envolver con `BearerAuth`) y el router del WebSocket (autenticación propia). |
-| clase | `Access` (—) | 877 | Qué eventos puede ver un principal (US-21.02 CA-02). Se recalcula cuando cambian pertenencias o roles. |
-| método | `Access.__init__(service, principal)` | 880 |  |
-| método | `Access.age()` | 890 |  |
-| método | `Access.can_see(event)` | 893 |  |
+| constante | `HTTP_STATUS` | 47 | |
+| constante | `KANBAN_COLUMNS` | 59 | |
+| constante | `WS_POLL_S` | 72 | |
+| constante | `WS_AUTH_TIMEOUT_S` | 73 | |
+| constante | `WS_ACCESS_REFRESH_S` | 74 | |
+| función | `_error_doc(description)` | 77 |  |
+| constante | `ERROR_RESPONSES` | 86 | |
+| clase | `StatusChange` (BaseModel) | 95 |  |
+| clase | `ProjectIn` (BaseModel) | 102 |  |
+| clase | `ConfigIn` (BaseModel) | 108 |  |
+| clase | `RequirementIn` (BaseModel) | 112 |  |
+| clase | `EpicIn` (BaseModel) | 117 |  |
+| clase | `RequirementIds` (BaseModel) | 124 |  |
+| clase | `FeatureIn` (BaseModel) | 128 |  |
+| clase | `SplitIn` (BaseModel) | 134 |  |
+| clase | `StoryIn` (BaseModel) | 138 |  |
+| clase | `CriteriaIn` (BaseModel) | 149 |  |
+| clase | `SprintIn` (BaseModel) | 153 |  |
+| clase | `StoryIds` (BaseModel) | 161 |  |
+| clase | `StartIn` (BaseModel) | 165 |  |
+| clase | `CloseIn` (BaseModel) | 169 |  |
+| clase | `RoleIn` (BaseModel) | 173 |  |
+| clase | `PrincipalIn` (BaseModel) | 177 |  |
+| clase | `TokenIn` (BaseModel) | 183 |  |
+| clase | `ModelsIn` (BaseModel) | 188 |  |
+| clase | `ApproveIn` (BaseModel) | 195 |  |
+| clase | `ChatIn` (BaseModel) | 199 |  |
+| función | `error_response(exc)` | 205 |  |
+| función | `build_api(service, engines, catalog)` | 212 | Devuelve la sub-app REST (a envolver con `BearerAuth`) y el router del WebSocket (autenticación propia). |
+| clase | `Access` (—) | 921 | Qué eventos puede ver un principal (US-21.02 CA-02). Se recalcula cuando cambian pertenencias o roles. |
+| método | `Access.__init__(service, principal)` | 924 |  |
+| método | `Access.age()` | 934 |  |
+| método | `Access.can_see(event)` | 937 |  |
 
-Rutas (54, relativas a su montaje):
+Rutas (59, relativas a su montaje):
 
 | Método | Ruta | Función | Línea | Descripción |
 |--------|------|---------|-------|-------------|
-| GET | `/me` | `me` | 281 | Tu identidad: principal, tipo, rol global, proyectos y tokens activos. |
-| GET | `/meta` | `meta` | 287 | Versión de ACM, estados de historia, transiciones permitidas, columnas del Kanban y último evento. |
-| GET | `/projects` | `projects` | 313 | Cartera: proyectos accesibles con su semáforo de gobernanza y las historias por estado. |
-| GET | `/projects/{project_id}` | `project` | 319 | Metadatos del proyecto, tu rol y su configuración. |
-| GET | `/projects/{project_id}/backlog` | `project_backlog` | 324 | Backlog completo: requisitos, épicas con features, historias con criterios y huecos de trazabilidad. |
-| GET | `/projects/{project_id}/stories/{story_id}` | `story` | 336 | Historia con criterios, requisitos, historial de estados y transiciones permitidas. |
-| POST | `/projects/{project_id}/stories/{story_id}/status` | `story_status` | 346 | Mueve la historia a otro estado permitido (DONE solo desde VERIFIED). |
-| POST | `/projects/{project_id}/stories/{story_id}/ready` | `story_ready` | 357 | Gate de calidad: pasa la historia de PLANNED a READY si está completa. |
-| GET | `/projects/{project_id}/requirements/{requirement_id}/trace` | `trace` | 364 | Trazabilidad de un requisito: épicas, features e historias que lo implementan. |
-| GET | `/projects/{project_id}/context/{story_id}` | `compact_context` | 369 | Contexto compacto de una historia para agentes, con fuentes y tokens ahorrados. |
-| GET | `/projects/{project_id}/members` | `members` | 374 | Miembros del proyecto con su rol y tipo. |
-| GET | `/projects/{project_id}/config` | `config` | 379 | Parámetros de configuración del proyecto con valor, valores permitidos y quién los usa. |
-| GET | `/projects/{project_id}/governance` | `governance` | 384 | Semáforo, integridad e histórico de auditorías del Watchdog. |
-| POST | `/projects/{project_id}/watchdog` | `watchdog_run` | 390 | Ejecuta ahora una auditoría de gobernanza del proyecto. |
-| GET | `/kanban` | `kanban` | 397 | Tablero Kanban de uno o varios proyectos (o de un sprint): columnas, transiciones y tarjetas. |
-| POST | `/projects` | `project_create` | 451 | Crea un proyecto con su propia base SQLite (`key` = project_id). |
-| POST | `/projects/{project_id}/requirements` | `requirement_create` | 467 | Registra un requisito REQ-NNN. |
-| POST | `/projects/{project_id}/epics` | `epic_create` | 479 | Crea una épica con objetivo, alcance y requisitos. |
-| POST | `/projects/{project_id}/epics/{epic_id}/requirements` | `epic_link` | 493 | Asocia más requisitos a una épica. |
-| POST | `/projects/{project_id}/epics/{epic_id}/confirm-coverage` | `epic_confirm` | 505 | Confirma que las features activas cubren el objetivo de la épica. |
-| POST | `/projects/{project_id}/features` | `feature_create` | 516 | Crea una feature dentro de una épica. |
-| POST | `/projects/{project_id}/features/{feature_id}/split` | `feature_split` | 529 | Divide una feature en ≥2 features nuevas repartiendo todas sus historias. |
-| POST | `/projects/{project_id}/stories` | `story_create` | 541 | Crea una historia (de usuario o técnica) enlazada a requisitos, con sus criterios. |
-| POST | `/projects/{project_id}/stories/{story_id}/criteria` | `story_criteria` | 559 | Añade criterios de aceptación a una historia. |
-| GET | `/projects/{project_id}/sprints` | `sprint_list` | 572 | Sprints con estado, historias, carga, capacidad y resumen de cierre. |
-| GET | `/projects/{project_id}/sprints/{sprint_id}` | `sprint_get` | 577 | Un sprint con sus historias e historial de pertenencia. |
-| POST | `/projects/{project_id}/sprints` | `sprint_create` | 582 | Crea un sprint PLANNED con objetivo, fechas y capacidad opcional (en historias). |
-| POST | `/projects/{project_id}/sprints/{sprint_id}/stories` | `sprint_add` | 597 | Planifica historias en un sprint abierto. |
-| DELETE | `/projects/{project_id}/sprints/{sprint_id}/stories/{story_id}` | `sprint_remove` | 609 | Retira una historia de un sprint abierto. |
-| POST | `/projects/{project_id}/sprints/{sprint_id}/start` | `sprint_start` | 621 | Inicia un sprint PLANNED (rechaza la sobrecarga salvo force). |
-| POST | `/projects/{project_id}/sprints/{sprint_id}/close` | `sprint_close` | 633 | Cierra el sprint activo con resumen; lo no terminado se traslada o vuelve al backlog. |
-| POST | `/projects/{project_id}/sprints/{sprint_id}/cancel` | `sprint_cancel` | 645 | Cancela un sprint abierto; sus historias vuelven al backlog. |
-| PUT | `/projects/{project_id}/members/{principal_id}` | `member_set` | 653 | (admin/owner) Añade un miembro al proyecto o cambia su rol. |
-| DELETE | `/projects/{project_id}/members/{principal_id}` | `member_remove` | 665 | (admin/owner) Retira a un miembro del proyecto. |
-| POST | `/principals` | `principal_create` | 676 | (admin) Alta de un usuario o agente. |
-| PUT | `/principals/{principal_id}/role` | `principal_role` | 683 | (admin) Cambia el rol global de un principal. |
-| POST | `/tokens` | `token_create` | 694 | (admin) Crea un token; el secreto (`token`) solo aparece en esta respuesta y nunca se audita. |
-| DELETE | `/tokens/{token_id}` | `token_revoke` | 699 | Revoca un token al instante (los propios, o cualquiera si eres admin). |
-| POST | `/engines/refresh` | `engines_refresh` | 704 | (admin) Comprueba de nuevo la salud y los modelos de cada motor, sin reiniciar ACM. |
-| GET | `/models` | `models_catalog` | 717 | Catálogo de modelos de Ollama y Ollaya: disponibles, elegidos, propósitos, notas y cómo usarlos. |
-| PUT | `/models` | `models_select` | 722 | (admin) Elige el modelo de Ollama y los de Ollaya (por defecto y por propósito); sin reiniciar. |
-| GET | `/projects/{project_id}/chat/threads` | `chat_threads` | 728 | Tus hilos de conversación con el modelo local (un admin ve todos). |
-| GET | `/projects/{project_id}/chat/threads/{thread_id}` | `chat_thread` | 733 | Un hilo con sus mensajes y las herramientas que usó el modelo. |
-| POST | `/projects/{project_id}/chat` | `chat_send` | 738 | Envía un mensaje al asistente local (Ollama) del proyecto; ACM conserva el hilo. |
-| GET | `/activity` | `activity` | 752 | Auditoría de invocaciones (solo admin), filtrable por proyecto, principal y operación. |
-| GET | `/events` | `events` | 761 | Eventos de dominio posteriores a un seq, filtrados por visibilidad. |
-| GET | `/health` | `health` | 773 | Salud de cada componente: bases SQLite, catálogo de skills y motores (solo admin). |
-| GET | `/engines` | `engines_list` | 778 | Motores de inferencia registrados, estado, modelos detectados y reglas disponibles. |
-| GET | `/savings` | `savings` | 784 | Tokens ahorrados a los agentes por el contexto compacto (solo admin). |
-| GET | `/skills` | `skills` | 789 | Catálogo de skills que ACM sirve a los agentes. |
-| GET | `/skills/{name}` | `skill` | 794 | Archivos de una skill (Markdown con frontmatter). |
-| GET | `/principals` | `principals` | 802 | Principales (usuarios y agentes) y roles disponibles (solo admin). |
-| GET | `/tokens` | `tokens` | 807 | Tokens sin su secreto: prefijo, estado y uso. |
-| WEBSOCKET | `/api/v1/ws` | `events_ws` | 815 |  |
+| GET | `/me` | `me` | 289 | Tu identidad: principal, tipo, rol global, proyectos y tokens activos. |
+| GET | `/meta` | `meta` | 295 | Versión de ACM, estados de historia, transiciones permitidas, columnas del Kanban y último evento. |
+| GET | `/projects` | `projects` | 321 | Cartera: proyectos accesibles con su semáforo de gobernanza y las historias por estado. |
+| GET | `/projects/{project_id}` | `project` | 327 | Metadatos del proyecto, tu rol y su configuración. |
+| GET | `/projects/{project_id}/backlog` | `project_backlog` | 332 | Backlog completo: requisitos, épicas con features, historias con criterios y huecos de trazabilidad. |
+| GET | `/projects/{project_id}/stories/{story_id}` | `story` | 344 | Historia con criterios, requisitos, historial de estados y transiciones permitidas. |
+| POST | `/projects/{project_id}/stories/{story_id}/status` | `story_status` | 354 | Mueve la historia a otro estado permitido (DONE solo desde VERIFIED). |
+| POST | `/projects/{project_id}/stories/{story_id}/ready` | `story_ready` | 365 | Gate de calidad: pasa la historia de PLANNED a READY si está completa. |
+| GET | `/projects/{project_id}/requirements/{requirement_id}/trace` | `trace` | 372 | Trazabilidad de un requisito: épicas, features e historias que lo implementan. |
+| GET | `/projects/{project_id}/context/{story_id}` | `compact_context` | 377 | Contexto compacto de una historia para agentes, con fuentes y tokens ahorrados. |
+| GET | `/projects/{project_id}/members` | `members` | 382 | Miembros del proyecto con su rol y tipo. |
+| GET | `/projects/{project_id}/config` | `config` | 387 | Parámetros de configuración del proyecto con valor, valores permitidos y quién los usa. |
+| GET | `/projects/{project_id}/governance` | `governance` | 392 | Semáforo, integridad e histórico de auditorías del Watchdog. |
+| POST | `/projects/{project_id}/watchdog` | `watchdog_run` | 398 | Ejecuta ahora una auditoría de gobernanza del proyecto. |
+| GET | `/kanban` | `kanban` | 405 | Tablero Kanban de uno o varios proyectos (o de un sprint): columnas, transiciones y tarjetas. |
+| GET | `/join-requests` | `join_requests` | 458 | Peticiones de agentes para unirse a proyectos que puedes decidir (admin: todas; owner: las suyas). |
+| POST | `/join-requests/{request_id}/approve` | `join_approve` | 463 | Aprueba la petición (solo una persona): `role` member (escritura) o viewer (lectura). |
+| POST | `/join-requests/{request_id}/reject` | `join_reject` | 472 | Rechaza la petición (solo una persona); el agente lo sabrá al consultar su estado. |
+| GET | `/projects/{project_id}/work` | `project_work` | 481 | Quién trabaja ahora en qué dentro del proyecto (asignaciones vigentes de `acm_next_work`). |
+| DELETE | `/projects/{project_id}/work/{item}` | `work_release` | 486 | Libera una asignación (una persona puede liberar cualquiera). |
+| POST | `/projects` | `project_create` | 495 | Crea un proyecto con su propia base SQLite (`key` = project_id). |
+| POST | `/projects/{project_id}/requirements` | `requirement_create` | 511 | Registra un requisito REQ-NNN. |
+| POST | `/projects/{project_id}/epics` | `epic_create` | 523 | Crea una épica con objetivo, alcance y requisitos. |
+| POST | `/projects/{project_id}/epics/{epic_id}/requirements` | `epic_link` | 537 | Asocia más requisitos a una épica. |
+| POST | `/projects/{project_id}/epics/{epic_id}/confirm-coverage` | `epic_confirm` | 549 | Confirma que las features activas cubren el objetivo de la épica. |
+| POST | `/projects/{project_id}/features` | `feature_create` | 560 | Crea una feature dentro de una épica. |
+| POST | `/projects/{project_id}/features/{feature_id}/split` | `feature_split` | 573 | Divide una feature en ≥2 features nuevas repartiendo todas sus historias. |
+| POST | `/projects/{project_id}/stories` | `story_create` | 585 | Crea una historia (de usuario o técnica) enlazada a requisitos, con sus criterios. |
+| POST | `/projects/{project_id}/stories/{story_id}/criteria` | `story_criteria` | 603 | Añade criterios de aceptación a una historia. |
+| GET | `/projects/{project_id}/sprints` | `sprint_list` | 616 | Sprints con estado, historias, carga, capacidad y resumen de cierre. |
+| GET | `/projects/{project_id}/sprints/{sprint_id}` | `sprint_get` | 621 | Un sprint con sus historias e historial de pertenencia. |
+| POST | `/projects/{project_id}/sprints` | `sprint_create` | 626 | Crea un sprint PLANNED con objetivo, fechas y capacidad opcional (en historias). |
+| POST | `/projects/{project_id}/sprints/{sprint_id}/stories` | `sprint_add` | 641 | Planifica historias en un sprint abierto. |
+| DELETE | `/projects/{project_id}/sprints/{sprint_id}/stories/{story_id}` | `sprint_remove` | 653 | Retira una historia de un sprint abierto. |
+| POST | `/projects/{project_id}/sprints/{sprint_id}/start` | `sprint_start` | 665 | Inicia un sprint PLANNED (rechaza la sobrecarga salvo force). |
+| POST | `/projects/{project_id}/sprints/{sprint_id}/close` | `sprint_close` | 677 | Cierra el sprint activo con resumen; lo no terminado se traslada o vuelve al backlog. |
+| POST | `/projects/{project_id}/sprints/{sprint_id}/cancel` | `sprint_cancel` | 689 | Cancela un sprint abierto; sus historias vuelven al backlog. |
+| PUT | `/projects/{project_id}/members/{principal_id}` | `member_set` | 697 | (admin/owner) Añade un miembro al proyecto o cambia su rol. |
+| DELETE | `/projects/{project_id}/members/{principal_id}` | `member_remove` | 709 | (admin/owner) Retira a un miembro del proyecto. |
+| POST | `/principals` | `principal_create` | 720 | (admin) Alta de un usuario o agente. |
+| PUT | `/principals/{principal_id}/role` | `principal_role` | 727 | (admin) Cambia el rol global de un principal. |
+| POST | `/tokens` | `token_create` | 738 | (admin) Crea un token; el secreto (`token`) solo aparece en esta respuesta y nunca se audita. |
+| DELETE | `/tokens/{token_id}` | `token_revoke` | 743 | Revoca un token al instante (los propios, o cualquiera si eres admin). |
+| POST | `/engines/refresh` | `engines_refresh` | 748 | (admin) Comprueba de nuevo la salud y los modelos de cada motor, sin reiniciar ACM. |
+| GET | `/models` | `models_catalog` | 761 | Catálogo de modelos de Ollama y Ollaya: disponibles, elegidos, propósitos, notas y cómo usarlos. |
+| PUT | `/models` | `models_select` | 766 | (admin) Elige el modelo de Ollama y los de Ollaya (por defecto y por propósito); sin reiniciar. |
+| GET | `/projects/{project_id}/chat/threads` | `chat_threads` | 772 | Tus hilos de conversación con el modelo local (un admin ve todos). |
+| GET | `/projects/{project_id}/chat/threads/{thread_id}` | `chat_thread` | 777 | Un hilo con sus mensajes y las herramientas que usó el modelo. |
+| POST | `/projects/{project_id}/chat` | `chat_send` | 782 | Envía un mensaje al asistente local (Ollama) del proyecto; ACM conserva el hilo. |
+| GET | `/activity` | `activity` | 796 | Auditoría de invocaciones (solo admin), filtrable por proyecto, principal y operación. |
+| GET | `/events` | `events` | 805 | Eventos de dominio posteriores a un seq, filtrados por visibilidad. |
+| GET | `/health` | `health` | 817 | Salud de cada componente: bases SQLite, catálogo de skills y motores (solo admin). |
+| GET | `/engines` | `engines_list` | 822 | Motores de inferencia registrados, estado, modelos detectados y reglas disponibles. |
+| GET | `/savings` | `savings` | 828 | Tokens ahorrados a los agentes por el contexto compacto (solo admin). |
+| GET | `/skills` | `skills` | 833 | Catálogo de skills que ACM sirve a los agentes. |
+| GET | `/skills/{name}` | `skill` | 838 | Archivos de una skill (Markdown con frontmatter). |
+| GET | `/principals` | `principals` | 846 | Principales (usuarios y agentes) y roles disponibles (solo admin). |
+| GET | `/tokens` | `tokens` | 851 | Tokens sin su secreto: prefijo, estado y uso. |
+| WEBSOCKET | `/api/v1/ws` | `events_ws` | 859 |  |
 
 ### `src/acm/webui_app.py`
 
@@ -873,9 +913,9 @@ Sesión (US-31.01): token en sessionStorage, identidad desde /api/v1/me, cierre 
 
 | Tipo | Nombre | Línea |
 |------|--------|-------|
-| componente | `AuthProvider` | 17 |
-| hook | `useAuth` | 49 |
-| función | `describeError` | 55 |
+| componente | `AuthProvider` | 33 |
+| hook | `useAuth` | 110 |
+| función | `describeError` | 116 |
 
 ### `web/src/components.tsx`
 
@@ -945,7 +985,7 @@ Canal en vivo (US-06.03, US-21.02/03): WebSocket autenticado, reanudación por s
 
 Tests del núcleo en vivo (US-31.08): orden por seq, duplicados, reanudación, resync y claves a recargar.
 
-Tests (7): aplica eventos en orden y descarta duplicados; al reconectar pide lo posterior al último evento aplicado; un ready no retrocede el último seq aplicado; resync pide recargar todo; reintentos con espera exponencial acotada; un cambio de historia invalida Kanban, cartera, proyecto e historia; recarga sprints y modelos cuando cambian (SPRINT-008)
+Tests (8): aplica eventos en orden y descarta duplicados; al reconectar pide lo posterior al último evento aplicado; un ready no retrocede el último seq aplicado; resync pide recargar todo; reintentos con espera exponencial acotada; un cambio de historia invalida Kanban, cartera, proyecto e historia; recarga sprints y modelos cuando cambian (SPRINT-008); recarga solicitudes de acceso y trabajo asignado (SPRINT-009)
 
 ### `web/src/liveCore.ts`
 
@@ -1016,7 +1056,7 @@ Panel general (US-45.01/45.03): todos los proyectos accesibles, su salud y la ac
 
 | Tipo | Nombre | Línea |
 |------|--------|-------|
-| componente | `Dashboard` | 40 |
+| componente | `Dashboard` | 41 |
 
 ### `web/src/pages/Docs.tsx`
 
@@ -1025,6 +1065,14 @@ Documentación (US-15.08..10, US-30.02): skills que ACM sirve a los agentes, flu
 | Tipo | Nombre | Línea |
 |------|--------|-------|
 | componente | `DocsPage` | 14 |
+
+### `web/src/pages/JoinRequests.tsx`
+
+Solicitudes de acceso de agentes (US-14.15): una persona aprueba (lectura o escritura) o rechaza que un agente se
+
+| Tipo | Nombre | Línea |
+|------|--------|-------|
+| componente | `JoinRequestsPanel` | 9 |
 
 ### `web/src/pages/KanbanPage.tsx`
 
@@ -1155,9 +1203,10 @@ Tipos de la API REST v1 de ACM (06_API/rest_api.md).
 | tipo | `Governance` | 181 |
 | tipo | `PortfolioProject` | 189 |
 | tipo | `Card` | 199 |
-| tipo | `Kanban` | 214 |
-| tipo | `Me` | 222 |
-| tipo | `AcmEvent` | 230 |
+| tipo | `JoinRequest` | 215 |
+| tipo | `Kanban` | 229 |
+| tipo | `Me` | 237 |
+| tipo | `AcmEvent` | 245 |
 
 ## Tests (`tests`)
 
@@ -1228,6 +1277,20 @@ ACM real por HTTP para los tests: uvicorn en un hilo, con acceso directo a los d
 | función | `running_acm(data_dir, **settings)` | 47 | ACM real por HTTP en un hilo; `settings` sobrescribe la configuración (p. ej. motores simulados). |
 | función | `acm(tmp_path)` | 69 |  |
 | función | `async mcp(acm, token)` | 75 |  |
+
+### `tests/test_access.py`
+
+SPRINT-009 — unirse a proyectos con aprobación de una persona: US-14.14 (agente) y US-14.15 (operador).
+
+| Tipo | Nombre | Línea | Descripción |
+|------|--------|-------|-------------|
+| constante | `BOT` | 20 | |
+| constante | `OTHER` | 21 | |
+| función | `anyio_backend()` | 25 |  |
+| función | `local(data_dir)` | 30 | ACM en modo local (ADR-023): los agentes ven el directorio y crean sus proyectos. |
+| función | `access(local)` | 43 |  |
+
+Tests (13): `test_us1414_ca01_directorio_con_rol_y_peticiones`, `test_us1414_ca01_fuera_del_modo_local_solo_ve_los_suyos`, `test_us1414_ca02_crear_proyecto_nuevo_sin_aprobacion`, `test_us1414_ca03_pedir_unirse_deja_pendiente_y_sin_acceso`, `test_us1414_ca03_entradas_invalidas`, `test_us1414_ca04_consultar_el_estado_de_la_peticion`, `test_us1415_ca01_las_peticiones_pendientes_llegan_en_tiempo_real`, `test_us1415_ca02_aprobar_con_escritura_o_solo_lectura`, `test_us1415_ca02_rol_invalido_y_peticion_ya_decidida`, `test_us1415_ca03_rechazar_y_el_agente_lo_sabe`, `test_us1415_ca04_retirar_a_un_agente_en_cualquier_momento`, `test_us1415_solo_una_persona_decide_y_solo_la_de_su_proyecto`, `test_us1414_flujo_del_agente_por_mcp`
 
 ### `tests/test_app.py`
 
@@ -1347,6 +1410,22 @@ US-24.01 y US-24.03 — varios proyectos con backlog y memoria independientes.
 
 Tests (6): `test_us2401_ca01_multiples_proyectos`, `test_us2401_ca02_backlog_independiente`, `test_us2401_ca03_memoria_independiente`, `test_us2401_ca04_cambiar_de_proyecto_cambia_contexto`, `test_us2403_ca01_agente_de_a_no_recupera_memoria_de_b`, `test_us2403_ca03_consultas_limitadas_al_proyecto`
 
+### `tests/test_local_mode.py`
+
+SPRINT-009 — conexión universal de agentes (US-14.12, US-14.13) con procesos reales.
+
+| Tipo | Nombre | Línea | Descripción |
+|------|--------|-------|-------------|
+| constante | `HOST` | 30 | |
+| función | `anyio_backend()` | 34 |  |
+| función | `async agent(data_dir, client, **env)` | 39 | Un agente real: proceso stdio con la entrada estándar de ACM, sin interfaz en segundo plano. |
+| función | `_data(result)` | 50 |  |
+| clase | `IdentityKinds` (—) | 93 |  |
+| método | `IdentityKinds.rows(svc)` | 95 |  |
+| función | `daemon(tmp_path)` | 176 | La interfaz local como la arranca un agente: proceso aparte que sobrevive a quien lo lanzó. |
+
+Tests (10): `test_us1412_ca02_un_unico_estado_por_usuario`, `test_us1412_ca03_identidad_valida_y_distinta_por_cliente_y_equipo`, `test_us1412_ca03_cada_cliente_es_un_agente_con_su_nombre`, `test_us1412_ca01_flujo_completo_sin_pasos_previos`, `test_us1412_ca03_dos_sesiones_del_mismo_cliente_no_se_pisan`, `test_us1412_ca03_acm_principal_conserva_la_identidad_admin_unica`, `test_us1412_ca04_solo_peticiones_locales_con_la_cabecera_de_la_interfaz`, `test_us1412_ca04_interfaz_local_en_segundo_plano_sin_token`, `test_us1412_ca04_la_interfaz_sobrevive_y_se_para_con_acm_stop`, `test_us1412_ca04_el_supervisor_trabaja_en_segundo_plano`
+
 ### `tests/test_mcp.py`
 
 Frontera MCP: US-01.01 (errores explícitos) y US-01.06 (project_id en cada herramienta).
@@ -1414,7 +1493,7 @@ EPIC-06 (Kanban), EPIC-21 (eventos y WebSocket) y EPIC-30 (API REST v1) contra A
 | función | `async _events(conn, n, *, types, timeout)` | 59 | Los siguientes `n` eventos de dominio (opcionalmente solo de ciertos tipos), en orden de llegada. |
 | función | `async _silence(conn, seconds, *, types)` | 72 | Eventos recibidos durante `seconds` (para comprobar que NO llega nada). |
 | constante | `DOMAIN` | 83 | |
-| constante | `ENDPOINTS` | 369 | |
+| constante | `ENDPOINTS` | 371 | |
 
 Tests (25): `test_us0602_ca01_ca02_cambio_permitido_y_registrado`, `test_us0602_ca03_transiciones_no_permitidas`, `test_us0602_done_solo_tras_verificar`, `test_us0602_ca04_el_tablero_refleja_el_estado`, `test_us0601_ca01_ca02_una_columna_por_historia_con_datos`, `test_us0601_ca03_solo_el_contexto_seleccionado_y_varios_a_la_vez`, `test_us0601_ca03_proyecto_ajeno_no_se_muestra`, `test_us0601_ca04_historia_inexistente_no_aparece`, `test_us2101_ca01_ca02_cambio_genera_evento_con_contexto`, `test_us2101_ca03_operacion_revertida_no_publica`, `test_us0603_ca01_ca02_agente_cambia_y_los_clientes_lo_reciben`, `test_us0603_agente_por_stdio_en_otro_proceso`, `test_us0603_ca04_evento_duplicado_no_modifica_dos_veces`, `test_us2102_ca01_ca02_solo_proyectos_autorizados`, `test_us2102_actividad_solo_para_admin`, `test_us2102_ca03_desconexion_libera_la_suscripcion`, `test_us2102_ws_exige_autenticacion`, `test_us2103_ca01_ca02_ca03_ca04_reanuda_sin_perder_ni_duplicar`, `test_us2103_resync_si_los_eventos_ya_no_estan`, `test_us2103_eventos_por_rest`, `test_us3001_ca01_us3002_contrato_documentado`, `test_us3001_ca02_ca04_entradas_invalidas_formato_consistente`, `test_us3001_ca03_autorizacion_aplicada`, `test_us3003_ca01_ca02_ca03_version_en_la_ruta`, `test_us3001_lectura_completa_del_proyecto`
 
@@ -1467,7 +1546,7 @@ US-15.01, US-15.04..US-15.10 — catálogo de skills y extensión MCP Skills (SE
 | función | `_skill_text(name)` | 75 |  |
 | constante | `TOOL_RE` | 240 | |
 
-Tests (25): `test_us1501_ca01_id_y_version`, `test_us1501_ca02_ca03_capacidades_y_dependencias`, `test_us1501_ca04_skill_invalida_no_se_activa`, `test_us1501_ca04_rechazo_en_cascada`, `test_us1504_ca01_instructions_piden_cargar_skills`, `test_us1504_ca02_capacidades_declaradas`, `test_us1504_ca03_skills_list`, `test_us1505_ca01_leer_cada_archivo_y_verificar_digest`, `test_us1505_ca02_skills_get_y_error`, `test_us1505_ca03_herramientas_de_respaldo`, `test_us1506_ca01_version_en_frontmatter`, `test_us1506_ca02_digest_cambia_solo_si_cambia_el_contenido`, `test_us1506_ca03_notificacion_al_cambiar_catalogo`, `test_us1506_recargar_requiere_admin`, `test_us1507_ca01_skills_oficiales_versionadas_con_el_codigo`, `test_us1507_ca02_skill_retirada_desaparece`, `test_us1507_ca03_descargas_auditadas`, `test_us1508_ca01_acm_schema_valida`, `test_us1508_ca02_ca03_documenta_exactamente_las_herramientas`, `test_us1508_ca04_modelo_y_flujo`, `test_us1509_ca01_acm_invest_valida`, `test_us1509_ca02_ca03_invest_y_criterios_binarios`, `test_us1509_us1510_ca04_solo_herramientas_existentes`, `test_us1510_ca01_acm_discovery_valida`, `test_us1510_ca02_ca03_preguntas_y_registro`
+Tests (31): `test_us1501_ca01_id_y_version`, `test_us1501_ca02_ca03_capacidades_y_dependencias`, `test_us1501_ca04_skill_invalida_no_se_activa`, `test_us1501_ca04_rechazo_en_cascada`, `test_us1504_ca01_instructions_piden_cargar_skills`, `test_us1504_ca02_capacidades_declaradas`, `test_us1504_ca03_skills_list`, `test_us1505_ca01_leer_cada_archivo_y_verificar_digest`, `test_us1505_ca02_skills_get_y_error`, `test_us1505_ca03_herramientas_de_respaldo`, `test_us1506_ca01_version_en_frontmatter`, `test_us1506_ca02_digest_cambia_solo_si_cambia_el_contenido`, `test_us1506_ca03_notificacion_al_cambiar_catalogo`, `test_us1506_recargar_requiere_admin`, `test_us1507_ca01_skills_oficiales_versionadas_con_el_codigo`, `test_us1507_ca02_skill_retirada_desaparece`, `test_us1507_ca03_descargas_auditadas`, `test_us1508_ca01_acm_schema_valida`, `test_us1508_ca02_ca03_documenta_exactamente_las_herramientas`, `test_us1508_ca04_modelo_y_flujo`, `test_us1509_ca01_acm_invest_valida`, `test_us1509_ca02_ca03_invest_y_criterios_binarios`, `test_us1509_us1510_ca04_solo_herramientas_existentes`, `test_us1510_ca01_acm_discovery_valida`, `test_us1510_ca02_ca03_preguntas_y_registro`, `test_us1413_ca01_instructions_breves_y_remiten_al_proceso`, `test_us1413_ca02_mismo_contenido_por_herramienta_recurso_y_prompt`, `test_us1413_ca02_leer_las_skills_queda_auditado`, `test_us1413_ca03_acm_workflow_describe_el_proceso_de_principio_a_fin`, `test_us1413_ca03_acm_workflow_solo_cita_herramientas_existentes`, `test_us1413_ca03_pasos_de_acm_next_work_existen`
 
 ### `tests/test_sprints.py`
 
@@ -1541,6 +1620,16 @@ SPRINT-007 — interfaz web (e2e con Chromium contra ACM real): US-31.06/07/08, 
 
 Tests (23): `test_us3106_ca01_cada_dato_tiene_vista`, `test_us3106_ca02_navegar_desde_una_historia`, `test_us3106_ca03_documentacion_de_acm`, `test_us3106_ca04_solo_lo_accesible`, `test_us3107_ca01_contraste_aa_en_ambos_temas`, `test_us3107_ca02_nunca_solo_color`, `test_us3107_ca03_elegir_tema`, `test_us3107_ca04_mover_con_teclado`, `test_us3108_ca01_cambio_de_agente_sin_recargar`, `test_us3108_ca02_indicador_de_conexion`, `test_us3108_ca03_reconexion_recupera_los_cambios`, `test_us0607_ca01_elegir_proyectos`, `test_us0607_ca02_color_y_nombre_del_proyecto`, `test_us0607_ca03_mezclados_o_por_carril`, `test_us0607_ca04_arrastrar_permitido_y_rechazo`, `test_us0606_ca01_ca02_ca03_abrir_tarjeta_con_contexto`, `test_us3104_us2109_feed_en_vivo_de_herramientas`, `test_us3101_us3102_consola_filtrable`, `test_us4503_panel_global_de_varios_proyectos`, `test_us4502_acceder_a_elementos_desde_el_panel`, `test_us0102_ca03_proyecto_activo_identificado`, `test_us0102_ca04_proyecto_inexistente_informa_y_no_queda_seleccionado`, `test_ui_sin_errores_de_consola_y_cabeceras_de_seguridad`
 
+### `tests/test_webui_agents.py`
+
+SPRINT-009 — la interfaz para los agentes (e2e con Chromium contra ACM real): entrada local sin token (US-14.12
+
+| Tipo | Nombre | Línea | Descripción |
+|------|--------|-------|-------------|
+| función | `local_ui(tmp_path, browser)` | 28 | ACM en modo local (como `acm serve --local`) y un navegador que NO tiene ningún token. |
+
+Tests (5): `test_us1412_ca04_la_interfaz_local_entra_sola`, `test_us1412_ca04_con_tokens_sigue_pidiendolos`, `test_us1415_ca01_ca02_ca03_aprobar_y_rechazar_en_tiempo_real`, `test_us1415_ca04_expulsar_a_un_agente_desde_miembros`, `test_us1417_ca03_el_kanban_muestra_el_agente_asignado`
+
 ### `tests/test_webui_ops.py`
 
 SPRINT-008 — operar ACM desde la interfaz (e2e con Chromium contra ACM real): US-31.09..31.12, sprints (US-05.02,
@@ -1553,6 +1642,22 @@ SPRINT-008 — operar ACM desde la interfaz (e2e con Chromium contra ACM real): 
 | función | `open_form(page, label)` | 55 |  |
 
 Tests (13): `test_us3109_ca01_crear_proyecto_desde_el_panel`, `test_us3109_ca02_editar_configuracion`, `test_us3109_ca03_miembro_no_edita_configuracion`, `test_us3110_ca01_ca04_crear_backlog_desde_la_interfaz`, `test_us3110_ca02_anadir_criterios_desde_la_ficha`, `test_us3110_ca03_enlazar_confirmar_y_dividir`, `test_us3111_ca01_ca02_principales_y_miembros`, `test_us3111_ca03_ca04_token_una_vez_y_revocar`, `test_us3112_ca01_ca02_ca03_motores_desde_la_interfaz`, `test_us0502_us0505_us0509_us0503_sprint_completo`, `test_us1314_ca05_us1315_ca03_informe_acciones_y_deshacer`, `test_us5009_modelos_desde_la_interfaz`, `test_us2210_us2211_asistente_del_proyecto`
+
+### `tests/test_work.py`
+
+SPRINT-009 — reparto de trabajo entre agentes: US-14.16 (pedir trabajo) y US-14.17 (asignación con caducidad).
+
+| Tipo | Nombre | Línea | Descripción |
+|------|--------|-------|-------------|
+| función | `anyio_backend()` | 27 |  |
+| función | `local(data_dir)` | 32 |  |
+| función | `backlog(local)` | 46 |  |
+| función | `_stories(backlog, n, ready)` | 54 |  |
+| función | `work(backlog)` | 62 |  |
+| función | `_active_sprint(backlog, stories)` | 66 |  |
+| función | `_expire(local, item)` | 73 |  |
+
+Tests (16): `test_us1416_ca01_responde_lo_que_toca_segun_el_estado`, `test_us1416_ca01_avanza_con_el_estado_de_la_historia`, `test_us1416_ca01_sprint_planificado_sin_iniciar`, `test_us1416_ca02_dos_agentes_nunca_reciben_lo_mismo`, `test_us1416_ca02_sin_trabajo_libre_espera`, `test_us1416_ca02_consultar_sin_asignar`, `test_us1416_ca03_historia_asignada_a_otro_no_se_cambia`, `test_us1416_acceso_de_solo_lectura_no_recibe_trabajo`, `test_us1417_ca01_la_asignacion_se_renueva_al_tocar_la_historia`, `test_us1417_ca01_caducada_queda_libre_para_otro`, `test_us1417_ca01_plazo_configurable`, `test_us1417_ca02_liberar_el_trabajo`, `test_us1417_ca02_pedir_otra_cosa_libera_lo_que_ya_no_corresponde`, `test_us1417_ca03_mismo_cliente_en_dos_sesiones_no_se_pisa`, `test_us1417_ca03_se_ve_quien_trabaja_en_que`, `test_us1416_flujo_del_agente_por_mcp`
 
 ## Herramientas de control (`control/tools`)
 

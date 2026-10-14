@@ -185,6 +185,11 @@ function KanbanCard(props: {
       <p className="card-meta">
         Como {card.as_a} · {card.criteria} CA · {card.feature_id}
       </p>
+      {card.assigned_to && (
+        <p className="card-meta" data-assigned={card.assigned_to}>
+          Asignada a <strong>{card.assigned_to}</strong>
+        </p>
+      )}
       {options.length > 0 && (
         <label className="move">
           <span className="sr-only">Mover {card.id} a</span>

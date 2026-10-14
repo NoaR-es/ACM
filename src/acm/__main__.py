@@ -1,7 +1,8 @@
 """CLI de ACM.
 
-acm serve [--host H] [--port P] [--data-dir D]   # proceso ASGI: /api y /mcp (Streamable HTTP)
-acm mcp-stdio [--data-dir D]                     # servidor MCP por stdio para agentes locales
+acm serve [--host H] [--port P] [--data-dir D] [--local]  # proceso ASGI: /api y /mcp (Streamable HTTP)
+acm mcp-stdio [--data-dir D]                     # servidor MCP por stdio para agentes locales (ADR-023)
+acm stop [--data-dir D]                          # para la interfaz local que arrancó un agente
 acm principal create ID --kind user|agent [--role admin|user] [--data-dir D]
 acm token create PRINCIPAL --name N [--data-dir D]  # imprime el token UNA vez (ADR-017)
 
@@ -12,7 +13,9 @@ ya los controla. Quedan auditados como `cli:*`.
 from __future__ import annotations
 
 import argparse
+import os
 import sys
+from dataclasses import replace
 
 from acm.config import Settings
 
@@ -24,6 +27,8 @@ def main(argv: list[str] | None = None) -> int:
     serve.add_argument("--host")
     serve.add_argument("--port", type=int)
     serve.add_argument("--data-dir")
+    serve.add_argument("--local", action="store_true", help="modo local: la interfaz de este equipo entra sin token")
+    sub.add_parser("stop", help="para la interfaz local que arrancó un agente").add_argument("--data-dir")
     stdio = sub.add_parser("mcp-stdio", help="servidor MCP por stdio")
     stdio.add_argument("--data-dir")
     principal = sub.add_parser("principal", help="gestiona principales (admin local)")
@@ -44,23 +49,44 @@ def main(argv: list[str] | None = None) -> int:
     if args.command in ("principal", "token"):
         return _admin_command(args)
 
+    if args.command == "stop":
+        from acm.local import stop_local_ui
+
+        print(stop_local_ui(Settings.from_env(data_dir=args.data_dir)))
+        return 0
+
     if args.command == "serve":
         import uvicorn
 
         from acm.app import create_app
 
         settings = Settings.from_env(host=args.host, port=args.port, data_dir=args.data_dir)
+        if args.local:
+            settings = replace(settings, local_mode=True)
         uvicorn.run(create_app(settings), host=settings.host, port=settings.port)
         return 0
 
+    return _run_stdio(Settings.from_env(data_dir=args.data_dir))
+
+
+def _run_stdio(settings: Settings) -> int:
+    """Servidor MCP por stdio. Con `ACM_PRINCIPAL` explícito, una única identidad admin (comportamiento anterior).
+    Sin él, modo local (ADR-023): cada agente es un principal propio, no admin, que se deduce de su cliente y de este
+    equipo (o de `ACM_AGENT`), y la interfaz y el supervisor corren en un proceso aparte que sobrevive a los agentes."""
     from acm.app import build_engines, build_service
+    from acm.local import local_principal, start_local_ui
     from acm.mcp_server import build_mcp_server
 
-    settings = Settings.from_env(data_dir=args.data_dir)
+    legacy = "ACM_PRINCIPAL" in os.environ
+    if not legacy:
+        settings = replace(settings, local_mode=True)
     service = build_service(settings)
     engines = build_engines(service, settings)
+    who = (lambda: settings.principal) if legacy else local_principal(service, settings)
+    if not legacy and settings.ui:
+        start_local_ui(settings)
     try:
-        build_mcp_server(service, principal=lambda: settings.principal, engines=engines).run()  # stdio
+        build_mcp_server(service, principal=who, engines=engines, stdio=True).run()  # stdio
     finally:
         engines.registry.close()
         service.close()

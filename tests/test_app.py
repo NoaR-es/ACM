@@ -61,7 +61,9 @@ async def test_fastapi_sirve_api_y_mcp_en_un_proceso(tmp_path: Path) -> None:
 
 async def test_modo_stdio_del_cli(tmp_path: Path) -> None:
     params = StdioServerParameters(
-        command=sys.executable, args=["-m", "acm", "mcp-stdio", "--data-dir", str(tmp_path / "data")]
+        command=sys.executable,
+        args=["-m", "acm", "mcp-stdio", "--data-dir", str(tmp_path / "data")],
+        env={"ACM_UI": "0"},  # sin interfaz en segundo plano: el test no debe dejar procesos
     )
     async with Client(params) as client:
         created = await client.call_tool("acm_project_create", {"key": "alpha", "name": "Alpha"})

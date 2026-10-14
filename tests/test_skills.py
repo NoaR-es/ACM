@@ -309,3 +309,70 @@ def test_us1510_ca02_ca03_preguntas_y_registro() -> None:
         "No inventes",
     ):
         assert topic in text, topic
+
+
+# ---------------------------------------------------------------- SPRINT-009 — US-14.13: skills por cualquier vía
+async def test_us1413_ca01_instructions_breves_y_remiten_al_proceso(client: Client) -> None:
+    text = client.instructions or ""
+    assert len(text) < 1500  # se cargan siempre: no pueden gastar tokens en el contenido de las skills
+    for needle in ("acm-workflow", "acm_project_directory", "acm_next_work", "acm_skill_get"):
+        assert needle in text, needle
+    assert "SKILL.md" in text and "prompt" in text  # y dicen todas las vías por las que obtenerlas
+
+
+async def test_us1413_ca02_mismo_contenido_por_herramienta_recurso_y_prompt(client: Client) -> None:
+    expected = _skill_text("acm-workflow")
+    by_tool = (await client.call_tool("acm_skill_get", {"name": "acm-workflow"})).structured_content["files"]
+    by_resource = (await client.read_resource("skill://acm/acm-workflow/SKILL.md")).contents[0].text
+    assert by_tool["skill://acm/acm-workflow/SKILL.md"] == by_resource == expected
+    prompts = {p.name for p in (await client.list_prompts()).prompts}
+    assert {"acm-workflow", "acm-skill"} <= prompts
+    workflow = await client.get_prompt("acm-workflow")
+    assert workflow.messages[0].content.text == expected
+    named = await client.get_prompt("acm-skill", {"name": "acm-invest"})
+    assert named.messages[0].content.text.startswith("---\nname: acm-invest")
+    with pytest.raises(MCPError):
+        await client.get_prompt("acm-skill", {"name": "no-existe"})
+
+
+async def test_us1413_ca02_leer_las_skills_queda_auditado(client: Client, service: ProjectService) -> None:
+    await client.get_prompt("acm-workflow")
+    with service.global_db.read() as conn:
+        ops = [r[0] for r in conn.execute("SELECT operation FROM mcp_audit")]
+    assert "prompts/get" in ops
+
+
+def test_us1413_ca03_acm_workflow_describe_el_proceso_de_principio_a_fin() -> None:
+    skill = SkillCatalog().skills["acm-workflow"]
+    assert skill.frontmatter["dependencies"] == ["acm-schema"]
+    text = _skill_text("acm-workflow")
+    for step in (
+        "acm_project_directory",
+        "acm_project_create",
+        "acm_project_join",
+        "acm_project_join_status",
+        "acm_next_work",
+        "acm_work_release",
+        "acm_work_list",
+        "acm_watchdog_run",
+        "acm_context_compact",
+        "acm_decide",
+    ):
+        assert step in text, step
+    for action in ("build_backlog", "refine", "plan_sprint", "start_sprint", "implement", "verify", "close_sprint"):
+        assert action in text, action  # una sección por cada acción que puede devolver acm_next_work
+    assert "Nunca marques `DONE`" in text and "pregunta a la persona" in text.lower()
+
+
+async def test_us1413_ca03_acm_workflow_solo_cita_herramientas_existentes(client: Client) -> None:
+    tools = await _tool_names(client)
+    mentioned = set(TOOL_RE.findall(_skill_text("acm-workflow")))
+    assert mentioned and mentioned <= tools, mentioned - tools
+
+
+async def test_us1413_ca03_pasos_de_acm_next_work_existen(client: Client) -> None:
+    from acm.domain.work import STEPS
+
+    tools = await _tool_names(client)
+    cited = set(TOOL_RE.findall(" ".join(step for steps in STEPS.values() for step in steps)))
+    assert cited <= tools, cited - tools

@@ -7,6 +7,7 @@ import { useAuth } from "../auth";
 import { Empty, ErrorBox, fmtDate, Loading, ProjectChip, Section, SemaphoreBadge, Stat, StatusBar } from "../components";
 import { Disclosure, Field, FormStatus, submit, useAction } from "../forms";
 import { useLive } from "../live";
+import { JoinRequestsPanel } from "./JoinRequests";
 import type { PortfolioProject } from "../types";
 
 function NewProject() {
@@ -66,6 +67,7 @@ export function Dashboard() {
         <Stat label="Bloqueadas" value={totals.blocked} />
         <Stat label="Semáforo rojo" value={totals.red} />
       </div>
+      {me?.role === "admin" && <JoinRequestsPanel projectIds={ids} />}
       <div className="grid-2">
         <Section
           title="Proyectos"

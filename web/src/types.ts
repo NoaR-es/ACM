@@ -210,6 +210,21 @@ export type Card = {
   updated_at: string;
   criteria: number;
   sprint_id: string | null;
+  assigned_to: string | null; // agente (y sesión) que tiene la historia asignada, si lo hay
+};
+export type JoinRequest = {
+  request_id: number;
+  project_id: string;
+  project_name: string;
+  principal_id: string;
+  kind: "user" | "agent";
+  access: "read" | "write";
+  message: string;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  created_at: string;
+  decided_at: string | null;
+  decided_by: string | null;
+  granted_role: "member" | "viewer" | null;
 };
 export type Kanban = {
   projects: string[];

@@ -20,6 +20,13 @@ from acm.domain.errors import AlreadyExists, FailedPrecondition, Forbidden, Inva
 from acm.domain.projects import ProjectService
 from acm.inference.ports import DecisionRequest, Question
 from acm.inference.router import EngineRouter, require_calibrated
+from acm.sessions import session_id
+
+
+def _holder(row: sqlite3.Row) -> str:
+    """Quién tiene un trabajo asignado: el principal y, si hay, su sesión (`claude-code.portatil#3f9a`)."""
+    return f"{row['principal']}#{row['session']}" if row["session"] else str(row["principal"])
+
 
 # Gate READY (US-04.03 CA-04) expresado como preguntas `noul` de la interfaz de decisión (US-35.11).
 READY_GATE_QUESTIONS: dict[str, Question] = {
@@ -537,22 +544,21 @@ class BacklogService:
         """US-14.16 CA-03: una historia asignada a otro agente (asignación vigente) no la cambia nadie más que él o una
         persona. Si es del propio agente, tocarla renueva la asignación (US-14.17 CA-01)."""
         row = conn.execute(
-            "SELECT principal, expires_at, ttl_s FROM work_claims WHERE item = ?", (story_id,)
+            "SELECT principal, session, expires_at, ttl_s FROM work_claims WHERE item = ?", (story_id,)
         ).fetchone()
         if row is None:
             return
         now = datetime.now(UTC)
-        if datetime.fromisoformat(row["expires_at"]) <= now:
-            return  # caducada: ya no protege nada
-        if row["principal"] == principal:
+        if row["principal"] == principal and row["session"] == session_id():
             renewed = (now + timedelta(seconds=row["ttl_s"])).isoformat()
             conn.execute("UPDATE work_claims SET expires_at = ? WHERE item = ?", (renewed, story_id))
-            return
+            return  # sigue siendo suya aunque hubiera caducado, mientras nadie más la haya recibido
+        if datetime.fromisoformat(row["expires_at"]) <= now:
+            return  # caducada: ya no protege nada
         if self.projects.principal_kind(principal) == "user":
             return  # una persona siempre puede mover el trabajo (p. ej. desde el Kanban)
         raise FailedPrecondition(
-            f"{story_id} está asignada a {row['principal']} hasta {row['expires_at']}; pide otro trabajo con "
-            "acm_next_work"
+            f"{story_id} está asignada a {_holder(row)} hasta {row['expires_at']}; pide otro trabajo con acm_next_work"
         )
 
     def _change_status(

@@ -434,6 +434,7 @@ PROJECT: tuple[Migration, ...] = (
             item TEXT PRIMARY KEY,
             action TEXT NOT NULL,
             principal TEXT NOT NULL,
+            session TEXT NOT NULL DEFAULT '',
             claimed_at TEXT NOT NULL,
             expires_at TEXT NOT NULL,
             ttl_s INTEGER NOT NULL CHECK (ttl_s > 0)

@@ -24,9 +24,10 @@ import sqlite3
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from acm.domain.backlog import BacklogService
+from acm.domain.backlog import BacklogService, _holder
 from acm.domain.config_schema import PARAMETERS
 from acm.domain.errors import Forbidden, NotFound
+from acm.sessions import session_id
 
 SPRINT_PLANNING = "sprint-planning"
 SPRINT_CLOSING = "sprint-closing"
@@ -170,6 +171,11 @@ class WorkService:
             self.projects.ensure_writable(project_id)
         ttl = self._ttl(project_id)
         now = _now()
+        session = session_id()
+
+        def mine(row: Any) -> bool:
+            return bool(row["principal"] == principal and row["session"] == session)
+
         with db.write() as conn:
             conn.execute("DELETE FROM work_claims WHERE expires_at <= ?", (now.isoformat(),))
             candidates = self._candidates(conn)
@@ -177,13 +183,13 @@ class WorkService:
             claims = {r["item"]: r for r in conn.execute("SELECT * FROM work_claims").fetchall()}
             # Asignaciones propias que ya no corresponden a nada pendiente (o cambiaron de acción): se liberan.
             for item, row in list(claims.items()):
-                if row["principal"] == principal and (item not in by_item or by_item[item]["action"] != row["action"]):
+                if mine(row) and (item not in by_item or by_item[item]["action"] != row["action"]):
                     conn.execute("DELETE FROM work_claims WHERE item = ?", (item,))
                     del claims[item]
             chosen, continuing = None, False
             for c in candidates:
                 owner = claims.get(c["item"])
-                if owner is not None and owner["principal"] == principal:
+                if owner is not None and mine(owner):
                     chosen, continuing = c, True
                     break
             if chosen is None:
@@ -192,14 +198,15 @@ class WorkService:
             if chosen is not None and claim:
                 expires = (now + timedelta(seconds=ttl)).isoformat()
                 conn.execute(
-                    "INSERT INTO work_claims(item, action, principal, claimed_at, expires_at, ttl_s) "
-                    "VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(item) DO UPDATE SET expires_at = excluded.expires_at",
-                    (chosen["item"], chosen["action"], principal, now.isoformat(), expires, ttl),
+                    "INSERT INTO work_claims(item, action, principal, session, claimed_at, expires_at, ttl_s) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(item) DO UPDATE SET expires_at = excluded.expires_at",
+                    (chosen["item"], chosen["action"], principal, session, now.isoformat(), expires, ttl),
                 )
                 granted = {"item": chosen["item"], "expires_at": expires, "ttl_minutes": ttl // 60}
             others = [
-                {"item": r["item"], "action": r["action"], "principal": r["principal"], "expires_at": r["expires_at"]}
-                for r in conn.execute("SELECT * FROM work_claims WHERE principal != ? ORDER BY item", (principal,))
+                {"item": r["item"], "action": r["action"], "agent": _holder(r), "expires_at": r["expires_at"]}
+                for r in conn.execute("SELECT * FROM work_claims ORDER BY item")
+                if not mine(r)
             ]
         result: dict[str, Any] = {"project_id": project_id, "others_working": others}
         if chosen is None:
@@ -236,11 +243,12 @@ class WorkService:
         """US-14.17 CA-02: el agente libera su trabajo; una persona puede liberar cualquiera."""
         db = self.backlog._db(principal, project_id, write=True)
         with db.write() as conn:
-            row = conn.execute("SELECT principal FROM work_claims WHERE item = ?", (item,)).fetchone()
+            row = conn.execute("SELECT principal, session FROM work_claims WHERE item = ?", (item,)).fetchone()
             if row is None:
                 raise NotFound(f"{item!r} no está asignado a nadie", field="item")
-            if row["principal"] != principal and self.projects.principal_kind(principal) != "user":
-                raise Forbidden(f"{item} está asignado a {row['principal']}: solo él o una persona pueden liberarlo")
+            mine = row["principal"] == principal and row["session"] == session_id()
+            if not mine and self.projects.principal_kind(principal) != "user":
+                raise Forbidden(f"{item} está asignado a {_holder(row)}: solo él o una persona pueden liberarlo")
             conn.execute("DELETE FROM work_claims WHERE item = ?", (item,))
         self.projects.events.append(
             "work.released",
@@ -248,9 +256,9 @@ class WorkService:
             project_id=project_id,
             entity_type="work",
             entity_id=item,
-            data={"was": row["principal"]},
+            data={"was": _holder(row)},
         )
-        return {"project_id": project_id, "item": item, "released": True, "was": row["principal"]}
+        return {"project_id": project_id, "item": item, "released": True, "was": _holder(row)}
 
     def claims(self, principal: str, project_id: str) -> dict[str, Any]:
         """US-14.17 CA-03: quién trabaja en qué ahora mismo (las caducadas no aparecen)."""
@@ -260,5 +268,8 @@ class WorkService:
             ).fetchall()
         return {
             "project_id": project_id,
-            "claims": [{k: r[k] for k in ("item", "action", "principal", "claimed_at", "expires_at")} for r in rows],
+            "claims": [
+                {"item": r["item"], "action": r["action"], "agent": _holder(r), "expires_at": r["expires_at"]}
+                for r in rows
+            ],
         }

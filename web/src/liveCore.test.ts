@@ -54,4 +54,11 @@ describe("canal en vivo (US-06.03, US-21.03)", () => {
     const models = affectedKeys(ev(5, { type: "models.changed", entity_type: "models", project_id: null }));
     expect(models.map((k) => k.join("/"))).toEqual(expect.arrayContaining(["models", "engines"]));
   });
+
+  it("recarga solicitudes de acceso y trabajo asignado (SPRINT-009)", () => {
+    const join = affectedKeys(ev(6, { type: "join.requested", entity_type: "join_request", entity_id: "1" }));
+    expect(join.map((k) => k.join("/"))).toContain("join-requests");
+    const work = affectedKeys(ev(7, { type: "work.claimed", entity_type: "work", entity_id: "US-01.01" }));
+    expect(work.map((k) => k.join("/"))).toEqual(expect.arrayContaining(["work/alpha", "kanban"]));
+  });
 });
