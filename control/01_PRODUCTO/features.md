@@ -1,8 +1,8 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v5.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v6.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
 
 # Features (backlog unificado)
 
-Total: **207**
+Total: **210**
 
 | ID | Épica | Título | Origen | Alcance | Historias |
 |----|-------|--------|--------|---------|-----------|
@@ -54,6 +54,9 @@ Total: **207**
 | FEAT-14.02 | EPIC-14 | MCP | B:FEAT-15.01 | MVP | US-14.04, US-14.05, US-14.06 |
 | FEAT-14.03 | EPIC-14 | Multi-proyecto | B:FEAT-15.02 | MVP | US-14.07, US-14.08, US-14.09 |
 | FEAT-14.04 | EPIC-14 | Auditoría MCP | B:FEAT-15.03 | MVP | US-14.10, US-14.11 |
+| FEAT-14.05 | EPIC-14 | Conexión universal de agentes **[v1.5]** | B:FEAT-15.05 | MVP | US-14.12, US-14.13 |
+| FEAT-14.06 | EPIC-14 | Unión a proyectos con aprobación **[v1.5]** | B:FEAT-15.06 | MVP | US-14.14, US-14.15 |
+| FEAT-14.07 | EPIC-14 | Colaboración de agentes en un proyecto **[v1.5]** | B:FEAT-15.07 | MVP | US-14.16, US-14.17 |
 | FEAT-15.01 | EPIC-15 | Skills | A:FEAT-15.01 | MVP | US-15.01, US-15.02, US-15.03 |
 | FEAT-15.02 | EPIC-15 | Distribución de skills ACM **[v1.1]** | B:FEAT-15.04 | MVP | US-15.04, US-15.05, US-15.06, US-15.07 |
 | FEAT-15.03 | EPIC-15 | Skills ACM | B:FEAT-22.01 | MVP | US-15.08, US-15.09, US-15.10, US-15.11, US-15.12 |

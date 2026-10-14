@@ -199,7 +199,8 @@ async def test_us2004_ca03_auditoria_distingue_principal(acm: Acm) -> None:
 
 # ---------------------------------------------------------------- US-20.01 — roles
 def test_us2001_ca01_roles_definidos(acm: Acm) -> None:
-    assert acm.identity.list_principals(ADMIN)["roles"] == {"global": ["admin", "user"], "project": ["owner", "member"]}
+    roles = acm.identity.list_principals(ADMIN)["roles"]
+    assert roles == {"global": ["admin", "user"], "project": ["owner", "member", "viewer"]}
 
 
 def test_us2001_ca02_asignar_rol_autorizado(acm: Acm) -> None:

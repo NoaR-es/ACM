@@ -135,6 +135,16 @@ PARAMETERS: dict[str, Parameter] = {
             "WatchdogService (supervisor ágil): límite WIP del Kanban",
             _int_range(0, 1000),
         ),
+        Parameter(
+            "work.claim_ttl_minutes",
+            "int",
+            30,
+            "1..1440",
+            False,
+            "Minutos que un trabajo asignado a un agente sigue siendo suyo sin tocarlo; después vuelve a quedar libre.",
+            "WorkService (acm_next_work): caducidad de las asignaciones",
+            _int_range(1, 1440),
+        ),
     )
 }
 

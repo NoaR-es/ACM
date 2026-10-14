@@ -43,8 +43,10 @@ def validate_project_id(value: Any, field: str = "project_id") -> str:
 
 
 class ProjectService:
-    def __init__(self, data_dir: Path | str, *, synchronous: str = "FULL"):
+    def __init__(self, data_dir: Path | str, *, synchronous: str = "FULL", local_mode: bool = False):
         self.data_dir = Path(data_dir)
+        # ADR-023: en modo local (entrada stdio de un agente) cualquier principal crea proyectos y ve el directorio.
+        self.local_mode = local_mode
         self.projects_dir = self.data_dir / "projects"
         try:
             self.projects_dir.mkdir(parents=True, exist_ok=True)
@@ -79,6 +81,14 @@ class ProjectService:
             raise Forbidden(f"principal desconocido: {principal_id!r}")
         return str(row["role"])
 
+    def principal_kind(self, principal_id: str) -> str:
+        """`user` (persona) o `agent`; FORBIDDEN si el principal no existe."""
+        with self.global_db.read() as conn:
+            row = conn.execute("SELECT kind FROM principals WHERE id = ?", (principal_id,)).fetchone()
+        if row is None:
+            raise Forbidden(f"principal desconocido: {principal_id!r}")
+        return str(row["kind"])
+
     def _project_role(self, principal_id: str, project_id: str) -> str:
         """Rol efectivo en el proyecto; NOT_FOUND si no existe o no es accesible (no se revela su existencia)."""
         validate_project_id(project_id)
@@ -108,7 +118,7 @@ class ProjectService:
             raise InvalidArgument("debe ser texto", field="description")
 
         with self.global_db.read() as conn:
-            if self._principal_role(conn, principal_id) != "admin":
+            if self._principal_role(conn, principal_id) != "admin" and not self.local_mode:
                 raise Forbidden("solo un principal con rol global 'admin' puede crear proyectos")
             if conn.execute("SELECT 1 FROM projects WHERE id = ?", (key,)).fetchone():
                 raise AlreadyExists(f"ya existe un proyecto con identificador {key!r}", field="key")

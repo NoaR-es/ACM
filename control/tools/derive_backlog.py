@@ -32,7 +32,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = ROOT / "01_PRODUCTO"
 SRC_A_REL = "01_PRODUCTO/backlog_completo_v1.md"
-SRC_B_REL = "01_PRODUCTO/product_definition_v5.md"
+SRC_B_REL = "01_PRODUCTO/product_definition_v6.md"
 SRC_A = ROOT / SRC_A_REL
 SRC_B = ROOT / SRC_B_REL
 # Estados distintos de PLANNED (historias, TECH, SPIKE). Sin entrada = PLANNED. Solo estados permitidos (CLAUDE.md §4).
@@ -79,6 +79,7 @@ FEATURE_MAP = {
     "FEAT-13.01": 12, "FEAT-13.02": 12, "FEAT-13.03": 12,
     "FEAT-14.01": 25, "FEAT-14.02": 25, "FEAT-14.03": 25,
     "FEAT-15.01": 14, "FEAT-15.02": 14, "FEAT-15.03": 14, "FEAT-15.04": 15,
+    "FEAT-15.05": 14, "FEAT-15.06": 14, "FEAT-15.07": 14,
     "FEAT-16.01": 20, "FEAT-16.02": 20, "FEAT-16.03": 20, "FEAT-16.04": 20,
     "FEAT-17.01": 19, "FEAT-17.02": 19, "FEAT-17.03": 41, "FEAT-17.04": 41,
     "FEAT-18.01": 21, "FEAT-18.02": 21, "FEAT-18.03": 21,

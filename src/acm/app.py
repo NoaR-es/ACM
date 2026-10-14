@@ -34,7 +34,7 @@ from acm.webui_app import SecureStatic, webui_available
 
 
 def build_service(settings: Settings) -> ProjectService:
-    service = ProjectService(settings.data_dir, synchronous=settings.sqlite_synchronous)
+    service = ProjectService(settings.data_dir, synchronous=settings.sqlite_synchronous, local_mode=settings.local_mode)
     # SPRINT-001: el principal lo fija la configuración y se da de alta como admin si no existe (EPIC-20 lo sustituirá).
     service.ensure_principal(settings.principal, "admin")
     return service

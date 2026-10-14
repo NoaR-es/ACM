@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import re
 import sqlite3
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from acm.domain.errors import AlreadyExists, FailedPrecondition, Forbidden, InvalidArgument, NotFound
@@ -464,6 +464,7 @@ class BacklogService:
         db = self._db(principal, project_id, write=True)
         with db.write() as conn:
             self._must_exist(conn, "stories", story_id, "story_id")
+            self._guard_claim(conn, principal, story_id)
             self._insert_criteria(conn, principal, story_id, items)
             conn.execute("UPDATE stories SET updated_at = ? WHERE id = ?", (_now(), story_id))
         result = self.get_story(principal, project_id, story_id)
@@ -532,10 +533,32 @@ class BacklogService:
         )
         return result
 
-    @staticmethod
+    def _guard_claim(self, conn: sqlite3.Connection, principal: str, story_id: str) -> None:
+        """US-14.16 CA-03: una historia asignada a otro agente (asignación vigente) no la cambia nadie más que él o una
+        persona. Si es del propio agente, tocarla renueva la asignación (US-14.17 CA-01)."""
+        row = conn.execute(
+            "SELECT principal, expires_at, ttl_s FROM work_claims WHERE item = ?", (story_id,)
+        ).fetchone()
+        if row is None:
+            return
+        now = datetime.now(UTC)
+        if datetime.fromisoformat(row["expires_at"]) <= now:
+            return  # caducada: ya no protege nada
+        if row["principal"] == principal:
+            renewed = (now + timedelta(seconds=row["ttl_s"])).isoformat()
+            conn.execute("UPDATE work_claims SET expires_at = ? WHERE item = ?", (renewed, story_id))
+            return
+        if self.projects.principal_kind(principal) == "user":
+            return  # una persona siempre puede mover el trabajo (p. ej. desde el Kanban)
+        raise FailedPrecondition(
+            f"{story_id} está asignada a {row['principal']} hasta {row['expires_at']}; pide otro trabajo con "
+            "acm_next_work"
+        )
+
     def _change_status(
-        conn: sqlite3.Connection, principal: str, story_id: str, old: str, new: str, reason: str
+        self, conn: sqlite3.Connection, principal: str, story_id: str, old: str, new: str, reason: str
     ) -> None:
+        self._guard_claim(conn, principal, story_id)
         now = _now()
         conn.execute("UPDATE stories SET status = ?, updated_at = ? WHERE id = ?", (new, now, story_id))
         conn.execute(

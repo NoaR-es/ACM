@@ -1,13 +1,13 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v5.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v6.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
 
 # Product Backlog unificado (resumen)
 
 | Tipo | Total | MVP | POST-MVP | Origen A | Origen B |
 |------|-------|-----|----------|----------|----------|
 | EPIC | 53 | 30 | 23 | 48 | 5 nuevas |
-| FEATURE | 207 | 90 | 117 | 48 | 159 |
-| USER_STORY (activas) | 483 | 224 | 259 | 132 | 351 |
-| Criterios de aceptación | 711 | — | — | 519 | 192 |
+| FEATURE | 210 | 93 | 117 | 48 | 162 |
+| USER_STORY (activas) | 489 | 230 | 259 | 132 | 357 |
+| Criterios de aceptación | 732 | — | — | 519 | 213 |
 | TECH (historia técnica, B) | 30 | — | — | — | 30 |
 | SPIKE (B) | 12 | — | — | — | 12 |
 
@@ -26,7 +26,7 @@ Correspondencia de IDs de la definición v1.1: `id_mapping.md`. Alcance MVP: ADR
 - **EPIC-11** (6): US-11.01, US-11.02, US-11.03, US-11.04, US-11.05, US-11.06
 - **EPIC-12** (8): US-12.01, US-12.02, US-12.04, US-12.05, US-12.06, US-12.07, US-12.08, US-12.09
 - **EPIC-13** (12): US-13.03, US-13.05, US-13.06, US-13.07, US-13.08, US-13.09, US-13.10, US-13.11, US-13.12, US-13.13, US-13.14, US-13.15
-- **EPIC-14** (7): US-14.04, US-14.05, US-14.06, US-14.07, US-14.09, US-14.10, US-14.11
+- **EPIC-14** (13): US-14.04, US-14.05, US-14.06, US-14.07, US-14.09, US-14.10, US-14.11, US-14.12, US-14.13, US-14.14, US-14.15, US-14.16, US-14.17
 - **EPIC-15** (11): US-15.01, US-15.03, US-15.04, US-15.05, US-15.06, US-15.07, US-15.08, US-15.09, US-15.10, US-15.11, US-15.12
 - **EPIC-16** (7): US-16.01, US-16.02, US-16.04, US-16.05, US-16.06, US-16.07, US-16.08
 - **EPIC-17** (10): US-17.01, US-17.02, US-17.03, US-17.04, US-17.05, US-17.06, US-17.07, US-17.08, US-17.09, US-17.10

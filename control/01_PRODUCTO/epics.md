@@ -1,8 +1,8 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v5.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v6.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
 
 # Épicas (backlog unificado)
 
-Total: **53** · Fuentes: A=`01_PRODUCTO/backlog_completo_v1.md`, B=`01_PRODUCTO/product_definition_v5.md` · Regla: ADR-010
+Total: **53** · Fuentes: A=`01_PRODUCTO/backlog_completo_v1.md`, B=`01_PRODUCTO/product_definition_v6.md` · Regla: ADR-010
 
 | ID | Título | Origen | Alcance | Estado | Features | Historias | CA |
 |----|--------|--------|---------|--------|----------|-----------|----|
@@ -19,7 +19,7 @@ Total: **53** · Fuentes: A=`01_PRODUCTO/backlog_completo_v1.md`, B=`01_PRODUCTO
 | EPIC-11 | GESTIÓN DEL CÓDIGO Y REPOSITORIO | A+B | MVP | PLANNED | 2 | 6 | 11 |
 | EPIC-12 | SNAPSHOTS, CHECKPOINTS Y ROLLBACK | A+B | MVP | PLANNED | 4 | 11 | 13 |
 | EPIC-13 | WATCHDOG Y AUTOSUPERVISIÓN | A+B | MVP | PLANNED | 6 | 14 | 43 |
-| EPIC-14 | MCP Y HERRAMIENTAS | A+B | MVP | PLANNED | 4 | 10 | 32 |
+| EPIC-14 | MCP Y HERRAMIENTAS | A+B | MVP | PLANNED | 7 | 16 | 53 |
 | EPIC-15 | SKILLS Y CAPACIDADES REUTILIZABLES | A+B | MVP | PLANNED | 8 | 22 | 36 |
 | EPIC-16 | RAG Y MEMORIA SEMÁNTICA | A+B | MVP | PLANNED | 6 | 13 | 12 |
 | EPIC-17 | PRODUCT GRAPH | A+B | MVP | PLANNED | 10 | 21 | 11 |

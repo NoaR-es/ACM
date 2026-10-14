@@ -1,7 +1,7 @@
 ---
 name: acm-schema
 description: Explica qué es ACM, su modelo de datos (proyecto, requisito, épica, feature, historia, criterio de aceptación) y qué herramienta MCP usar en cada paso. Léela antes de operar sobre cualquier proyecto ACM.
-version: 1.5.0
+version: 1.6.0
 capabilities: [acm-model, acm-tools, acm-workflow, acm-second-brain, acm-models, acm-local-chat, acm-identity, acm-governance, acm-sprints]
 dependencies: []
 ---
@@ -34,7 +34,9 @@ Proyecto (project_id)
 ```
 
 ## Flujo recomendado
-1. `acm_project_list` → elige `project_id` (o `acm_project_create`).
+0. Proceso de principio a fin (elegir proyecto, pedir trabajo, colaborar): skill `acm-workflow`.
+1. `acm_project_directory` → crea un proyecto (`acm_project_create`) o pide unirte a uno (`acm_project_join`, lo aprueba
+   una persona); `acm_project_list` da los tuyos.
 2. `acm_requirement_create` por cada requisito del producto.
 3. `acm_epic_create` (objetivo + alcance + `requirement_ids`).
 4. `acm_feature_create` dentro de cada épica; si una feature crece demasiado, `acm_feature_split`.
@@ -110,7 +112,13 @@ Proyecto (project_id)
 | `acm_system_info` | Estado de la plataforma, versión y skills activas |
 | `acm_audit_list` | (admin) Consulta la auditoría de invocaciones |
 | `acm_project_create` | Crea un proyecto con su propia base SQLite |
+| `acm_project_directory` | Directorio de proyectos con tu rol y tus peticiones de unión (empieza aquí) |
+| `acm_project_join` | Pide unirte a un proyecto; queda PENDING hasta que una persona lo apruebe |
+| `acm_project_join_status` | Estado de tu petición: NONE, PENDING, APPROVED, REJECTED o MEMBER |
 | `acm_project_list` | Proyectos a los que tienes acceso |
+| `acm_next_work` | Lo siguiente que toca en el proyecto, asignado a ti (sin solapes con otros agentes) |
+| `acm_work_release` | Libera un trabajo que tienes asignado |
+| `acm_work_list` | Quién trabaja ahora en qué |
 | `acm_project_open` | Contexto de un proyecto: metadatos, rol, configuración |
 | `acm_project_config_get` | Parámetros de configuración del proyecto |
 | `acm_project_config_set` | Modifica parámetros (valida todo antes de guardar) |

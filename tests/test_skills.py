@@ -24,7 +24,7 @@ from tests.conftest import ADMIN
 
 pytestmark = pytest.mark.anyio
 ANY = TypeAdapter(dict[str, Any])
-OFFICIAL = {"acm-discovery", "acm-invest", "acm-schema"}
+OFFICIAL = {"acm-discovery", "acm-invest", "acm-schema", "acm-workflow"}
 
 
 class SkillsListRequest(Request[SkillsListParams, Literal["skills/list"]]):

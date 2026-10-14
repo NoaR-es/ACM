@@ -208,6 +208,41 @@ GLOBAL: tuple[Migration, ...] = (
         )""",
         ),
     ),
+    Migration(
+        9,
+        "access_requests",
+        (
+            # US-14.14 / US-14.15: un agente pide unirse a un proyecto y una persona lo aprueba o rechaza en la
+            # interfaz. Rol `viewer` (solo lectura) para los aprobados con acceso de lectura. SQLite no altera un
+            # CHECK: la tabla de pertenencias se reconstruye conservando sus filas.
+            """CREATE TABLE project_members_v9 (
+            project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+            principal_id TEXT NOT NULL REFERENCES principals(id),
+            role TEXT NOT NULL CHECK (role IN ('owner', 'member', 'viewer')),
+            added_at TEXT NOT NULL,
+            PRIMARY KEY (project_id, principal_id)
+        )""",
+            "INSERT INTO project_members_v9 SELECT project_id, principal_id, role, added_at FROM project_members",
+            "DROP TABLE project_members",
+            "ALTER TABLE project_members_v9 RENAME TO project_members",
+            "CREATE INDEX idx_project_members_principal ON project_members(principal_id)",
+            """CREATE TABLE join_requests (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+            principal_id TEXT NOT NULL REFERENCES principals(id),
+            access TEXT NOT NULL CHECK (access IN ('read', 'write')),
+            message TEXT NOT NULL DEFAULT '',
+            status TEXT NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED')),
+            created_at TEXT NOT NULL,
+            decided_at TEXT,
+            decided_by TEXT,
+            granted_role TEXT CHECK (granted_role IS NULL OR granted_role IN ('member', 'viewer'))
+        )""",
+            # Como mucho una petición pendiente por agente y proyecto: pedir otra vez devuelve la misma.
+            "CREATE UNIQUE INDEX idx_join_requests_pending ON join_requests(project_id, principal_id) "
+            "WHERE status = 'PENDING'",
+        ),
+    ),
 )
 
 PROJECT: tuple[Migration, ...] = (
@@ -386,6 +421,24 @@ PROJECT: tuple[Migration, ...] = (
             created_at TEXT NOT NULL
         )""",
             "CREATE INDEX idx_chat_messages_thread ON chat_messages(thread_id, id)",
+        ),
+    ),
+    Migration(
+        6,
+        "work_claims",
+        (
+            # US-14.16 / US-14.17: trabajo asignado por ACM a un agente (`acm_next_work`). `item` es una historia
+            # (US-…) o una tarea del proyecto (`sprint-planning`, `backlog`, `sprint-closing`). La asignación caduca en
+            # `expires_at` si el agente no la renueva; otra petición la puede recibir entonces.
+            """CREATE TABLE work_claims (
+            item TEXT PRIMARY KEY,
+            action TEXT NOT NULL,
+            principal TEXT NOT NULL,
+            claimed_at TEXT NOT NULL,
+            expires_at TEXT NOT NULL,
+            ttl_s INTEGER NOT NULL CHECK (ttl_s > 0)
+        )""",
+            "CREATE INDEX idx_work_claims_principal ON work_claims(principal)",
         ),
     ),
 )

@@ -13,6 +13,11 @@ DEFAULT_HOST = "127.0.0.1"  # solo interfaz local por defecto: exponer tras un p
 DEFAULT_PORT = 8765
 
 
+def default_data_dir() -> Path:
+    """US-14.12: un único estado por usuario, sea cual sea la carpeta desde la que se abra el agente."""
+    return Path.home() / ".acm"
+
+
 @dataclass(frozen=True)
 class Settings:
     data_dir: Path
@@ -30,11 +35,16 @@ class Settings:
     allowed_hosts: tuple[
         str, ...
     ] = ()  # nombres extra aceptados en la cabecera Host (TD-002; p. ej. tras un proxy TLS)
+    # Modo local (ADR-023): ACM arrancado por un agente con la entrada stdio estándar. Los agentes ven el directorio de
+    # proyectos, pueden crear los suyos y piden unirse a los demás; la interfaz local entra sin pegar token.
+    local_mode: bool = False
+    agent: str | None = None  # nombre del agente (ACM_AGENT); sin él, el que declara su cliente MCP
+    ui: bool = True  # en stdio, levanta la interfaz y el supervisor si el puerto está libre (ACM_UI=0 lo desactiva)
 
     @classmethod
     def from_env(cls, **overrides: object) -> Settings:
         values: dict[str, object] = {
-            "data_dir": Path(os.environ.get("ACM_DATA_DIR", Path.cwd() / ".acm-data")),
+            "data_dir": Path(os.environ.get("ACM_DATA_DIR") or default_data_dir()),
             "principal": os.environ.get("ACM_PRINCIPAL", "local-admin"),
             "host": os.environ.get("ACM_HOST", DEFAULT_HOST),
             "port": int(os.environ.get("ACM_PORT", DEFAULT_PORT)),
@@ -47,6 +57,8 @@ class Settings:
             "events_keep": int(os.environ.get("ACM_EVENTS_KEEP", 10_000)),
             "watchdog_interval_s": float(os.environ.get("ACM_WATCHDOG_INTERVAL_S", 600)),
             "allowed_hosts": tuple(h.strip() for h in os.environ.get("ACM_ALLOWED_HOSTS", "").split(",") if h.strip()),
+            "agent": os.environ.get("ACM_AGENT") or None,
+            "ui": os.environ.get("ACM_UI", "1").strip().lower() not in ("0", "false", "no", "off"),
         }
         values.update({k: v for k, v in overrides.items() if v is not None})
         values["data_dir"] = Path(values["data_dir"])  # type: ignore[arg-type]

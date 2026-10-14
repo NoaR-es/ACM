@@ -6,10 +6,14 @@
 - Cada invocación (herramientas, `skills/*` y lectura de archivos de skills) se audita (US-14.10, US-14.11).
 - Extensión MCP Skills (SEP-2640) con el catálogo oficial de ACM (US-15.04..07).
 - Segundo cerebro: decisiones delegadas y contexto compacto a través del router de inferencia (EPIC-35, ADR-015).
+- Conexión universal (FEAT-14.05): las skills llegan por herramientas, recursos, prompts y la extensión de skills; las
+  `instructions` son breves y remiten a la skill `acm-workflow`. El nombre que declara el cliente MCP queda en
+  `current_client` para identificar al agente en stdio (ADR-023).
 """
 
 from __future__ import annotations
 
+import contextvars
 import time
 from collections.abc import Callable
 from functools import partial
@@ -26,6 +30,7 @@ from mcp_types import RequestParams
 from mcp_types.jsonrpc import INVALID_PARAMS
 
 from acm import __version__
+from acm.domain.access import AccessService
 from acm.domain.audit import AuditService
 from acm.domain.backlog import BacklogService
 from acm.domain.chat import ChatService
@@ -36,6 +41,7 @@ from acm.domain.models import ModelService
 from acm.domain.projects import ProjectService
 from acm.domain.sprints import SprintService
 from acm.domain.watchdog import WatchdogService
+from acm.domain.work import WorkService
 from acm.inference.ports import DecisionRequest
 from acm.inference.router import EngineRouter
 from acm.skills_catalog import SKILL_PREFIX, SkillCatalog
@@ -44,19 +50,46 @@ T = TypeVar("T")
 SKILLS_EXTENSION = "io.modelcontextprotocol/skills"
 
 INSTRUCTIONS = (
-    "Estás conectado a ACM (Agile Context Manager), la memoria de estado y gobernanza de tus proyectos.\n"
-    "- ANTES DE OPERAR, descarga y lee TODAS las skills de ACM: si tu cliente soporta la extensión "
-    "io.modelcontextprotocol/skills usa skills/list y resources/read (URIs skill://acm/...); si no, usa las "
-    "herramientas acm_skills_list y acm_skill_get. Empieza por la skill acm-schema.\n"
-    "- ACM no recuerda un 'proyecto activo': pasa SIEMPRE el parámetro project_id en cada herramienta de proyecto.\n"
-    "- Obtén los project_id disponibles con acm_project_list; crea uno nuevo con acm_project_create.\n"
-    "- Cada respuesta repite el project_id sobre el que actuó: compruébalo.\n"
-    "- Ahorra tokens: pide el contexto de una historia con acm_context_compact y delega decisiones tipadas "
-    "(sí/no, clasificar, puntuar) con acm_decide.\n"
-    "- Los errores empiezan por un código (INVALID_ARGUMENT, NOT_FOUND, ALREADY_EXISTS, FORBIDDEN, "
-    "FAILED_PRECONDITION, STORAGE_ERROR, ENGINE_UNAVAILABLE, ENGINE_ERROR, UNAUTHENTICATED) seguido del motivo; "
-    "corrige la llamada según el motivo."
+    "ACM (Agile Context Manager) lleva el proceso ágil de tus proyectos: backlog, sprints, Kanban, trazabilidad y "
+    "gobernanza. Tú trabajas; ACM decide qué toca y lo registra.\n"
+    "1. Lee UNA vez la skill acm-workflow (el proceso completo): con la herramienta acm_skill_get('acm-workflow'), el "
+    "prompt acm-workflow o el recurso skill://acm/acm-workflow/SKILL.md (o skills/list si tu cliente usa la extensión "
+    "de skills). El resto de skills (acm-schema…) solo cuando las necesites: acm_skills_list.\n"
+    "2. Empieza con acm_project_directory: crea un proyecto o pide unirte a uno (lo aprueba una persona).\n"
+    "3. Pide trabajo con acm_next_work y repite. Pasa SIEMPRE project_id (acm_project_list da los tuyos).\n"
+    "Los errores empiezan por un código (INVALID_ARGUMENT, NOT_FOUND, FORBIDDEN, FAILED_PRECONDITION…) y su motivo."
 )
+
+# Nombre que declara el cliente MCP al conectarse (`clientInfo.name`): Claude Code, Cursor, Codex… (US-14.12 CA-03).
+current_client: contextvars.ContextVar[str | None] = contextvars.ContextVar("acm_mcp_client", default=None)
+
+
+class AcmMCPServer(MCPServer):
+    """MCPServer que deja el nombre del cliente de cada petición en `current_client` antes de atenderla."""
+
+    @staticmethod
+    def _remember_client(context: Any) -> None:
+        try:
+            info = context.request_context.session.client_params.client_info
+        except (AttributeError, ValueError):
+            return
+        if info is not None and getattr(info, "name", None):
+            current_client.set(str(info.name))
+
+    async def call_tool(self, name: str, arguments: dict[str, Any], context: Any = None) -> Any:
+        if context is not None:
+            self._remember_client(context)
+        return await super().call_tool(name, arguments, context)
+
+    async def read_resource(self, uri: Any, context: Any = None) -> Any:
+        if context is not None:
+            self._remember_client(context)
+        return await super().read_resource(uri, context)
+
+    async def get_prompt(self, name: str, arguments: dict[str, Any] | None = None, context: Any = None) -> Any:
+        if context is not None:
+            self._remember_client(context)
+        return await super().get_prompt(name, arguments, context)
 
 
 class SkillsListParams(RequestParams):
@@ -90,6 +123,8 @@ def build_mcp_server(
     chat = ChatService(service, backlog, engines)
     audit = AuditService(service)
     identity = IdentityService(service)
+    access = AccessService(service)
+    work = WorkService(backlog)
     bus = InMemorySubscriptionBus()
 
     def activity(who: str, operation: str, arguments: dict[str, Any], status: str, error: str) -> None:
@@ -172,7 +207,7 @@ def build_mcp_server(
             entry = await audited("skills/get", {"uri": params.uri}, find)
             return {"resultType": "complete", "skill": entry, "ttlMs": 300000, "cacheScope": "public"}
 
-    server = MCPServer(
+    server = AcmMCPServer(
         name="acm", version=__version__, instructions=INSTRUCTIONS, extensions=[AcmSkillsExtension()], subscriptions=bus
     )
 
@@ -188,6 +223,31 @@ def build_mcp_server(
             return f.text
 
         return await audited("resources/read", {"uri": uri}, read)
+
+    # ------------------------------------------- skills como prompts (US-14.13 CA-02)
+    @server.prompt(name="acm-workflow", title="Proceso de trabajo con ACM")
+    async def workflow_prompt() -> str:
+        """El proceso completo para trabajar con ACM: elegir proyecto, pedir trabajo, registrarlo y auditar."""
+
+        def text() -> str:
+            f = catalog.file("acm-workflow", "SKILL.md")
+            if f is None:
+                raise ResourceNotFoundError("la skill acm-workflow no está en el catálogo")
+            return f.text
+
+        return await audited("prompts/get", {"name": "acm-workflow"}, text)
+
+    @server.prompt(name="acm-skill", title="Skill de ACM")
+    async def skill_prompt(name: str) -> str:
+        """Cualquier skill de ACM por su nombre (acm_skills_list las enumera)."""
+
+        def text() -> str:
+            skill = catalog.skills.get(name)
+            if skill is None:
+                raise ResourceNotFoundError(f"la skill {name!r} no existe; usa acm_skills_list")
+            return "\n\n".join(f.text for f in skill.files)
+
+        return await audited("prompts/get", {"name": "acm-skill", "skill": name}, text)
 
     # ------------------------------------------------ skills: respaldo y gestión
     @server.tool()
@@ -229,6 +289,25 @@ def build_mcp_server(
         """Crea un proyecto ACM con su propia base SQLite. `key` es el project_id: ^[a-z][a-z0-9-]{1,39}$."""
         args = {"key": key, "name": name, "description": description}
         return await call("acm_project_create", args, service.create, principal(), key, name, description)
+
+    @server.tool()
+    async def acm_project_directory() -> dict[str, Any]:
+        """EMPIEZA AQUÍ. Proyectos de ACM con tu rol en cada uno y tus peticiones para unirte. Pregunta a la persona si
+        crear uno nuevo (acm_project_create) o unirte a uno existente (acm_project_join)."""
+        return await call("acm_project_directory", {}, access.directory, principal())
+
+    @server.tool()
+    async def acm_project_join(project_id: str, access_level: str = "write", message: str = "") -> dict[str, Any]:
+        """Pide unirte a un proyecto existente (`access_level`: write | read). Queda PENDING hasta que una persona la
+        apruebe en la interfaz de ACM; mientras tanto el proyecto no es accesible. Repetirla no duplica la petición."""
+        args = {"project_id": project_id, "access_level": access_level, "message": message}
+        return await call("acm_project_join", args, access.request_join, principal(), project_id, access_level, message)
+
+    @server.tool()
+    async def acm_project_join_status(project_id: str) -> dict[str, Any]:
+        """Estado de tu petición para unirte a un proyecto: NONE, PENDING, APPROVED, REJECTED o MEMBER."""
+        args = {"project_id": project_id}
+        return await call("acm_project_join_status", args, access.join_status, principal(), project_id)
 
     @server.tool()
     async def acm_project_list() -> list[dict[str, Any]]:
@@ -553,6 +632,27 @@ def build_mcp_server(
         args = {"project_id": project_id, "sprint_id": sprint_id}
         return await call("acm_sprint_cancel", args, sprints.cancel, principal(), project_id, sprint_id)
 
+    # ------------------------------------------------- reparto de trabajo (FEAT-14.07)
+    @server.tool()
+    async def acm_next_work(project_id: str, claim: bool = True) -> dict[str, Any]:
+        """Qué toca ahora en el proyecto, ya asignado a ti: `action` (implement, verify, refine, plan_sprint,
+        start_sprint, close_sprint, build_backlog o idle), el elemento, el motivo y los pasos. Ningún otro agente recibe
+        lo mismo mientras sea tuyo; la asignación caduca si no lo tocas. Pídelo de nuevo al terminar cada trabajo."""
+        args = {"project_id": project_id, "claim": claim}
+        return await call("acm_next_work", args, work.next_work, principal(), project_id, claim)
+
+    @server.tool()
+    async def acm_work_release(project_id: str, item: str) -> dict[str, Any]:
+        """Libera un trabajo que tienes asignado (al abandonarlo); queda libre para otro agente."""
+        args = {"project_id": project_id, "item": item}
+        return await call("acm_work_release", args, work.release, principal(), project_id, item)
+
+    @server.tool()
+    async def acm_work_list(project_id: str) -> dict[str, Any]:
+        """Quién trabaja ahora en qué dentro del proyecto (asignaciones vigentes)."""
+        args = {"project_id": project_id}
+        return await call("acm_work_list", args, work.claims, principal(), project_id)
+
     # ------------------------------------------------------------------ segundo cerebro (EPIC-35)
     @server.tool()
     async def acm_decide(
@@ -691,7 +791,8 @@ def build_mcp_server(
 
     @server.tool()
     async def acm_member_set(project_id: str, principal_id: str, role: str) -> dict[str, Any]:
-        """(admin u owner del proyecto) Añade un miembro o cambia su rol (owner | member)."""
+        """(persona admin u owner del proyecto) Añade un miembro o cambia su rol (owner | member | viewer). Un agente no
+        puede dar acceso: pide unirse con acm_project_join."""
         args = {"project_id": project_id, "principal_id": principal_id, "role": role}
         return await call("acm_member_set", args, identity.set_member, principal(), project_id, principal_id, role)
 

@@ -1,8 +1,10 @@
 """Identidad, roles y tokens (EPIC-20; ADR-017).
 
 - Principales de tipo `user` o `agent`, cada uno con sus propias credenciales (US-20.04).
-- Roles: globales `admin` | `user`; de proyecto `owner` | `member` (US-20.01). Un admin gestiona los roles globales;
-  un admin o un owner del proyecto gestiona sus miembros. Nunca se queda el sistema sin admin ni un proyecto sin owner.
+- Roles: globales `admin` | `user`; de proyecto `owner` | `member` | `viewer` (solo lectura) (US-20.01, US-14.15).
+  Un admin gestiona los roles globales; un admin o un owner del proyecto gestiona sus miembros, y solo si es una
+  persona: un agente nunca da ni quita acceso a un proyecto (ADR-024; entra pidiendo unirse y lo aprueba una
+  persona). Nunca se queda el sistema sin admin ni un proyecto sin owner.
 - Tokens opacos `acm_<aleatorio>`: se muestran completos una sola vez; se guarda su hash sha256 y un prefijo
   visible. Autorizan como su principal (sus roles) mientras no estén revocados; cada uso se anota (US-20.03).
 """
@@ -21,7 +23,7 @@ from acm.domain.projects import GLOBAL_ROLES, ProjectService
 
 PRINCIPAL_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{1,63}$")
 PRINCIPAL_KINDS = ("user", "agent")
-PROJECT_ROLES = ("owner", "member")
+PROJECT_ROLES = ("owner", "member", "viewer")
 TOKEN_PREFIX = "acm_"
 PREFIX_SHOWN = 12  # "acm_" + 8 caracteres: suficiente para reconocerlo, inútil para usarlo
 
@@ -60,6 +62,11 @@ class IdentityService:
         role = self.projects._project_role(actor, project_id)  # NOT_FOUND si no es accesible
         if role not in ("admin", "owner"):
             raise Forbidden("solo un admin o un owner del proyecto puede gestionar sus miembros")
+        if self.projects.principal_kind(actor) == "agent":
+            raise Forbidden(
+                "un agente no puede dar ni quitar acceso a un proyecto: lo hace una persona (los agentes piden unirse "
+                "con acm_project_join)"
+            )
 
     @staticmethod
     def _must_principal(conn: sqlite3.Connection, principal_id: str) -> sqlite3.Row:

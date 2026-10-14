@@ -1,8 +1,8 @@
-<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v5.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
+<!-- GENERADO por control/tools/derive_backlog.py desde 01_PRODUCTO/backlog_completo_v1.md (A) y 01_PRODUCTO/product_definition_v6.md (B). No editar a mano: editar las fuentes o el mapeo del script y regenerar. -->
 
 # User Stories (backlog unificado)
 
-Total activas: **483** · Con criterios de aceptación: **196** · Sin criterios: **287** · Posibles solapamientos señalados: **29**
+Total activas: **489** · Con criterios de aceptación: **202** · Sin criterios: **287** · Posibles solapamientos señalados: **29**
 
 > READY exige la cadena completa de la *Regla de aceptación del backlog* (fuente A): precondiciones, flujo,
 > alternativas, errores, reglas, validaciones, casos límite, CA, tareas y pruebas. Se documenta en
@@ -1309,6 +1309,69 @@ READY: **0** · Fusionadas (CANCELLED): **0**
   - [ ] CA-03: Se registra la duración en milisegundos. (definido en refinamiento)
   - [ ] CA-04: Se registra el estado (`ok`/`error`) y, si hay error, su motivo con código. (definido en refinamiento)
   - [ ] CA-05: También se registran los intentos de principales desconocidos o sin permiso. (definido en refinamiento)
+
+### FEAT-14.05 — Conexión universal de agentes **[v1.5]** · origen B:FEAT-15.05
+
+#### US-14.12
+
+- Enunciado: Como operador quiero conectar cualquier agente IA (Claude Code, Cursor, Codex, Antigravity, Hermes u otro) a ACM añadiendo una única entrada MCP estándar en su configuración, sin instalar, clonar ni configurar nada más.
+- Origen: B:US-15.13 · Épica: EPIC-14 · Feature: FEAT-14.05 · Alcance: MVP · Prioridad: P1 · Estado: IN_PROGRESS
+- Criterios de aceptación:
+  - [ ] CA-01: Existe una entrada stdio estándar (`command` + `args`) que arranca ACM sin pasos previos ni tokens.
+  - [ ] CA-02: Todos los agentes conectados comparten un único estado por usuario (`~/.acm` salvo `ACM_DATA_DIR`), sea cual sea la carpeta desde la que se abran.
+  - [ ] CA-03: Cada agente queda identificado por el nombre que declara su cliente MCP (o `ACM_AGENT`) y todo lo que hace se le atribuye.
+  - [ ] CA-04: Mientras haya un agente conectado, la interfaz web y el supervisor funcionan sin arrancar nada más; la interfaz local no pide token.
+
+#### US-14.13
+
+- Enunciado: Como agente IA quiero recibir las skills y el proceso de trabajo de ACM por la vía MCP que soporte mi cliente, sin gastar tokens en contenido repetido.
+- Origen: B:US-15.14 · Épica: EPIC-14 · Feature: FEAT-14.05 · Alcance: MVP · Prioridad: P1 · Estado: IN_PROGRESS
+- Criterios de aceptación:
+  - [ ] CA-01: Las `instructions` de inicialización son breves e indican cómo obtener el proceso de trabajo.
+  - [ ] CA-02: Las skills se pueden obtener por herramientas, recursos, prompts MCP y la extensión de skills, todas con el mismo contenido.
+  - [ ] CA-03: Existe una skill que describe el proceso de trabajo con ACM de principio a fin (elegir proyecto, pedir trabajo, registrarlo, auditar).
+
+### FEAT-14.06 — Unión a proyectos con aprobación **[v1.5]** · origen B:FEAT-15.06
+
+#### US-14.14
+
+- Enunciado: Como agente IA quiero ver qué proyectos existen y crear uno nuevo o pedir unirme a uno existente, para trabajar donde el operador decida.
+- Origen: B:US-15.15 · Épica: EPIC-14 · Feature: FEAT-14.06 · Alcance: MVP · Prioridad: P1 · Estado: IN_PROGRESS
+- Criterios de aceptación:
+  - [ ] CA-01: El agente ve los proyectos existentes, indicando en cuáles es miembro y en cuáles tiene una petición pendiente.
+  - [ ] CA-02: Crear un proyecto nuevo no requiere aprobación y el agente queda como su owner.
+  - [ ] CA-03: Pedir unirse a un proyecto crea una petición pendiente; hasta su aprobación el agente no accede a nada del proyecto.
+  - [ ] CA-04: El agente puede consultar el estado de su petición.
+
+#### US-14.15
+
+- Enunciado: Como operador quiero aprobar o rechazar desde la interfaz las peticiones de agentes para unirse a mis proyectos, y expulsarlos cuando quiera.
+- Origen: B:US-15.16 · Épica: EPIC-14 · Feature: FEAT-14.06 · Alcance: MVP · Prioridad: P1 · Estado: IN_PROGRESS
+- Criterios de aceptación:
+  - [ ] CA-01: Las peticiones pendientes aparecen en la interfaz en tiempo real.
+  - [ ] CA-02: Al aprobar elijo si el agente tiene acceso de lectura o de escritura.
+  - [ ] CA-03: Al rechazar, el agente lo sabe al consultar su petición.
+  - [ ] CA-04: Puedo retirar a un agente de un proyecto en cualquier momento.
+
+### FEAT-14.07 — Colaboración de agentes en un proyecto **[v1.5]** · origen B:FEAT-15.07
+
+#### US-14.16
+
+- Enunciado: Como agente IA quiero pedir a ACM el siguiente trabajo del proyecto, para avanzar el proceso ágil sin que otro agente haga lo mismo que yo.
+- Origen: B:US-15.17 · Épica: EPIC-14 · Feature: FEAT-14.07 · Alcance: MVP · Prioridad: P1 · Estado: IN_PROGRESS
+- Criterios de aceptación:
+  - [ ] CA-01: ACM responde el siguiente trabajo según el sprint y el estado del backlog (refinar, implementar, verificar, planificar), con su motivo.
+  - [ ] CA-02: El trabajo de una historia queda asignado al agente que lo recibe; otro agente no lo recibe mientras siga asignado.
+  - [ ] CA-03: Los cambios de estado de una historia asignada a otro agente se rechazan explicando a quién está asignada.
+
+#### US-14.17
+
+- Enunciado: Como operador quiero que el trabajo asignado a un agente que desaparece vuelva a quedar libre, para que el proyecto no se bloquee.
+- Origen: B:US-15.18 · Épica: EPIC-14 · Feature: FEAT-14.07 · Alcance: MVP · Prioridad: P1 · Estado: IN_PROGRESS
+- Criterios de aceptación:
+  - [ ] CA-01: Cada asignación caduca si el agente no la renueva en un plazo configurable.
+  - [ ] CA-02: El agente puede liberar su trabajo al terminarlo o abandonarlo.
+  - [ ] CA-03: El Kanban muestra a qué agente está asignada cada historia.
 
 ## EPIC-15 — SKILLS Y CAPACIDADES REUTILIZABLES
 
