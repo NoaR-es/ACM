@@ -37,6 +37,6 @@ SPRINT-008 cerrado y archivado en `99_ARCHIVO/historical/sprint_008.md` (CI runs
 
 | Historia | Estado | Evidencia |
 |----------|--------|-----------|
-| US-14.12, 14.13, 14.14, 14.15, 14.16, 14.17 | VERIFIED | `12_TESTING/sprint_009_evidence.md` |
+| US-14.12, 14.13, 14.14, 14.15, 14.16, 14.17 | IN_PROGRESS | Tests nuevos en PASS en local; falta la suite completa, la evidencia y la CI (`12_TESTING/sprint_009_evidence.md` aún no existe) |
 
 PAUSADO el 2026-10-14 a petición del operador. VERIFIED = todos los CA con test automático en PASS en la suite completa. DONE requiere además la revisión del operador (merge del PR). Lo que no se ha podido verificar: el comportamiento de cada agente concreto (Antigravity, Codex, Hermes, Cursor) al leer las `instructions` o los prompts, y la interfaz con equipos distintos.
