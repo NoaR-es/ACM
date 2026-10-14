@@ -1,0 +1,65 @@
+"""Configuración de proceso de ACM (variables de entorno).
+
+La configuración *de cada proyecto* vive en su base SQLite (US-01.03); esta es la del proceso.
+"""
+
+from __future__ import annotations
+
+import os
+from dataclasses import dataclass
+from pathlib import Path
+
+DEFAULT_HOST = "127.0.0.1"  # solo interfaz local por defecto: exponer tras un proxy TLS (VULN-002)
+DEFAULT_PORT = 8765
+
+
+def default_data_dir() -> Path:
+    """US-14.12: un único estado por usuario, sea cual sea la carpeta desde la que se abra el agente."""
+    return Path.home() / ".acm"
+
+
+@dataclass(frozen=True)
+class Settings:
+    data_dir: Path
+    principal: str = "local-admin"
+    host: str = DEFAULT_HOST
+    port: int = DEFAULT_PORT
+    sqlite_synchronous: str = "FULL"  # ADR-013: FULL por defecto en la base global
+    ollama_url: str | None = None  # EPIC-22: sin URL no se registra ningún motor Ollama
+    ollama_model: str | None = None  # modelo local: resume el contexto (US-35.08) y decide sin calibrar (ADR-015)
+    jev_url: str | None = None  # EPIC-50: servidor Ollaya con modelos de decisión JEV; sin URL no se registra
+    jev_model: str | None = None  # modelo de decisión de Ollaya (p. ej. `laya`)
+    jev_api_key: str | None = None  # clave Bearer si el servidor Ollaya usa OLLAYA_API_KEY
+    events_keep: int = 10_000  # ADR-018: eventos conservados para reanudar clientes WebSocket
+    watchdog_interval_s: float = 600.0  # US-13.06: auditoría periódica de todos los proyectos; 0 la desactiva
+    allowed_hosts: tuple[
+        str, ...
+    ] = ()  # nombres extra aceptados en la cabecera Host (TD-002; p. ej. tras un proxy TLS)
+    # Modo local (ADR-023): ACM arrancado por un agente con la entrada stdio estándar. Los agentes ven el directorio de
+    # proyectos, pueden crear los suyos y piden unirse a los demás; la interfaz local entra sin pegar token.
+    local_mode: bool = False
+    agent: str | None = None  # nombre del agente (ACM_AGENT); sin él, el que declara su cliente MCP
+    ui: bool = True  # en stdio, levanta la interfaz y el supervisor si el puerto está libre (ACM_UI=0 lo desactiva)
+
+    @classmethod
+    def from_env(cls, **overrides: object) -> Settings:
+        values: dict[str, object] = {
+            "data_dir": Path(os.environ.get("ACM_DATA_DIR") or default_data_dir()),
+            "principal": os.environ.get("ACM_PRINCIPAL", "local-admin"),
+            "host": os.environ.get("ACM_HOST", DEFAULT_HOST),
+            "port": int(os.environ.get("ACM_PORT", DEFAULT_PORT)),
+            "sqlite_synchronous": os.environ.get("ACM_SQLITE_SYNCHRONOUS", "FULL"),
+            "ollama_url": os.environ.get("ACM_OLLAMA_URL") or None,
+            "ollama_model": os.environ.get("ACM_OLLAMA_MODEL") or None,
+            "jev_url": os.environ.get("ACM_JEV_URL") or None,
+            "jev_model": os.environ.get("ACM_JEV_MODEL") or None,
+            "jev_api_key": os.environ.get("ACM_JEV_API_KEY") or None,
+            "events_keep": int(os.environ.get("ACM_EVENTS_KEEP", 10_000)),
+            "watchdog_interval_s": float(os.environ.get("ACM_WATCHDOG_INTERVAL_S", 600)),
+            "allowed_hosts": tuple(h.strip() for h in os.environ.get("ACM_ALLOWED_HOSTS", "").split(",") if h.strip()),
+            "agent": os.environ.get("ACM_AGENT") or None,
+            "ui": os.environ.get("ACM_UI", "1").strip().lower() not in ("0", "false", "no", "off"),
+        }
+        values.update({k: v for k, v in overrides.items() if v is not None})
+        values["data_dir"] = Path(values["data_dir"])  # type: ignore[arg-type]
+        return cls(**values)  # type: ignore[arg-type]

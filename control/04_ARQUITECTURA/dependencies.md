@@ -1,0 +1,21 @@
+# Dependencias
+
+Estado: versiones fijadas en `/pyproject.toml` (SPRINT-001, 2026-09-30).
+
+| Dependencia | Versión probada | Uso | Decisión | Validada en |
+|-------------|-----------------|-----|----------|-------------|
+| Python | 3.11.15 | Runtime backend | ADR-005 | SPIKE-001/002 |
+| SQLite (vía `sqlite3` stdlib) | 3.45.1 | Persistencia, fuente de verdad del producto | ADR-001, ADR-011, ADR-013 | SPIKE-001 |
+| mcp (SDK oficial) + mcp-types | 2.2.0 | Servidor MCP propio, extensión Skills | ADR-008, ADR-014 | SPIKE-002 |
+| starlette | 1.7.0 | ASGI (montaje de MCP, rutas, WebSocket) | ADR-014 | SPIKE-002 |
+| uvicorn | 0.54.0 | Servidor ASGI | ADR-014 | SPIKE-002 |
+| httpx | 0.28.1 | Cliente HTTP (tests; adaptadores Ollama/Ollaya) | ADR-014/015 | SPIKE-002 |
+| websockets | 17.1 | Soporte WebSocket de uvicorn y cliente de tests | ADR-014 | SPIKE-002 |
+| pydantic | 2.13.5 | Modelos (dependencia del SDK) | — | SPIKE-002 |
+| anyio | 4.15.1 | Concurrencia (dependencia del SDK; `to_thread` para SQLite) | ADR-013 | SPIKE-002 (sin medir con SQLite) |
+| FastAPI | 0.142.2 | API HTTP con OpenAPI; monta el MCP en `/mcp` | ADR-014 | SPRINT-001 (`test_app.py`) |
+| pytest | 9.1.1 | Tests | — | SPRINT-001 |
+| ruff | 0.16.9 | Lint y formato | — | SPRINT-001 |
+| playwright (dev) | 1.63.0 | e2e de la interfaz con Chromium | ADR-019 | SPRINT-007 (`test_webui.py`) |
+
+Frontend (SPRINT-007, ADR-019): React 19.3, TypeScript 7.0.2, Vite 8.3.1, react-query 5.104, react-router-dom 7.18.4, marked 18, DOMPurify 3.4.16, vitest 5.0.3. Lista completa y propósito: `05_CODIGO/dependencies.md`; lockfile `web/package-lock.json`.
