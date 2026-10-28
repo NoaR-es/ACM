@@ -11,9 +11,8 @@ const NO_AUTO_KEY = "acm.no-auto-login";
 async function localToken(): Promise<string | null> {
   try {
     const res = await fetch("/api/local-session", { headers: { "X-ACM-Local": "1" }, cache: "no-store" });
-    if (!res.ok) return null;
-    const body = (await res.json()) as { token?: string };
-    return body.token ?? null;
+    const body = (await res.json()) as { token?: string | null };
+    return res.ok ? (body.token ?? null) : null;
   } catch {
     return null;
   }

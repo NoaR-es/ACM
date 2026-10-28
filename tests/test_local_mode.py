@@ -188,7 +188,7 @@ def daemon(tmp_path: Path) -> Iterator[Settings]:
 def test_us1412_ca04_interfaz_local_en_segundo_plano_sin_token(daemon: Settings) -> None:
     base = f"http://127.0.0.1:{daemon.port}"
     assert start_local_ui(daemon) is False  # ya hay una: no se lanza otra
-    assert httpx.get(f"{base}/api/local-session").status_code == 404  # sin la cabecera de la interfaz
+    assert httpx.get(f"{base}/api/local-session").json() == {"token": None}  # sin la cabecera de la interfaz
     session = httpx.get(f"{base}/api/local-session", headers={"X-ACM-Local": "1"})
     assert session.status_code == 200 and session.headers["cache-control"] == "no-store"
     token = session.json()["token"]
@@ -197,7 +197,7 @@ def test_us1412_ca04_interfaz_local_en_segundo_plano_sin_token(daemon: Settings)
     assert httpx.get(f"{base}/api/v1/me").status_code == 401  # sin token, la API sigue cerrada
     assert httpx.get(f"{base}/api/v1/me", headers={"Host": "evil.example.com"}).status_code in (401, 421)
     evil = httpx.get(f"{base}/api/local-session", headers={"X-ACM-Local": "1", "Host": "evil.example.com"})
-    assert evil.status_code == 404  # DNS rebinding: otro nombre de servidor no recibe el token
+    assert evil.json() == {"token": None}  # DNS rebinding: otro nombre de servidor no recibe el token
 
 
 def test_us1412_ca04_la_interfaz_sobrevive_y_se_para_con_acm_stop(tmp_path: Path) -> None:

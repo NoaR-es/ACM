@@ -154,11 +154,11 @@ def create_app(settings: Settings) -> FastAPI:
     def local_session(request: Request) -> JSONResponse:
         """US-14.12 CA-04: la interfaz de este equipo obtiene su token sin que la persona lo pegue (solo modo local)."""
         client = request.client.host if request.client else None
-        if local_token is None or not is_local_request(
+        local = local_token is not None and is_local_request(
             client, request.headers.get("host", ""), request.headers.get("x-acm-local")
-        ):
-            return JSONResponse({"error": "no disponible"}, status_code=404, headers={"cache-control": "no-store"})
-        return JSONResponse({"token": local_token}, headers={"cache-control": "no-store"})
+        )
+        # Siempre 200: un 404 aparecería como error rojo en la consola de cualquier navegador que abra ACM.
+        return JSONResponse({"token": local_token if local else None}, headers={"cache-control": "no-store"})
 
     api, ws = build_api(service, engines, catalog)
     app.include_router(ws)  # WebSocket con autenticación propia (primer mensaje), antes del montaje de /api/v1

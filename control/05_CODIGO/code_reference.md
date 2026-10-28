@@ -913,9 +913,9 @@ Sesión (US-31.01): token en sessionStorage, identidad desde /api/v1/me, cierre 
 
 | Tipo | Nombre | Línea |
 |------|--------|-------|
-| componente | `AuthProvider` | 33 |
-| hook | `useAuth` | 110 |
-| función | `describeError` | 116 |
+| componente | `AuthProvider` | 32 |
+| hook | `useAuth` | 109 |
+| función | `describeError` | 115 |
 
 ### `web/src/components.tsx`
 
