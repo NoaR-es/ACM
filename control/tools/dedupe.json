@@ -1,0 +1,97 @@
+{
+  "US-01.04": {
+    "into": "US-01.01",
+    "reason": "B:US-01.01 'crear un proyecto ACM' = A:US-01.01 'Crear un proyecto'; sus 4 criterios se conservan en US-01.01"
+  },
+  "US-01.05": {
+    "into": "US-01.02",
+    "reason": "B:US-01.02 'cambiar el proyecto activo sin mezclar contextos' = A:US-01.02 (seleccionar; CA-05 no mezcla datos)"
+  },
+  "US-01.07": {
+    "into": "US-01.03",
+    "reason": "B:US-01.04 'consultar la configuración' está cubierta por A:US-01.03 CA-01 (parámetros con su valor actual)"
+  },
+  "US-01.08": {
+    "into": "US-01.03",
+    "reason": "B:US-01.05 'modificar parámetros configurables' = A:US-01.03 'Configurar un proyecto'"
+  },
+  "US-24.04": {
+    "into": "US-24.03",
+    "reason": "B:US-26.01 'aislar los datos de cada proyecto' = A:US-24.03 'Evitar contaminación entre proyectos'"
+  },
+  "US-24.05": {
+    "into": "US-24.03",
+    "reason": "B:US-26.02 'impedir consultar memoria de otro proyecto' = A:US-24.03 CA-01"
+  },
+  "US-04.04": {
+    "into": "US-04.01",
+    "reason": "B:US-04.01 'crear una épica asociada a funcionalidades' = A:US-04.01 'Crear una épica' (CA-03/CA-04)"
+  },
+  "US-04.05": {
+    "into": "US-04.01",
+    "reason": "B:US-04.02 'definir visión y valor de negocio de una épica' está cubierta por A:US-04.01 CA-02 (objetivo y alcance)"
+  },
+  "US-04.07": {
+    "into": "US-04.03",
+    "reason": "B:US-04.04 'crear historias INVEST' = A:US-04.03 'Crear User Stories'"
+  },
+  "US-04.08": {
+    "into": "US-04.03",
+    "reason": "B:US-04.05 'relacionar cada historia con su origen funcional' = A:US-04.03 CA-02 (requisito de origen)"
+  },
+  "US-04.11": {
+    "into": "US-04.03",
+    "reason": "B:US-04.08 'añadir criterios de aceptación binarios' = A:US-04.03 CA-03"
+  },
+  "US-04.13": {
+    "into": "US-04.03",
+    "reason": "B:US-04.10 'impedir que una historia avance sin criterios' = A:US-04.03 CA-04 (incompleta no puede ser READY)"
+  },
+  "US-14.08": {
+    "into": "US-01.06",
+    "cross_epic": true,
+    "reason": "B:US-15.05 'seleccionar explícitamente el proyecto' = US-01.06 (project_id explícito en cada herramienta, ADR-014)"
+  },
+  "US-22.05": {
+    "into": "US-22.01",
+    "reason": "B:US-23.02 'detectar modelos disponibles en Ollama' = A:US-22.01 'Detectar modelos disponibles' (el runtime configurado es Ollama)"
+  },
+  "US-20.06": {
+    "into": "US-20.01",
+    "reason": "B:US-16.03 'asignar roles a usuarios y agentes' = A:US-20.01 'Gestionar roles'"
+  },
+  "US-20.09": {
+    "into": "US-20.03",
+    "reason": "B:US-16.06 'tokens específicos para agentes' = A:US-20.03 CA-01 (cada token tiene identidad)"
+  },
+  "US-20.10": {
+    "into": "US-20.03",
+    "reason": "B:US-16.07 'revocar un token inmediatamente' = A:US-20.03 CA-02"
+  },
+  "US-20.11": {
+    "into": "US-20.03",
+    "reason": "B:US-16.08 'registrar el uso de cada token' = A:US-20.03 CA-04"
+  },
+  "US-13.04": {
+    "into": "US-13.03",
+    "reason": "B:US-01.07 'comprobación de salud de la infraestructura ACM' = A:US-13.03 'Supervisar salud global'"
+  },
+  "US-06.05": {
+    "into": "US-06.03",
+    "reason": "B:US-19.02 'ver los cambios provocados por agentes en tiempo real' = A:US-06.03 'Actualizar Kanban en tiempo real'"
+  },
+  "US-31.05": {
+    "into": "US-31.01",
+    "reason": "B:US-19.05 'historial de actividad de un agente' = A:US-31.01 consola de actividad filtrable por principal (US-31.02)"
+  },
+  "US-21.04": {
+    "into": "US-31.08",
+    "cross_epic": true,
+    "reason": "B:US-18.01 'frontend recibe cambios de estado en tiempo real' = US-31.08 (tiempo real en la interfaz)"
+  },
+  "US-21.06": {
+    "into": "US-31.08",
+    "cross_epic": true,
+    "reason": "B:US-18.03 'frontend recibe movimientos del Kanban en tiempo real' = US-31.08 CA-01"
+  }
+}

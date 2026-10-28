@@ -1,0 +1,873 @@
+"""Servidor MCP propio de ACM (ADR-008, ADR-014).
+
+- Sin estado de sesión: toda herramienta de proyecto exige `project_id` y lo devuelve (US-01.06).
+- Los errores de dominio llegan al agente como `ToolError("<CODE>: <motivo>")` (GAP-007).
+- El servicio es síncrono (sqlite3): cada llamada se ejecuta en un hilo de trabajo (ADR-013).
+- Cada invocación (herramientas, `skills/*` y lectura de archivos de skills) se audita (US-14.10, US-14.11).
+- Extensión MCP Skills (SEP-2640) con el catálogo oficial de ACM (US-15.04..07).
+- Segundo cerebro: decisiones delegadas y contexto compacto a través del router de inferencia (EPIC-35, ADR-015).
+- Conexión universal (FEAT-14.05): las skills llegan por herramientas, recursos, prompts y la extensión de skills; las
+  `instructions` son breves y remiten a la skill `acm-workflow`. El nombre que declara el cliente MCP queda en
+  `current_client` para identificar al agente en stdio (ADR-023).
+"""
+
+from __future__ import annotations
+
+import time
+from collections.abc import Callable
+from functools import partial
+from typing import Any, TypeVar
+
+import anyio
+from mcp.server.extension import Extension, MethodBinding
+from mcp.server.mcpserver import MCPServer
+from mcp.server.mcpserver.exceptions import ResourceNotFoundError, ToolError
+from mcp.server.subscriptions import InMemorySubscriptionBus
+from mcp.shared.exceptions import MCPError
+from mcp.shared.subscriptions import ResourcesListChanged
+from mcp_types import RequestParams
+from mcp_types.jsonrpc import INVALID_PARAMS
+
+from acm import __version__
+from acm.domain.access import AccessService
+from acm.domain.audit import AuditService
+from acm.domain.backlog import BacklogService
+from acm.domain.chat import ChatService
+from acm.domain.context import ContextService
+from acm.domain.errors import AcmError, Forbidden
+from acm.domain.identity import IdentityService
+from acm.domain.models import ModelService
+from acm.domain.projects import ProjectService
+from acm.domain.sprints import SprintService
+from acm.domain.watchdog import WatchdogService
+from acm.domain.work import WorkService
+from acm.inference.ports import DecisionRequest
+from acm.inference.router import EngineRouter
+from acm.sessions import PROCESS_SESSION, current_client, current_session
+from acm.skills_catalog import SKILL_PREFIX, SkillCatalog
+
+T = TypeVar("T")
+SKILLS_EXTENSION = "io.modelcontextprotocol/skills"
+
+INSTRUCTIONS = (
+    "ACM (Agile Context Manager) lleva el proceso ágil de tus proyectos: backlog, sprints, Kanban, trazabilidad y "
+    "gobernanza. Tú trabajas; ACM decide qué toca y lo registra.\n"
+    "1. Lee UNA vez la skill acm-workflow (el proceso completo): con la herramienta acm_skill_get('acm-workflow'), el "
+    "prompt acm-workflow o el recurso skill://acm/acm-workflow/SKILL.md (o skills/list si tu cliente usa la extensión "
+    "de skills). El resto de skills (acm-schema…) solo cuando las necesites: acm_skills_list.\n"
+    "2. Empieza con acm_project_directory: crea un proyecto o pide unirte a uno (lo aprueba una persona).\n"
+    "3. Pide trabajo con acm_next_work y repite. Pasa SIEMPRE project_id (acm_project_list da los tuyos).\n"
+    "Los errores empiezan por un código (INVALID_ARGUMENT, NOT_FOUND, FORBIDDEN, FAILED_PRECONDITION…) y su motivo."
+)
+
+
+class AcmMCPServer(MCPServer):
+    """MCPServer que deja el cliente y la sesión de cada petición en `current_client` y `current_session`.
+
+    Por stdio hay una conexión por proceso: su sesión es `PROCESS_SESSION`. Por HTTP es el `Mcp-Session-Id` de la
+    conexión (si el modo sin estado no lo da, queda vacía y el trabajo se reparte por principal).
+    """
+
+    def __init__(self, *args: Any, stdio: bool = False, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+        self._stdio = stdio
+
+    def _remember_client(self, context: Any) -> None:
+        try:
+            session = context.request_context.session
+            info = session.client_params.client_info if session.client_params is not None else None
+        except (AttributeError, ValueError):
+            return
+        if info is not None and getattr(info, "name", None):
+            current_client.set(str(info.name))
+        if self._stdio:
+            current_session.set(PROCESS_SESSION)
+            return
+        try:  # el SDK no expone el id de la conexión públicamente
+            sid = session._connection.session_id
+        except AttributeError:
+            sid = None
+        current_session.set(str(sid)[:8] if sid else "")
+
+    async def call_tool(self, name: str, arguments: dict[str, Any], context: Any = None) -> Any:
+        if context is not None:
+            self._remember_client(context)
+        return await super().call_tool(name, arguments, context)
+
+    async def read_resource(self, uri: Any, context: Any = None) -> Any:
+        if context is not None:
+            self._remember_client(context)
+        return await super().read_resource(uri, context)
+
+    async def get_prompt(self, name: str, arguments: dict[str, Any] | None = None, context: Any = None) -> Any:
+        if context is not None:
+            self._remember_client(context)
+        return await super().get_prompt(name, arguments, context)
+
+
+class SkillsListParams(RequestParams):
+    pass
+
+
+class SkillsGetParams(RequestParams):
+    uri: str
+
+
+def build_mcp_server(
+    service: ProjectService,
+    principal: Callable[[], str],
+    catalog: SkillCatalog | None = None,
+    engines: EngineRouter | None = None,
+    token_id: Callable[[], str | None] = lambda: None,
+    stdio: bool = False,
+) -> MCPServer:
+    """Crea el servidor MCP.
+
+    `principal` resuelve la identidad del llamante (SPRINT-001/002: configuración; EPIC-20: token verificado).
+    `engines` es el router de inferencia; por defecto, solo el motor de reglas (sin modelos).
+    `token_id` identifica el token de la petición HTTP en curso para la auditoría (US-20.03 CA-04); en stdio, None.
+    """
+    catalog = catalog if catalog is not None else SkillCatalog()
+    engines = engines if engines is not None else EngineRouter(service)
+    backlog = BacklogService(service, engines)
+    context = ContextService(service, backlog, engines)
+    watchdog = WatchdogService(service, backlog, engines)
+    sprints = SprintService(backlog)
+    models = ModelService(service, engines)
+    chat = ChatService(service, backlog, engines)
+    audit = AuditService(service)
+    identity = IdentityService(service)
+    access = AccessService(service)
+    work = WorkService(backlog)
+    bus = InMemorySubscriptionBus()
+
+    def activity(who: str, operation: str, arguments: dict[str, Any], status: str, error: str) -> None:
+        """US-21.09 / US-31.04: qué herramienta ejecuta cada agente, en vivo (eventos `activity`, solo admin)."""
+        project_id = arguments.get("project_id") if isinstance(arguments.get("project_id"), str) else None
+        service.events.append(
+            "activity",
+            principal=who,
+            project_id=project_id,
+            entity_type="operation",
+            entity_id=operation,
+            data={"status": status, "error": error[:300]},
+        )
+
+    async def audited(operation: str, arguments: dict[str, Any], fn: Callable[..., T], *args: Any) -> T:
+        who, token = principal(), token_id()
+        start = time.perf_counter()
+        try:
+            result = await anyio.to_thread.run_sync(partial(fn, *args))
+        except Exception as exc:
+            elapsed = (time.perf_counter() - start) * 1000
+            record = partial(
+                audit.record,
+                principal=who,
+                token_id=token,
+                operation=operation,
+                arguments=arguments,
+                status="error",
+                duration_ms=elapsed,
+                error=str(exc) or type(exc).__name__,
+            )
+            await anyio.to_thread.run_sync(record)
+            await anyio.to_thread.run_sync(partial(activity, who, operation, arguments, "error", str(exc)))
+            raise
+        elapsed = (time.perf_counter() - start) * 1000
+        record = partial(
+            audit.record,
+            principal=who,
+            token_id=token,
+            operation=operation,
+            arguments=arguments,
+            status="ok",
+            duration_ms=elapsed,
+            result=result,
+        )
+        await anyio.to_thread.run_sync(record)
+        await anyio.to_thread.run_sync(partial(activity, who, operation, arguments, "ok", ""))
+        return result
+
+    async def call(operation: str, arguments: dict[str, Any], fn: Callable[..., T], *args: Any) -> T:
+        try:
+            return await audited(operation, arguments, fn, *args)
+        except AcmError as exc:
+            raise ToolError(str(exc)) from exc
+
+    # --------------------------------------------------------- extensión Skills
+    class AcmSkillsExtension(Extension):
+        identifier = SKILLS_EXTENSION
+
+        def settings(self) -> dict[str, Any]:
+            return {"directoryRead": False}
+
+        def methods(self) -> list[MethodBinding]:
+            return [
+                MethodBinding("skills/list", SkillsListParams, self._list),
+                MethodBinding("skills/get", SkillsGetParams, self._get),
+            ]
+
+        async def _list(self, ctx: Any, params: SkillsListParams) -> dict[str, Any]:
+            skills = await audited("skills/list", {}, catalog.entries)
+            return {"resultType": "complete", "skills": skills, "ttlMs": 300000, "cacheScope": "public"}
+
+        async def _get(self, ctx: Any, params: SkillsGetParams) -> dict[str, Any]:
+            def find() -> dict[str, Any]:
+                skill = catalog.get_by_uri(params.uri)
+                if skill is None:
+                    raise MCPError(INVALID_PARAMS, f"Unknown skill: {params.uri}")
+                return skill.entry()
+
+            entry = await audited("skills/get", {"uri": params.uri}, find)
+            return {"resultType": "complete", "skill": entry, "ttlMs": 300000, "cacheScope": "public"}
+
+    server = AcmMCPServer(
+        stdio=stdio,
+        name="acm",
+        version=__version__,
+        instructions=INSTRUCTIONS,
+        extensions=[AcmSkillsExtension()],
+        subscriptions=bus,
+    )
+
+    @server.resource(f"{SKILL_PREFIX}/{{skill}}/{{filename}}", name="acm-skill-file", mime_type="text/markdown")
+    async def skill_file(skill: str, filename: str) -> str:
+        """Archivo de una skill de ACM, leído del catálogo vigente (una skill retirada deja de existir)."""
+        uri = f"{SKILL_PREFIX}/{skill}/{filename}"
+
+        def read() -> str:
+            f = catalog.file(skill, filename)
+            if f is None:
+                raise ResourceNotFoundError(f"Unknown skill resource: {uri}")
+            return f.text
+
+        return await audited("resources/read", {"uri": uri}, read)
+
+    # ------------------------------------------- skills como prompts (US-14.13 CA-02)
+    @server.prompt(name="acm-workflow", title="Proceso de trabajo con ACM")
+    async def workflow_prompt() -> str:
+        """El proceso completo para trabajar con ACM: elegir proyecto, pedir trabajo, registrarlo y auditar."""
+
+        def text() -> str:
+            f = catalog.file("acm-workflow", "SKILL.md")
+            if f is None:
+                raise ResourceNotFoundError("la skill acm-workflow no está en el catálogo")
+            return f.text
+
+        return await audited("prompts/get", {"name": "acm-workflow"}, text)
+
+    @server.prompt(name="acm-skill", title="Skill de ACM")
+    async def skill_prompt(name: str) -> str:
+        """Cualquier skill de ACM por su nombre (acm_skills_list las enumera)."""
+
+        def text() -> str:
+            skill = catalog.skills.get(name)
+            if skill is None:
+                raise ResourceNotFoundError(f"la skill {name!r} no existe; usa acm_skills_list")
+            return "\n\n".join(f.text for f in skill.files)
+
+        return await audited("prompts/get", {"name": "acm-skill", "skill": name}, text)
+
+    # ------------------------------------------------ skills: respaldo y gestión
+    @server.tool()
+    async def acm_skills_list() -> list[dict[str, Any]]:
+        """Lista las skills de ACM (uri, frontmatter con versión, digest y tamaño de cada archivo)."""
+        return await call("acm_skills_list", {}, catalog.entries)
+
+    @server.tool()
+    async def acm_skill_get(name: str) -> dict[str, Any]:
+        """Devuelve todos los archivos de una skill de ACM (respaldo de skills/get + resources/read)."""
+
+        def get() -> dict[str, Any]:
+            skill = catalog.skills.get(name)
+            if skill is None:
+                raise ToolError(f"NOT_FOUND: skill {name!r} no existe; usa acm_skills_list")
+            return {**skill.entry(), "files": {f.uri: f.text for f in skill.files}}
+
+        return await call("acm_skill_get", {"name": name}, get)
+
+    @server.tool()
+    async def acm_skills_reload() -> dict[str, Any]:
+        """(admin) Relee el catálogo de skills; si cambia, notifica resources/list_changed a los suscritos."""
+
+        def reload() -> dict[str, Any]:
+            with service.global_db.read() as conn:
+                if service._principal_role(conn, principal()) != "admin":
+                    raise Forbidden("solo un admin puede recargar el catálogo de skills")
+            changed = catalog.reload()
+            return {"changed": changed, "skills": sorted(catalog.skills), "rejected": catalog.rejected}
+
+        result = await call("acm_skills_reload", {}, reload)
+        if result["changed"]:
+            await bus.publish(ResourcesListChanged())
+        return result
+
+    # ---------------------------------------------------------------- proyectos
+    @server.tool()
+    async def acm_project_create(key: str, name: str, description: str = "") -> dict[str, Any]:
+        """Crea un proyecto ACM con su propia base SQLite. `key` es el project_id: ^[a-z][a-z0-9-]{1,39}$."""
+        args = {"key": key, "name": name, "description": description}
+        return await call("acm_project_create", args, service.create, principal(), key, name, description)
+
+    @server.tool()
+    async def acm_project_directory() -> dict[str, Any]:
+        """EMPIEZA AQUÍ. Proyectos de ACM con tu rol en cada uno y tus peticiones para unirte. Pregunta a la persona si
+        crear uno nuevo (acm_project_create) o unirte a uno existente (acm_project_join)."""
+        return await call("acm_project_directory", {}, access.directory, principal())
+
+    @server.tool()
+    async def acm_project_join(project_id: str, access_level: str = "write", message: str = "") -> dict[str, Any]:
+        """Pide unirte a un proyecto existente (`access_level`: write | read). Queda PENDING hasta que una persona la
+        apruebe en la interfaz de ACM; mientras tanto el proyecto no es accesible. Repetirla no duplica la petición."""
+        args = {"project_id": project_id, "access_level": access_level, "message": message}
+        return await call("acm_project_join", args, access.request_join, principal(), project_id, access_level, message)
+
+    @server.tool()
+    async def acm_project_join_status(project_id: str) -> dict[str, Any]:
+        """Estado de tu petición para unirte a un proyecto: NONE, PENDING, APPROVED, REJECTED o MEMBER."""
+        args = {"project_id": project_id}
+        return await call("acm_project_join_status", args, access.join_status, principal(), project_id)
+
+    @server.tool()
+    async def acm_project_list() -> list[dict[str, Any]]:
+        """Lista los proyectos a los que tienes acceso (con su project_id)."""
+        return await call("acm_project_list", {}, service.list_for, principal())
+
+    @server.tool()
+    async def acm_project_open(project_id: str) -> dict[str, Any]:
+        """Abre un proyecto: devuelve metadatos, tu rol, versión de esquema y configuración efectiva."""
+        return await call("acm_project_open", {"project_id": project_id}, service.open, principal(), project_id)
+
+    @server.tool()
+    async def acm_project_config_get(project_id: str) -> dict[str, Any]:
+        """Devuelve cada parámetro de configuración del proyecto con su valor actual, por defecto y permitido."""
+        args = {"project_id": project_id}
+        return await call("acm_project_config_get", args, service.get_config, principal(), project_id)
+
+    @server.tool()
+    async def acm_project_config_set(project_id: str, changes: dict[str, Any]) -> dict[str, Any]:
+        """Modifica parámetros ({parámetro: valor}). Valida todo antes de guardar; indica cuáles requieren recarga."""
+        args = {"project_id": project_id, "changes": changes}
+        return await call("acm_project_config_set", args, service.set_config, principal(), project_id, changes)
+
+    @server.tool()
+    async def acm_system_info() -> dict[str, Any]:
+        """Estado de la plataforma: versión, esquema global, nº de proyectos, PRAGMAs y skills activas/rechazadas."""
+
+        def info() -> dict[str, Any]:
+            return {
+                "acm_version": __version__,
+                **service.system_info(),
+                "skills": sorted(catalog.skills),
+                "skills_rejected": catalog.rejected,
+            }
+
+        return await call("acm_system_info", {}, info)
+
+    @server.tool()
+    async def acm_audit_list(
+        limit: int = 50, principal_id: str | None = None, operation: str | None = None, project_id: str | None = None
+    ) -> dict[str, Any]:
+        """(admin) Últimas invocaciones MCP auditadas: quién, operación, argumentos, resultado, estado, duración."""
+        args = {"limit": limit, "principal_id": principal_id, "operation": operation, "project_id": project_id}
+        fn = partial(
+            audit.list,
+            principal(),
+            limit=limit,
+            filter_principal=principal_id,
+            operation=operation,
+            project_id=project_id,
+        )
+        return await call("acm_audit_list", args, fn)
+
+    # ------------------------------------------------------------------ backlog
+    @server.tool()
+    async def acm_requirement_create(
+        project_id: str, title: str, description: str = "", requirement_id: str | None = None
+    ) -> dict[str, Any]:
+        """Registra un requisito (REQ-NNN). `requirement_id` opcional para importar IDs existentes."""
+        args = {"project_id": project_id, "title": title, "description": description, "requirement_id": requirement_id}
+        return await call(
+            "acm_requirement_create",
+            args,
+            backlog.create_requirement,
+            principal(),
+            project_id,
+            title,
+            description,
+            requirement_id,
+        )
+
+    @server.tool()
+    async def acm_requirement_list(project_id: str) -> dict[str, Any]:
+        """Lista los requisitos del proyecto."""
+        args = {"project_id": project_id}
+        return await call("acm_requirement_list", args, backlog.list_requirements, principal(), project_id)
+
+    @server.tool()
+    async def acm_requirement_trace(project_id: str, requirement_id: str) -> dict[str, Any]:
+        """Trazabilidad de un requisito: sus épicas, las features de esas épicas y las historias que lo implementan."""
+        args = {"project_id": project_id, "requirement_id": requirement_id}
+        return await call(
+            "acm_requirement_trace", args, backlog.trace_requirement, principal(), project_id, requirement_id
+        )
+
+    @server.tool()
+    async def acm_epic_create(
+        project_id: str,
+        title: str,
+        objective: str,
+        scope: str,
+        requirement_ids: list[str] | None = None,
+        epic_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Crea una épica (EPIC-NN) con objetivo y alcance obligatorios, opcionalmente asociada a requisitos."""
+        args = {
+            "project_id": project_id,
+            "title": title,
+            "objective": objective,
+            "scope": scope,
+            "requirement_ids": requirement_ids,
+            "epic_id": epic_id,
+        }
+        return await call(
+            "acm_epic_create",
+            args,
+            backlog.create_epic,
+            principal(),
+            project_id,
+            title,
+            objective,
+            scope,
+            requirement_ids,
+            epic_id,
+        )
+
+    @server.tool()
+    async def acm_epic_link_requirements(project_id: str, epic_id: str, requirement_ids: list[str]) -> dict[str, Any]:
+        """Asocia requisitos existentes a una épica."""
+        args = {"project_id": project_id, "epic_id": epic_id, "requirement_ids": requirement_ids}
+        return await call(
+            "acm_epic_link_requirements",
+            args,
+            backlog.link_epic_requirements,
+            principal(),
+            project_id,
+            epic_id,
+            requirement_ids,
+        )
+
+    @server.tool()
+    async def acm_epic_get(project_id: str, epic_id: str) -> dict[str, Any]:
+        """Devuelve una épica con sus requisitos y sus features (y las historias de cada feature)."""
+        args = {"project_id": project_id, "epic_id": epic_id}
+        return await call("acm_epic_get", args, backlog.get_epic, principal(), project_id, epic_id)
+
+    @server.tool()
+    async def acm_epic_list(project_id: str) -> dict[str, Any]:
+        """Lista las épicas del proyecto con sus features e historias."""
+        return await call("acm_epic_list", {"project_id": project_id}, backlog.list_epics, principal(), project_id)
+
+    @server.tool()
+    async def acm_epic_confirm_coverage(project_id: str, epic_id: str) -> dict[str, Any]:
+        """Confirma que las features activas de la épica cubren su objetivo (requiere al menos una feature activa)."""
+        args = {"project_id": project_id, "epic_id": epic_id}
+        return await call(
+            "acm_epic_confirm_coverage", args, backlog.confirm_epic_coverage, principal(), project_id, epic_id
+        )
+
+    @server.tool()
+    async def acm_feature_create(
+        project_id: str, epic_id: str, title: str, description: str = "", feature_id: str | None = None
+    ) -> dict[str, Any]:
+        """Crea una feature (FEAT-NN.MM) dentro de una épica."""
+        args = {
+            "project_id": project_id,
+            "epic_id": epic_id,
+            "title": title,
+            "description": description,
+            "feature_id": feature_id,
+        }
+        return await call(
+            "acm_feature_create",
+            args,
+            backlog.create_feature,
+            principal(),
+            project_id,
+            epic_id,
+            title,
+            description,
+            feature_id,
+        )
+
+    @server.tool()
+    async def acm_feature_split(project_id: str, feature_id: str, parts: list[dict[str, Any]]) -> dict[str, Any]:
+        """Divide una feature en ≥2: parts=[{title, description?, story_ids}] repartiendo todas sus historias."""
+        args = {"project_id": project_id, "feature_id": feature_id, "parts": parts}
+        return await call("acm_feature_split", args, backlog.split_feature, principal(), project_id, feature_id, parts)
+
+    @server.tool()
+    async def acm_story_create(
+        project_id: str,
+        feature_id: str,
+        as_a: str,
+        i_want: str,
+        so_that: str,
+        requirement_ids: list[str],
+        acceptance_criteria: list[str] | None = None,
+        kind: str = "user_story",
+        technical_reason: str = "",
+        story_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Crea una historia (US-NN.MM): actor (as_a), acción (i_want), valor (so_that), ≥1 requisito de origen y
+        criterios de aceptación binarios. Una tarea técnica solo con kind='technical' y technical_reason."""
+        args = {
+            "project_id": project_id,
+            "feature_id": feature_id,
+            "as_a": as_a,
+            "i_want": i_want,
+            "so_that": so_that,
+            "requirement_ids": requirement_ids,
+            "acceptance_criteria": acceptance_criteria,
+            "kind": kind,
+            "technical_reason": technical_reason,
+            "story_id": story_id,
+        }
+        return await call(
+            "acm_story_create",
+            args,
+            backlog.create_story,
+            principal(),
+            project_id,
+            feature_id,
+            as_a,
+            i_want,
+            so_that,
+            requirement_ids,
+            acceptance_criteria,
+            kind,
+            technical_reason,
+            story_id,
+        )
+
+    @server.tool()
+    async def acm_story_add_criteria(project_id: str, story_id: str, criteria: list[str]) -> dict[str, Any]:
+        """Añade criterios de aceptación (CA-NN) a una historia."""
+        args = {"project_id": project_id, "story_id": story_id, "criteria": criteria}
+        return await call(
+            "acm_story_add_criteria", args, backlog.add_criteria, principal(), project_id, story_id, criteria
+        )
+
+    @server.tool()
+    async def acm_story_get(project_id: str, story_id: str) -> dict[str, Any]:
+        """Devuelve una historia con sus requisitos de origen y criterios de aceptación."""
+        args = {"project_id": project_id, "story_id": story_id}
+        return await call("acm_story_get", args, backlog.get_story, principal(), project_id, story_id)
+
+    @server.tool()
+    async def acm_story_mark_ready(project_id: str, story_id: str) -> dict[str, Any]:
+        """Pasa una historia de PLANNED a READY si tiene actor, acción, valor, requisito y criterios."""
+        args = {"project_id": project_id, "story_id": story_id}
+        return await call("acm_story_mark_ready", args, backlog.mark_ready, principal(), project_id, story_id)
+
+    @server.tool()
+    async def acm_story_set_status(project_id: str, story_id: str, status: str, reason: str = "") -> dict[str, Any]:
+        """Mueve una historia de estado (Kanban) si la transición está permitida. PLANNED → READY: acm_story_mark_ready.
+        DONE solo desde VERIFIED."""
+        args = {"project_id": project_id, "story_id": story_id, "status": status, "reason": reason}
+        return await call(
+            "acm_story_set_status", args, backlog.set_status, principal(), project_id, story_id, status, reason
+        )
+
+    @server.tool()
+    async def acm_story_history(project_id: str, story_id: str) -> dict[str, Any]:
+        """Historial de cambios de estado de una historia (quién, cuándo, de qué a qué y por qué)."""
+        args = {"project_id": project_id, "story_id": story_id}
+        return await call("acm_story_history", args, backlog.status_history, principal(), project_id, story_id)
+
+    @server.tool()
+    async def acm_backlog_audit(project_id: str) -> dict[str, Any]:
+        """Huecos de trazabilidad: requisitos huérfanos, épicas/features vacías, historias sin CA."""
+        return await call("acm_backlog_audit", {"project_id": project_id}, backlog.audit, principal(), project_id)
+
+    # ------------------------------------------------------------------ sprints (EPIC-05)
+    @server.tool()
+    async def acm_sprint_create(
+        project_id: str, name: str, goal: str, start_date: str, end_date: str, capacity: int | None = None
+    ) -> dict[str, Any]:
+        """Crea un sprint SPRINT-NN (PLANNED) con objetivo, fechas AAAA-MM-DD y capacidad opcional en historias."""
+        args = {
+            "project_id": project_id,
+            "name": name,
+            "goal": goal,
+            "start_date": start_date,
+            "end_date": end_date,
+            "capacity": capacity,
+        }
+        fn = partial(sprints.create, principal(), project_id, name, goal, start_date, end_date, capacity)
+        return await call("acm_sprint_create", args, fn)
+
+    @server.tool()
+    async def acm_sprint_list(project_id: str) -> dict[str, Any]:
+        """Sprints del proyecto con estado, historias, carga, capacidad y resumen de cierre."""
+        return await call("acm_sprint_list", {"project_id": project_id}, sprints.list, principal(), project_id)
+
+    @server.tool()
+    async def acm_sprint_get(project_id: str, sprint_id: str) -> dict[str, Any]:
+        """Un sprint con sus historias actuales, historial de pertenencia y métricas."""
+        args = {"project_id": project_id, "sprint_id": sprint_id}
+        return await call("acm_sprint_get", args, sprints.get, principal(), project_id, sprint_id)
+
+    @server.tool()
+    async def acm_sprint_add_stories(project_id: str, sprint_id: str, story_ids: list[str]) -> dict[str, Any]:
+        """Planifica historias en un sprint abierto (una historia, un sprint abierto); avisa si no están READY."""
+        args = {"project_id": project_id, "sprint_id": sprint_id, "story_ids": story_ids}
+        fn = partial(sprints.add_stories, principal(), project_id, sprint_id, story_ids)
+        return await call("acm_sprint_add_stories", args, fn)
+
+    @server.tool()
+    async def acm_sprint_remove_story(project_id: str, sprint_id: str, story_id: str) -> dict[str, Any]:
+        """Retira una historia de un sprint abierto (queda en su historial como retirada)."""
+        args = {"project_id": project_id, "sprint_id": sprint_id, "story_id": story_id}
+        fn = partial(sprints.remove_story, principal(), project_id, sprint_id, story_id)
+        return await call("acm_sprint_remove_story", args, fn)
+
+    @server.tool()
+    async def acm_sprint_start(project_id: str, sprint_id: str, force: bool = False) -> dict[str, Any]:
+        """Inicia un sprint PLANNED. Rechaza si ya hay uno activo o si supera su capacidad (salvo force=true)."""
+        args = {"project_id": project_id, "sprint_id": sprint_id, "force": force}
+        return await call("acm_sprint_start", args, sprints.start, principal(), project_id, sprint_id, force)
+
+    @server.tool()
+    async def acm_sprint_close(project_id: str, sprint_id: str, carry_over_to: str | None = None) -> dict[str, Any]:
+        """Cierra el sprint activo: lo DONE queda hecho; el resto pasa a `carry_over_to` o vuelve al backlog."""
+        args = {"project_id": project_id, "sprint_id": sprint_id, "carry_over_to": carry_over_to}
+        fn = partial(sprints.close, principal(), project_id, sprint_id, carry_over_to)
+        return await call("acm_sprint_close", args, fn)
+
+    @server.tool()
+    async def acm_sprint_cancel(project_id: str, sprint_id: str) -> dict[str, Any]:
+        """Cancela un sprint PLANNED o ACTIVE: sus historias vuelven al backlog sin cambiar de estado."""
+        args = {"project_id": project_id, "sprint_id": sprint_id}
+        return await call("acm_sprint_cancel", args, sprints.cancel, principal(), project_id, sprint_id)
+
+    # ------------------------------------------------- reparto de trabajo (FEAT-14.07)
+    @server.tool()
+    async def acm_next_work(project_id: str, claim: bool = True) -> dict[str, Any]:
+        """Qué toca ahora en el proyecto, ya asignado a ti: `action` (implement, verify, refine, plan_sprint,
+        start_sprint, close_sprint, build_backlog o idle), el elemento, el motivo y los pasos. Ningún otro agente recibe
+        lo mismo mientras sea tuyo; la asignación caduca si no lo tocas. Pídelo de nuevo al terminar cada trabajo."""
+        args = {"project_id": project_id, "claim": claim}
+        return await call("acm_next_work", args, work.next_work, principal(), project_id, claim)
+
+    @server.tool()
+    async def acm_work_release(project_id: str, item: str) -> dict[str, Any]:
+        """Libera un trabajo que tienes asignado (al abandonarlo); queda libre para otro agente."""
+        args = {"project_id": project_id, "item": item}
+        return await call("acm_work_release", args, work.release, principal(), project_id, item)
+
+    @server.tool()
+    async def acm_work_list(project_id: str) -> dict[str, Any]:
+        """Quién trabaja ahora en qué dentro del proyecto (asignaciones vigentes)."""
+        args = {"project_id": project_id}
+        return await call("acm_work_list", args, work.claims, principal(), project_id)
+
+    # ------------------------------------------------------------------ segundo cerebro (EPIC-35)
+    @server.tool()
+    async def acm_decide(
+        project_id: str,
+        purpose: str,
+        questions: dict[str, Any],
+        state: dict[str, Any] | str,
+        model: str | None = None,
+    ) -> dict[str, Any]:
+        """Delega una decisión tipada (noul = sí/no, choice = clasificar, score = puntuar) en el motor de decisión.
+
+        questions: {clave: {"type": "noul"|"choice"|"score", "instructions": str, "criteria": ...}}. Respuesta con
+        probabilidades, el motor que decidió (`engine`), `calibrated` y `fallback_from`. `model` pide un modelo concreto
+        de Ollaya (ver `acm_models_list`); sin él se usa el asignado al propósito. Ver skill acm-schema.
+        """
+        args = {"project_id": project_id, "purpose": purpose, "questions": questions, "state": state, "model": model}
+
+        def decide() -> dict[str, Any]:
+            request = DecisionRequest.from_json(project_id, purpose, state, questions, model)
+            routed = engines.decide(principal(), request)
+            return {"project_id": project_id, "call_id": routed.call_id, **routed.result.to_json()}
+
+        return await call("acm_decide", args, decide)
+
+    @server.tool()
+    async def acm_context_compact(project_id: str, story_id: str, budget_tokens: int | None = None) -> dict[str, Any]:
+        """Contexto compacto de una historia (historia, CA, requisitos, feature, épica, historias hermanas).
+
+        Cada sección lleva sus fuentes. Si supera `budget_tokens` (por defecto, context.max_tokens del proyecto) y hay
+        un modelo local, resume las secciones de apoyo. Indica tokens entregados, equivalente completo y método.
+        """
+        args = {"project_id": project_id, "story_id": story_id, "budget_tokens": budget_tokens}
+        fn = partial(context.compact, principal(), project_id, story_id, budget_tokens)
+        return await call("acm_context_compact", args, fn)
+
+    @server.tool()
+    async def acm_engines_list() -> dict[str, Any]:
+        """Motores de inferencia registrados, su último estado, modelos detectados y preguntas que cubren las reglas."""
+
+        def listing() -> dict[str, Any]:
+            rules = next(e for e in engines.registry.decision if e.provider == "rules")
+            return {"engines": engines.registry.list(), "rules": rules.catalog()}  # type: ignore[attr-defined]
+
+        return await call("acm_engines_list", {}, listing)
+
+    @server.tool()
+    async def acm_engines_refresh() -> dict[str, Any]:
+        """(admin) Comprueba la salud de cada motor y detecta los modelos disponibles en su runtime."""
+
+        def refresh() -> dict[str, Any]:
+            with service.global_db.read() as conn:
+                if service._principal_role(conn, principal()) != "admin":
+                    raise Forbidden("solo un admin puede refrescar los motores de inferencia")
+            return {"engines": engines.registry.refresh()}
+
+        return await call("acm_engines_refresh", {}, refresh)
+
+    @server.tool()
+    async def acm_savings_report(principal_id: str | None = None, project_id: str | None = None) -> dict[str, Any]:
+        """(admin) Tokens ahorrados por el contexto compacto, agregados por agente y proyecto, con el método usado."""
+        args = {"principal_id": principal_id, "project_id": project_id}
+        fn = partial(context.savings_report, principal(), filter_principal=principal_id, project_id=project_id)
+        return await call("acm_savings_report", args, fn)
+
+    # ---------------------------------------------------------- modelos y conversación (US-50.09/10, US-22.10/11)
+    @server.tool()
+    async def acm_models_list() -> dict[str, Any]:
+        """Modelos disponibles: Ollaya (JEV, decisiones) con detalles, propósitos asignados y nota; Ollama (local)
+        con el elegido. Explica para qué y cómo usar cada motor, y qué propósitos conoce ACM."""
+        return await call("acm_models_list", {}, models.catalog, principal())
+
+    @server.tool()
+    async def acm_models_select(
+        ollama_model: str | None = None,
+        jev_default_model: str | None = None,
+        jev_models_by_purpose: dict[str, str] | None = None,
+        jev_model_notes: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        """(admin) Elige el modelo de Ollama y, en Ollaya, el de por defecto, uno por propósito y notas de uso.
+        Solo modelos detectados; se aplica sin reiniciar."""
+        args = {
+            "ollama_model": ollama_model,
+            "jev_default_model": jev_default_model,
+            "jev_models_by_purpose": jev_models_by_purpose,
+            "jev_model_notes": jev_model_notes,
+        }
+        fn = partial(models.select, principal(), **args)
+        return await call("acm_models_select", args, fn)
+
+    @server.tool()
+    async def acm_chat(
+        project_id: str, message: str, thread_id: str | None = None, title: str | None = None
+    ) -> dict[str, Any]:
+        """Habla con el modelo local de Ollama en un hilo que ACM conserva: envía solo el mensaje nuevo (y `thread_id`
+        para continuar). El modelo consulta él mismo el proyecto con herramientas de ACM de solo lectura. Delega en él
+        resúmenes, revisiones o búsquedas sobre el proyecto para ahorrar tus tokens."""
+        args = {"project_id": project_id, "message": message, "thread_id": thread_id, "title": title}
+        fn = partial(chat.send, principal(), project_id, message, thread_id, title)
+        return await call("acm_chat", args, fn)
+
+    @server.tool()
+    async def acm_chat_threads(project_id: str) -> dict[str, Any]:
+        """Tus hilos de conversación con el modelo local en el proyecto (un admin ve todos)."""
+        return await call("acm_chat_threads", {"project_id": project_id}, chat.threads, principal(), project_id)
+
+    @server.tool()
+    async def acm_chat_get(project_id: str, thread_id: str) -> dict[str, Any]:
+        """Un hilo con todos sus mensajes, herramientas usadas y modelo."""
+        args = {"project_id": project_id, "thread_id": thread_id}
+        return await call("acm_chat_get", args, chat.get, principal(), project_id, thread_id)
+
+    # ------------------------------------------------------------------ identidad, roles y tokens (EPIC-20)
+    @server.tool()
+    async def acm_whoami() -> dict[str, Any]:
+        """Tu identidad: principal, tipo (user/agent), rol global, proyectos con su rol y tokens activos."""
+        return await call("acm_whoami", {}, lambda: identity.get_principal(principal(), principal()))
+
+    @server.tool()
+    async def acm_principal_create(principal_id: str, kind: str, role: str = "user") -> dict[str, Any]:
+        """(admin) Da de alta un usuario o un agente (kind: user | agent; role global: admin | user)."""
+        args = {"principal_id": principal_id, "kind": kind, "role": role}
+        return await call(
+            "acm_principal_create", args, identity.create_principal, principal(), principal_id, kind, role
+        )
+
+    @server.tool()
+    async def acm_principal_list() -> dict[str, Any]:
+        """(admin) Principales con su tipo y rol global, y los roles disponibles."""
+        return await call("acm_principal_list", {}, identity.list_principals, principal())
+
+    @server.tool()
+    async def acm_principal_set_role(principal_id: str, role: str) -> dict[str, Any]:
+        """(admin) Cambia el rol global (admin | user). Nunca deja el sistema sin admin."""
+        args = {"principal_id": principal_id, "role": role}
+        return await call("acm_principal_set_role", args, identity.set_global_role, principal(), principal_id, role)
+
+    @server.tool()
+    async def acm_member_set(project_id: str, principal_id: str, role: str) -> dict[str, Any]:
+        """(persona admin u owner del proyecto) Añade un miembro o cambia su rol (owner | member | viewer). Un agente no
+        puede dar acceso: pide unirse con acm_project_join."""
+        args = {"project_id": project_id, "principal_id": principal_id, "role": role}
+        return await call("acm_member_set", args, identity.set_member, principal(), project_id, principal_id, role)
+
+    @server.tool()
+    async def acm_member_remove(project_id: str, principal_id: str) -> dict[str, Any]:
+        """(admin u owner del proyecto) Retira a un miembro. Nunca deja el proyecto sin owner."""
+        args = {"project_id": project_id, "principal_id": principal_id}
+        return await call("acm_member_remove", args, identity.remove_member, principal(), project_id, principal_id)
+
+    @server.tool()
+    async def acm_member_list(project_id: str) -> dict[str, Any]:
+        """Miembros del proyecto con su rol y tipo."""
+        return await call("acm_member_list", {"project_id": project_id}, identity.list_members, principal(), project_id)
+
+    @server.tool()
+    async def acm_token_create(principal_id: str, name: str) -> dict[str, Any]:
+        """(admin) Crea un token para un principal. El token completo se muestra SOLO en esta respuesta: guárdalo."""
+        args = {"principal_id": principal_id, "name": name}
+        return await call("acm_token_create", args, identity.create_token, principal(), principal_id, name)
+
+    @server.tool()
+    async def acm_token_list(principal_id: str | None = None) -> dict[str, Any]:
+        """Tokens (sin el secreto: solo prefijo, estado y uso). Los tuyos, o los de cualquiera si eres admin."""
+        args = {"principal_id": principal_id}
+        return await call("acm_token_list", args, identity.list_tokens, principal(), principal_id)
+
+    @server.tool()
+    async def acm_token_revoke(token_id: str) -> dict[str, Any]:
+        """Revoca un token al instante (los tuyos; los ajenos, solo un admin)."""
+        return await call("acm_token_revoke", {"token_id": token_id}, identity.revoke_token, principal(), token_id)
+
+    # ------------------------------------------------------------------ Watchdog (EPIC-13)
+    @server.tool()
+    async def acm_watchdog_run(project_id: str) -> dict[str, Any]:
+        """Auditoría de gobernanza del proyecto: integridad SQLite, calidad de historias (vía el motor de decisión) y
+        estructura. Devuelve semáforo (GREEN/AMBER/RED) y hallazgos. Si la integridad falla, el proyecto queda en
+        cuarentena (sin escrituras) hasta que otra ejecución lo encuentre sano."""
+        return await call("acm_watchdog_run", {"project_id": project_id}, watchdog.run, principal(), project_id)
+
+    @server.tool()
+    async def acm_watchdog_history(project_id: str, limit: int = 20) -> dict[str, Any]:
+        """Histórico de auditorías del proyecto (más recientes primero), con sus hallazgos."""
+        args = {"project_id": project_id, "limit": limit}
+        return await call("acm_watchdog_history", args, watchdog.history, principal(), project_id, limit)
+
+    @server.tool()
+    async def acm_governance_status(project_id: str) -> dict[str, Any]:
+        """Indicadores de gobernanza: semáforo y recuentos de la última auditoría, integridad y si admite escrituras."""
+        args = {"project_id": project_id}
+        return await call("acm_governance_status", args, watchdog.status, principal(), project_id)
+
+    @server.tool()
+    async def acm_health() -> dict[str, Any]:
+        """(admin) Salud de cada componente: bases SQLite, catálogo de skills y motores de inferencia."""
+        return await call("acm_health", {}, lambda: watchdog.health(principal(), catalog))
+
+    server.acm_catalog = catalog  # type: ignore[attr-defined]
+    server.acm_engines = engines  # type: ignore[attr-defined]
+    return server

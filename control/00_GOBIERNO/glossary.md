@@ -1,0 +1,80 @@
+# Glosario
+
+| Término | Definición |
+|---------|------------|
+| ACM | Agile Context Manager, el producto de este repositorio. |
+| control/ | Fuente de verdad operacional del proyecto (Markdown). |
+| Constitución | `/CLAUDE.md`: reglas de funcionamiento del agente. |
+| INVEST | Independent, Negotiable, Valuable, Estimable, Small, Testable — criterios de calidad de historias. |
+| ADR | Architecture Decision Record. |
+| MCP | Model Context Protocol: interfaz por la que los agentes invocan herramientas de ACM. |
+| RAG | Retrieval-Augmented Generation: recuperación semántica de contexto. |
+| Ollama | Motor de inferencia de modelos locales. |
+| JEV / Jev | Modelos de decisión "System One" (TypeSafe) servidos en local por Ollaya: estado + preguntas tipadas → respuestas con probabilidades calibradas, sin generar texto. Integrados en SPRINT-008 (`JevDecisionEngine`, EPIC-50), aún sin verificar contra un Ollaya real (IMP-004) (ADR-006, ADR-012). |
+| Interfaz de decisión | Puerto único del núcleo por el que Watchdog, gates y router piden decisiones tipadas; implementaciones: reglas, Ollama y JEV (US-35.11, ADR-012). |
+| Segundo cerebro | Papel de ACM respecto al agente IA: contexto compacto y decisiones resueltas con modelos locales para que el agente gaste menos tokens (definición §1.2, ADR-012). |
+| Preparado para JEV | Diseño en el que conectar el adaptador JEV no requiere cambiar a los consumidores (US-47.01). |
+| Ollaya | Runtime local tipo Ollama para modelos de decisión estilo Jev (puerto 11435). |
+| choice / score / noul | Tipos de pregunta de un modelo de decisión: categoría, puntuación, sí/no. |
+| Walkthrough | Secuencia de pasos (algunos ejecutables) que evidencia que una funcionalidad funciona (EPIC-28). |
+| Done-Done | Código terminado **y** verificado con evidencia. |
+| Snapshot | Estado coordinado SQLite + Git restaurable (EPIC-12). |
+| DocuTwin | Documentación viva sincronizada con el sistema real (EPIC-25). |
+| Historia técnica (TECH-NNN) | Trabajo técnico transversal necesario para el producto (no es deuda). |
+| GAP-NNN | Hueco/inconsistencia detectado en el sistema de control o backlog. |
+| MVP / POST-MVP | Clasificación de alcance (ADR-010). |
+| Fuente A / Fuente B | A = `backlog_completo_v1.md` (columna vertebral del backlog); B = `product_definition_v6.md` (definición v1.5). ADR-010. |
+| Backlog unificado | Backlog generado a partir de A y B con IDs sin colisiones; traducción de IDs de B en `id_mapping.md`. |
+| CA-NN | Criterio de aceptación binario PASS/FAIL de una historia. |
+| CONF-NNN | Conflicto de requisitos entre fuentes que requiere decisión del operador. |
+| Orquestador | Componente de ACM que asigna trabajo a agentes internos (EPIC-07, POST-MVP). |
+| Skill | Paquete de instrucciones (`SKILL.md` con frontmatter YAML) que enseña a un agente a realizar una tarea; ACM sirve las suyas por MCP (ADR-008). |
+| Extensión MCP Skills | SEP-2640, `io.modelcontextprotocol/skills`: estándar para descubrir y distribuir skills por MCP (`skills/list`, `skills/get`, URIs `skill://`). |
+| WAL | Write-Ahead Logging de SQLite: los lectores no se bloquean con un escritor activo (ADR-013). |
+| BEGIN IMMEDIATE | Transacción SQLite que toma el lock de escritura al empezar; obligatoria para escrituras en ACM (ADR-013). |
+| Streamable HTTP | Transporte HTTP de MCP; ACM lo sirve en `/mcp` (ADR-014). |
+| 2026-07-28 | Revisión del protocolo MCP con peticiones autocontenidas (sin handshake ni sesión); impide el estado de "proyecto seleccionado" por sesión (ADR-014). |
+| DecisionEngine / GenerationEngine | Interfaces de inferencia del núcleo (ADR-015). |
+| Spike | Experimento acotado para responder una pregunta técnica; su código vive en `spikes/` y no es producto. |
+| Principal | Identidad que llama a ACM, de tipo `user` o `agent`. Rol global `admin`/`user`. Por HTTP la fija su token (ADR-017); en stdio y CLI, `ACM_PRINCIPAL`. |
+| Token de ACM | Credencial `acm_…` de un principal. Se muestra una vez; ACM guarda su hash y un prefijo. Revocable al instante. |
+| owner / member | Roles de pertenencia a un proyecto: owner modifica la configuración y gestiona miembros; member lee y escribe el backlog. |
+| Refinamiento | Documento `01_PRODUCTO/refinements/US-NN.MM.md` con las secciones de la regla READY de la fuente A. |
+| Fusión (dedupe) | Marcar una historia como duplicado de otra (`tools/dedupe.json`): queda CANCELLED y sus CA pasan a la destino. `cross_epic: true` permite fusionar entre épicas. |
+| Skill | Paquete de instrucciones en Markdown (`SKILL.md` con frontmatter) que ACM sirve por MCP para que el agente sepa usarlo. Oficiales en `src/acm/skills/`. |
+| Extensión Skills | Extensión MCP `io.modelcontextprotocol/skills` (SEP-2640): métodos `skills/list` y `skills/get`, archivos como recursos `skill://`. |
+| Digest | `sha256:<hex>` del contenido de un archivo de skill; cambia solo si cambia el contenido (US-15.06). |
+| Auditoría MCP | Registro en `mcp_audit` de cada invocación: principal, operación, argumentos, estado, error, resultado (truncado) y duración. |
+| Evento de dominio | Registro en `events` de un cambio confirmado, con `seq` creciente; se empuja por WebSocket a los clientes autorizados (ADR-018). |
+| seq | Número de orden global de un evento: permite reanudar tras reconectar y descartar duplicados. |
+| resync | Aviso del WebSocket: los eventos pedidos ya no están; el cliente recarga el estado por REST. |
+| Watchdog | Subsistema inspector (ACT-05, EPIC-13); en el producto, servicio de ACM que audita cada proyecto: integridad SQLite, calidad de historias (vía el motor de decisión) y estructura; produce semáforo e histórico (EPIC-13). |
+| Semáforo | Resumen de una auditoría: RED (algún CRITICAL), AMBER (WARNING o REVIEW), GREEN; UNKNOWN si nunca se auditó. |
+| Cuarentena | Estado de un proyecto con la base dañada: se rechazan sus escrituras (`DATA_INTEGRITY`) hasta que una auditoría lo encuentre sano. |
+| Motor de decisión | Implementación del puerto `DecisionEngine` (reglas, Ollama, JEV). Responde preguntas `noul`, `choice` o `score`. |
+| Router de inferencia | `EngineRouter`: elige motor según `decision.engine_order`, aplica fallback y registra cada llamada. Los consumidores solo hablan con él. |
+| Calibrado | Respuesta cuyas probabilidades son reales (reglas exactas, JEV). La de un LLM generativo no lo es: un gate no la acepta. |
+| purpose | Para qué se pide una decisión o generación (p. ej. `story.quality`, `context.compact`); sirve para enrutar y auditar. |
+| Contexto compacto | Contexto de una historia por secciones con fuentes, resumido si supera el presupuesto (US-35.08). |
+| chars/4@v1 | Método versionado de estimación de tokens: ⌈caracteres / 4⌉ del JSON entregado (US-35.09). |
+| TD-NNN | Deuda técnica detectada durante el desarrollo (`13_BUGS/known_issues.md`); distinta de las historias TECH-NNN del backlog. |
+| CSP | Content Security Policy: cabecera con la que el servidor le dice al navegador qué scripts y conexiones admite la interfaz. En ACM: solo scripts propios y conexiones al mismo host (ADR-019). |
+| e2e | Test de extremo a extremo: Chromium real (Playwright) contra ACM real, como lo usaría una persona (`tests/test_webui.py`). |
+| Carril | En el Kanban de varios proyectos, fila propia de cada proyecto (US-06.07 CA-03); la alternativa es la vista mezclada. |
+| WCAG AA | Nivel de accesibilidad exigido a la paleta: contraste ≥ 4.5:1 para texto y ≥ 3:1 para elementos gráficos (US-31.07). |
+| code_reference.md | Referencia de símbolos generada desde el código por `control/tools/code_inventory.py`; no se edita a mano. |
+| Supervisor ágil | Revisión autónoma que ACM hace de cada proyecto en cada ejecución del Watchdog: detecta incongruencias, revisa historias con JEV u Ollama, redacta un informe y aplica solo acciones seguras y reversibles (ADR-020, FEAT-10.04). |
+| `acm-supervisor` | Principal interno (agente, admin, sin token) con el que actúa y se audita el supervisor ágil. |
+| Acción segura | Cambio que el supervisor puede aplicar solo: `story.mark_ready`, `story.back_to_planned`, `sprint.remove_story`. Reversible, auditado y por encima del umbral de confianza. |
+| Propósito (de inferencia) | Para qué se pide una decisión o una generación (`agile.story_review`, `agent.chat`…). Decide el motor y el modelo (ADR-021). |
+| Familia de Ollaya | Grupo de modelos JEV con el mismo nombre antes de `:` (`laya`, `winnow`, `kev`…); la guía de uso está en `10_IA/models.md`. |
+| Agente interno | Conversación con el modelo local de Ollama sobre un proyecto, con herramientas de solo lectura (ADR-022). |
+| Hilo (`TH-NNN`) | Conversación persistida con el agente interno; conserva el contexto entre mensajes y solo la ve quien la abrió (y los admin). |
+| Sprint (en el producto) | `SPRINT-NN` de un proyecto gestionado por ACM: objetivo, fechas, capacidad en historias y estados PLANNED → ACTIVE → CLOSED o CANCELLED (EPIC-05). |
+| Modo local | Forma de usar ACM con la entrada MCP estándar por stdio: estado por usuario en `~/.acm`, agentes sin permisos de admin, interfaz sin token en el propio equipo (ADR-023). |
+| Principal (agente) | Identidad con la que se aprueban los permisos de un agente: `<cliente>.<equipo>` o `ACM_AGENT`. No cambia entre sesiones. |
+| Sesión (agente) | Una conexión de un agente (`#3f9a`). El reparto de trabajo y la actividad distinguen sesiones del mismo principal. |
+| Solicitud de acceso | Petición de un agente para unirse a un proyecto; queda pendiente hasta que una persona la aprueba (escritura o lectura) o rechaza en la interfaz (ADR-024). |
+| `viewer` | Rol de proyecto de solo lectura: lee, no escribe y no recibe trabajo. |
+| Asignación de trabajo | Trabajo que ACM da a una sesión con `acm_next_work`; caduca a los 30 minutos sin actividad (ADR-025). |
+| `acm-workflow` | Skill del proceso completo para trabajar con ACM desde cualquier agente. |
