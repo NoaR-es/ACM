@@ -61,3 +61,4 @@
 | 2026-10-28 | Entrada estándar real | PASS | `uvx --from <ruta> acm mcp-stdio` con un cliente MCP real por stdio: `instructions`, identidad `codex.<equipo>` y 65 herramientas |
 | 2026-10-28 | TEST-CTRL-001 (SPRINT-009) | PASS | `stories=489 criteria=732 test_refs=397`; `OK (check)` |
 | 2026-10-28 | Evidencia SPRINT-009 | 21 PASS, 0 pendientes | `sprint_009_evidence.md` |
+| 2026-10-28 | CI GitHub Actions runs #27 y #28 | PASS | Commit `0ccd71c` (cierre de SPRINT-009); también en verde el arreglo `b93b1fb`: jobs `test` (e2e obligatorios) y `web` |

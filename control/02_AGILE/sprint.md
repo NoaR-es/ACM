@@ -14,6 +14,7 @@ Contexto: el operador pide que ACM se pueda configurar en cualquier agente (Clau
 | Historias | US-14.12, US-14.13, US-14.14, US-14.15, US-14.16, US-14.17 (fuente B: US-15.13..15.18, FEAT-15.05..15.07) |
 | Dependencias | SPRINT-008; ADR-017, ADR-018; nuevas ADR-023, ADR-024, ADR-025 |
 | Riesgos | Los formatos de configuración de Antigravity, Codex y Hermes no se han podido probar con esos agentes (solo con un cliente MCP real por stdio y `uvx`); `~/.acm` es de un equipo (compartir entre equipos exige servidor con tokens); todos los agentes locales se ejecutan como el usuario del sistema |
+| CI | En verde: runs #27 y #28, commit `0ccd71c` (los commits parciales `234947c` y `c066e8a` fallaron por BUG-003) |
 | Impedimentos | IMP-004 (abierto; no afecta) |
 | Fuera de alcance | Dependencias entre historias (US-05.02 CA-03); verificación con Ollama y Ollaya reales; proceso de instalación de `uv` |
 | Velocidad | No se mide |
