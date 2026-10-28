@@ -1,16 +1,19 @@
-TASK: SPRINT-009 PAUSADO (2026-10-14, a petición del operador)
-STORY: US-14.12..14.17 (IN_PROGRESS: tests nuevos en PASS en local; falta la suite completa, evidencia, control y CI)
-SPRINT: SPRINT-009 — Conexión universal de agentes, unión con aprobación y colaboración
+TASK: none (SPRINT-009 entregado; pendiente de CI)
+STORY: —
+SPRINT: SPRINT-009
 
-PARA REANUDAR:
-1. Ejecutar la suite completa: ACM_E2E_REQUIRED=1 .venv/bin/pytest -q (esperado 431 casos) y ruff.
-2. Generar 12_TESTING/sprint_009_evidence.md con tools/evidence.py y pasar las historias a VERIFIED si todo pasa.
-3. Actualizar control/: 03_ESTADO, 06_API (65 herramientas, rutas /join-requests y /work), 07_DATOS (global v9, proyecto v6),
-   08 environment, 09 events (join.*, work.*), 10_IA, 11_SEGURIDAD, 12_TESTING, 15_CAMBIOS (0.9.0.dev0), RELATIONSHIPS, INDEX, glossary.
-4. Commit, push y comprobar la CI.
+NEXT CANDIDATES (decisión del operador):
+- Probar la entrada estándar con Antigravity, Codex, Hermes y Cursor (formatos no verificados con esos agentes)
+- Dependencias entre historias (cierra US-05.02 CA-03) y tareas con su Kanban (EPIC-10, US-06.04)
+- SPIKE-005 con Ollama y Ollaya reales (IMP-004)
 
 RELEVANT DOCUMENTS:
-01_PRODUCTO/product_definition_v6.md · 02_AGILE/sprint.md · 14_DECISIONES/decisions.md (ADR-023..025)
+02_AGILE/sprint.md
+12_TESTING/sprint_009_evidence.md
+14_DECISIONES/decisions.md (ADR-023, ADR-024, ADR-025)
+README.md (configuración de cada agente)
+
+FILES AFFECTED: —
 
 LOCK: none
-LAST_UPDATED: 2026-10-14
+LAST_UPDATED: 2026-10-28

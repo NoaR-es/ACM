@@ -1,9 +1,9 @@
-# Bases de datos (SPRINT-001; v2 en SPRINT-002; global v3 en SPRINT-003; global v4 en SPRINT-004; global v5 en SPRINT-005; global v6 y proyecto v3 en SPRINT-006; global v8 y proyecto v5 en SPRINT-008)
+# Bases de datos (SPRINT-001; v2 en SPRINT-002; global v3 en SPRINT-003; global v4 en SPRINT-004; global v5 en SPRINT-005; global v6 y proyecto v3 en SPRINT-006; global v8 y proyecto v5 en SPRINT-008; global v9 y proyecto v6 en SPRINT-009)
 
 | Base | Ruta | Motor | Propósito | Esquema | Migraciones |
 |------|------|-------|-----------|---------|-------------|
-| Global | `<ACM_DATA_DIR>/acm.db` | SQLite 3 (WAL) | Principales, registro de proyectos, pertenencias, auditoría MCP, motores y llamadas de inferencia, entregas de contexto, tokens de acceso, Watchdog con informe y acciones del supervisor, eventos, modelos elegidos | `acm.db.schema.GLOBAL` v8 | `schema_migrations` |
-| Proyecto | `<ACM_DATA_DIR>/projects/<project_id>/project.db` | SQLite 3 (WAL) | Metadatos y configuración del proyecto y backlog con historial de estados, sprints, revisiones del supervisor e hilos del agente interno (y, en el futuro, todo su estado: ADR-011) | `acm.db.schema.PROJECT` v5 | `schema_migrations` |
+| Global | `<ACM_DATA_DIR>/acm.db` | SQLite 3 (WAL) | Principales, registro de proyectos, pertenencias, auditoría MCP, motores y llamadas de inferencia, entregas de contexto, tokens de acceso, Watchdog con informe y acciones del supervisor, eventos, modelos elegidos | `acm.db.schema.GLOBAL` v9 | `schema_migrations` |
+| Proyecto | `<ACM_DATA_DIR>/projects/<project_id>/project.db` | SQLite 3 (WAL) | Metadatos y configuración del proyecto y backlog con historial de estados, sprints, revisiones del supervisor e hilos del agente interno (y, en el futuro, todo su estado: ADR-011) | `acm.db.schema.PROJECT` v6 | `schema_migrations` |
 
 ## Esquema global v1
 | Tabla | Columnas | Restricciones |
@@ -44,6 +44,14 @@ Retención de `inference_calls` y `context_deliveries`: sin política (MISSING, 
 |--------|---------|
 | `projects.integrity_status` / `integrity_detail` / `integrity_checked_at` | `unknown` \| `ok` \| `corrupt`; `corrupt` bloquea las escrituras del proyecto (US-13.11) |
 | `watchdog_runs` | Histórico de auditorías: proyecto, fecha, trigger (`manual` \| `scheduled`), principal, semáforo, recuentos por severidad, hallazgos (JSON), motores, duración. Retención: sin política (MISSING, EPIC-44) |
+
+## Esquema global v9 y de proyecto v6 (SPRINT-009)
+| Versión | Cambio | Uso |
+|---------|--------|-----|
+| global v9 `access_requests` | `project_members` se reconstruye con el rol `viewer` (solo lectura); tabla nueva `join_requests` (`project_id`, `principal_id`, `access` read/write, `message`, `status` PENDING/APPROVED/REJECTED, `decided_at/by`, `granted_role`) con índice único parcial: una petición pendiente por agente y proyecto | Unión de agentes con aprobación de una persona (ADR-024) |
+| proyecto v6 `work_claims` | tabla `work_claims` (`item` PK, `action`, `principal`, `session`, `claimed_at`, `expires_at`, `ttl_s`) | Trabajo asignado por `acm_next_work`; caduca a los `work.claim_ttl_minutes` (ADR-025) |
+
+Estado por defecto en `~/.acm` (`ACM_DATA_DIR` lo cambia). Es de un equipo: compartir proyectos entre equipos exige un servidor (`acm serve`).
 
 ## Esquema global v7 y v8 (SPRINT-008)
 | Versión | Cambio | Uso |

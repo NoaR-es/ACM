@@ -23,7 +23,7 @@
 | Historia técnica (TECH-NNN) | Trabajo técnico transversal necesario para el producto (no es deuda). |
 | GAP-NNN | Hueco/inconsistencia detectado en el sistema de control o backlog. |
 | MVP / POST-MVP | Clasificación de alcance (ADR-010). |
-| Fuente A / Fuente B | A = `backlog_completo_v1.md` (columna vertebral del backlog); B = `product_definition_v5.md` (definición v1.4). ADR-010. |
+| Fuente A / Fuente B | A = `backlog_completo_v1.md` (columna vertebral del backlog); B = `product_definition_v6.md` (definición v1.5). ADR-010. |
 | Backlog unificado | Backlog generado a partir de A y B con IDs sin colisiones; traducción de IDs de B en `id_mapping.md`. |
 | CA-NN | Criterio de aceptación binario PASS/FAIL de una historia. |
 | CONF-NNN | Conflicto de requisitos entre fuentes que requiere decisión del operador. |
@@ -71,3 +71,10 @@
 | Agente interno | Conversación con el modelo local de Ollama sobre un proyecto, con herramientas de solo lectura (ADR-022). |
 | Hilo (`TH-NNN`) | Conversación persistida con el agente interno; conserva el contexto entre mensajes y solo la ve quien la abrió (y los admin). |
 | Sprint (en el producto) | `SPRINT-NN` de un proyecto gestionado por ACM: objetivo, fechas, capacidad en historias y estados PLANNED → ACTIVE → CLOSED o CANCELLED (EPIC-05). |
+| Modo local | Forma de usar ACM con la entrada MCP estándar por stdio: estado por usuario en `~/.acm`, agentes sin permisos de admin, interfaz sin token en el propio equipo (ADR-023). |
+| Principal (agente) | Identidad con la que se aprueban los permisos de un agente: `<cliente>.<equipo>` o `ACM_AGENT`. No cambia entre sesiones. |
+| Sesión (agente) | Una conexión de un agente (`#3f9a`). El reparto de trabajo y la actividad distinguen sesiones del mismo principal. |
+| Solicitud de acceso | Petición de un agente para unirse a un proyecto; queda pendiente hasta que una persona la aprueba (escritura o lectura) o rechaza en la interfaz (ADR-024). |
+| `viewer` | Rol de proyecto de solo lectura: lee, no escribe y no recibe trabajo. |
+| Asignación de trabajo | Trabajo que ACM da a una sesión con `acm_next_work`; caduca a los 30 minutos sin actividad (ADR-025). |
+| `acm-workflow` | Skill del proceso completo para trabajar con ACM desde cualquier agente. |

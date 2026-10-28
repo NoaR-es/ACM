@@ -1,6 +1,6 @@
 # Relaciones
 
-LAST_UPDATED: 2026-10-06
+LAST_UPDATED: 2026-10-28
 
 ## Sprint → Tasks
 ```
@@ -84,7 +84,7 @@ ADR-009 (MVP v2)
 ```
 ADR-010 (backlog unificado + MVP v3)
 ├── supersede ADR-009
-├── fuentes: backlog_completo_v1.md (A), product_definition_v5.md (B, v1.4; antes v4/v3/v2)
+├── fuentes: backlog_completo_v1.md (A), product_definition_v6.md (B, v1.5; antes v5/v4/v3/v2)
 ├── genera: epics.md, features.md, user_stories.md, backlog.md, technical_stories.md, id_mapping.md
 ├── nuevas épicas: EPIC-49 (deuda), EPIC-50 (JEV ← ADR-006), EPIC-51 (sandbox), EPIC-52 (CLI), EPIC-53 (extensiones)
 └── conflictos: CONF-001 (EPIC-47 ↔ EPIC-50), CONF-002 (EPIC-02 ↔ EPIC-18), CONF-003 (EPIC-07/08/09/46), CONF-004 (EPIC-14)
@@ -226,7 +226,7 @@ SPRINT-007
 Código → historias: webui_app.py ← ADR-019, VULN-004 · KanbanBoard.tsx/kanban.ts ← US-06.06, 06.07 · live.tsx/liveCore.ts ← US-31.08, 31.04 · Activity.tsx ← US-31.01, 31.02, 31.04, 21.09 · Dashboard.tsx ← US-45.02, 45.03 · Project/Story/Docs/System.tsx ← US-31.06, US-01.02 · theme.ts/prefs.tsx ← US-31.07
 
 SPRINT-008
-├── TASK-008-01 → 01_PRODUCTO/product_definition_v5.md (v1.4: FEAT-19.07, FEAT-10.04, FEAT-23.05, FEAT-24.05), tools/derive_backlog.py, 29 refinamientos
+├── TASK-008-01 → 99_ARCHIVO/superseded/product_definition_v5.md (v1.4: FEAT-19.07, FEAT-10.04, FEAT-23.05, FEAT-24.05), tools/derive_backlog.py, 29 refinamientos
 ├── US-31.09..31.12 (FEAT-19.07) → web_api.py (escritura), web/src/forms.tsx, pages/{Dashboard,BacklogForms,Project,Story,System}.tsx → tests/test_rest_write.py::test_us3109_*..test_us3112_*, tests/test_webui_ops.py::test_us3109_*..test_us3112_*
 ├── US-05.02..05.09 (EPIC-05) → domain/sprints.py, db/schema.py (proyecto v4), mcp_server.py (acm_sprint_*), web_api.py (/sprints, /kanban?sprint=), web/src/pages/Sprints.tsx → tests/test_sprints.py, tests/test_rest_write.py::test_us0505_*, tests/test_webui_ops.py::test_us0502_us0505_us0509_us0503_*
 ├── US-13.14, 13.15, 04.10, 04.14, 04.15, 43.08 (FEAT-10.04) / ADR-020 → domain/supervisor.py, domain/watchdog.py, db/schema.py (global v7, supervisor_reviews), web/src/pages/Supervisor.tsx → tests/test_supervisor.py, tests/test_webui_ops.py::test_us1314_ca05_us1315_ca03_*
@@ -239,4 +239,17 @@ SPRINT-008
 
 Código → historias: sprints.py ← US-05.02..05.09 · supervisor.py ← US-13.14, 13.15, 04.10, 04.14, 04.15, 43.08, ADR-020 · jev.py ← US-50.01, 50.02 · ollama.py (decisión) ← US-22.04 · router.py ← US-50.03, 50.04 · models.py/selection.py/ollaya_models.py ← US-50.09, 50.10, 22.06, 22.07, ADR-021 · chat.py ← US-22.10, 22.11, ADR-022 · forms.tsx ← US-31.09..31.12
 Modelo IA → uso: jev:<modelo> → agile.story_review, agile.sprint_review, acm_decide · ollama-decide:<modelo> → respaldo de decisiones · ollama:<modelo> → context.compact, agile.report, agent.chat (10_IA/model_registry.md)
+
+SPRINT-009
+├── TASK-009-01 → 01_PRODUCTO/product_definition_v6.md (v1.5: FEAT-15.05..15.07), tools/derive_backlog.py, 6 refinamientos, ADR-023..025
+├── US-14.12 (FEAT-15.05) / ADR-023 → sessions.py, local.py, config.py, __main__.py, app.py (/api/local-session), web/src/auth.tsx → tests/test_local_mode.py, tests/test_app.py::test_modo_stdio_del_cli, tests/test_webui_agents.py::test_us1412_*
+├── US-14.13 (FEAT-15.05) → mcp_server.py (instructions, prompts), skills/acm-workflow, skills/acm-schema → tests/test_skills.py::test_us1413_*
+├── US-14.14, 14.15 (FEAT-15.06) / ADR-024 → domain/access.py, db/schema.py (global v9), domain/identity.py (agentes no dan acceso), web_api.py (/join-requests), web/src/pages/JoinRequests.tsx → tests/test_access.py, tests/test_webui_agents.py::test_us1415_*
+├── US-14.16, 14.17 (FEAT-15.07) / ADR-025 → domain/work.py, domain/backlog.py (_guard_claim), db/schema.py (proyecto v6), config_schema.py (work.claim_ttl_minutes), KanbanBoard.tsx → tests/test_work.py, tests/test_webui_agents.py::test_us1417_*
+├── BUG-003 → app.py (local_session), web/src/auth.tsx → tests/test_webui.py::test_ui_sin_errores_de_consola_y_cabeceras_de_seguridad
+├── VULN-005, VULN-006 → 11_SEGURIDAD/vulnerabilities.md, README.md (Security)
+└── README.md, 06_API/{rest_api,mcp_server,endpoints}.md, 07_DATOS/databases.md, 08_INFRAESTRUCTURA/environment.md, 09_MENSAJERIA/events.md, 11_SEGURIDAD/{permissions,secrets}.md, 12_TESTING/sprint_009_evidence.md
+
+Código → historias: sessions.py ← US-14.12 · local.py ← US-14.12 · access.py ← US-14.14, 14.15 · work.py ← US-14.16, 14.17 · backlog._guard_claim ← US-14.16 CA-03 · JoinRequests.tsx ← US-14.15
+Agente (principal) → sesión → asignación: `<cliente>.<equipo>` → `#<4 hex>` → work_claims (`acm_work_list`)
 ```

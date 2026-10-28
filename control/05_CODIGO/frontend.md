@@ -1,6 +1,6 @@
 # Interfaz web — arquitectura del código (`web/`)
 
-Actualizado: 2026-10-06 (SPRINT-008). Decisión: ADR-019. Componentes: `components.md`. Hooks: `hooks.md`.
+Actualizado: 2026-10-28 (SPRINT-009). Decisión: ADR-019. Componentes: `components.md`. Hooks: `hooks.md`.
 
 ## Pila
 React 19 + TypeScript 7 (estricto) + Vite 8; `@tanstack/react-query` (caché e invalidación), `react-router-dom` (HashRouter), `marked` + `dompurify` (Markdown seguro); vitest + jsdom para tests unitarios. Versiones fijadas: `dependencies.md`.
@@ -45,3 +45,6 @@ Toda operación de escritura usa `useAction` (`forms.tsx`): mutación de react-q
 3. Si depende de eventos, su clave en `liveCore.affectedKeys` (con test).
 4. Test e2e en `tests/test_webui.py`.
 5. Fila en `file_inventory.md` (lo exige `code_inventory --check`) y entrada en `components.md`.
+
+## Entrada local y agentes (SPRINT-009)
+`AuthProvider` intenta una sola vez al arrancar (y cada 5 s como mucho tras un 401) obtener un token de `/api/local-session` con la cabecera `X-ACM-Local`; solo lo entrega un `acm serve --local` a este equipo. Salir a propósito (`Salir`) guarda un marcador en `sessionStorage` para no volver a entrar solo. La respuesta es siempre 200 (`{"token": null}` fuera del modo local): un 404 aparecía como error en la consola del navegador. `JoinRequestsPanel` (Panel) aprueba o rechaza peticiones de agentes; el Kanban muestra `assigned_to`; `liveCore` recarga `join-requests` y `work` con los eventos `join.*` y `work.*`.

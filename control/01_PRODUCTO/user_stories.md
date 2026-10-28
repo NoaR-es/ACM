@@ -1315,7 +1315,7 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-14.12
 
 - Enunciado: Como operador quiero conectar cualquier agente IA (Claude Code, Cursor, Codex, Antigravity, Hermes u otro) a ACM añadiendo una única entrada MCP estándar en su configuración, sin instalar, clonar ni configurar nada más.
-- Origen: B:US-15.13 · Épica: EPIC-14 · Feature: FEAT-14.05 · Alcance: MVP · Prioridad: P1 · Estado: IN_PROGRESS · Sprint: SPRINT-009
+- Origen: B:US-15.13 · Épica: EPIC-14 · Feature: FEAT-14.05 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-009
 - Refinamiento: `refinements/US-14.12.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Existe una entrada stdio estándar (`command` + `args`) que arranca ACM sin pasos previos ni tokens.
@@ -1326,7 +1326,7 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-14.13
 
 - Enunciado: Como agente IA quiero recibir las skills y el proceso de trabajo de ACM por la vía MCP que soporte mi cliente, sin gastar tokens en contenido repetido.
-- Origen: B:US-15.14 · Épica: EPIC-14 · Feature: FEAT-14.05 · Alcance: MVP · Prioridad: P1 · Estado: IN_PROGRESS · Sprint: SPRINT-009
+- Origen: B:US-15.14 · Épica: EPIC-14 · Feature: FEAT-14.05 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-009
 - Refinamiento: `refinements/US-14.13.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Las `instructions` de inicialización son breves e indican cómo obtener el proceso de trabajo.
@@ -1338,7 +1338,7 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-14.14
 
 - Enunciado: Como agente IA quiero ver qué proyectos existen y crear uno nuevo o pedir unirme a uno existente, para trabajar donde el operador decida.
-- Origen: B:US-15.15 · Épica: EPIC-14 · Feature: FEAT-14.06 · Alcance: MVP · Prioridad: P1 · Estado: IN_PROGRESS · Sprint: SPRINT-009
+- Origen: B:US-15.15 · Épica: EPIC-14 · Feature: FEAT-14.06 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-009
 - Refinamiento: `refinements/US-14.14.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: El agente ve los proyectos existentes, indicando en cuáles es miembro y en cuáles tiene una petición pendiente.
@@ -1349,7 +1349,7 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-14.15
 
 - Enunciado: Como operador quiero aprobar o rechazar desde la interfaz las peticiones de agentes para unirse a mis proyectos, y expulsarlos cuando quiera.
-- Origen: B:US-15.16 · Épica: EPIC-14 · Feature: FEAT-14.06 · Alcance: MVP · Prioridad: P1 · Estado: IN_PROGRESS · Sprint: SPRINT-009
+- Origen: B:US-15.16 · Épica: EPIC-14 · Feature: FEAT-14.06 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-009
 - Refinamiento: `refinements/US-14.15.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Las peticiones pendientes aparecen en la interfaz en tiempo real.
@@ -1362,7 +1362,7 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-14.16
 
 - Enunciado: Como agente IA quiero pedir a ACM el siguiente trabajo del proyecto, para avanzar el proceso ágil sin que otro agente haga lo mismo que yo.
-- Origen: B:US-15.17 · Épica: EPIC-14 · Feature: FEAT-14.07 · Alcance: MVP · Prioridad: P1 · Estado: IN_PROGRESS · Sprint: SPRINT-009
+- Origen: B:US-15.17 · Épica: EPIC-14 · Feature: FEAT-14.07 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-009
 - Refinamiento: `refinements/US-14.16.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: ACM responde el siguiente trabajo según el sprint y el estado del backlog (refinar, implementar, verificar, planificar), con su motivo.
@@ -1372,7 +1372,7 @@ READY: **0** · Fusionadas (CANCELLED): **0**
 #### US-14.17
 
 - Enunciado: Como operador quiero que el trabajo asignado a un agente que desaparece vuelva a quedar libre, para que el proyecto no se bloquee.
-- Origen: B:US-15.18 · Épica: EPIC-14 · Feature: FEAT-14.07 · Alcance: MVP · Prioridad: P1 · Estado: IN_PROGRESS · Sprint: SPRINT-009
+- Origen: B:US-15.18 · Épica: EPIC-14 · Feature: FEAT-14.07 · Alcance: MVP · Prioridad: P1 · Estado: VERIFIED · Sprint: SPRINT-009
 - Refinamiento: `refinements/US-14.17.md` — completo (regla READY de A)
 - Criterios de aceptación:
   - [ ] CA-01: Cada asignación caduca si el agente no la renueva en un plazo configurable.

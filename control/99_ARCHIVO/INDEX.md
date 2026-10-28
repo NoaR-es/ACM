@@ -9,7 +9,8 @@
 | `superseded/product_definition_v1.md` | SUPERSEDED | `superseded/product_definition_v2.md` (v1.1) | 2026-09-30 |
 | `superseded/product_definition_v2.md` | SUPERSEDED | `superseded/product_definition_v3.md` (v1.2) | 2026-09-30 |
 | `superseded/product_definition_v3.md` | SUPERSEDED | `superseded/product_definition_v4.md` (v1.3: interfaz completa, FEAT-19.05/19.06) | 2026-09-30 |
-| `superseded/product_definition_v4.md` | SUPERSEDED | `01_PRODUCTO/product_definition_v5.md` (v1.4: FEAT-19.07, FEAT-10.04, FEAT-23.05, FEAT-24.05) | 2026-09-30 |
+| `superseded/product_definition_v4.md` | SUPERSEDED | `superseded/product_definition_v5.md` (v1.4: FEAT-19.07, FEAT-10.04, FEAT-23.05, FEAT-24.05) | 2026-09-30 |
+| `superseded/product_definition_v5.md` | SUPERSEDED | `01_PRODUCTO/product_definition_v6.md` (v1.5: FEAT-15.05, FEAT-15.06, FEAT-15.07) | 2026-10-28 |
 | `deprecated/` | vacío | — | — |
 | `historical/sprint_000.md` | HISTORICAL | SPRINT-001 | 2026-09-30 |
 | `historical/sprint_001.md` | HISTORICAL | SPRINT-002 | 2026-09-30 |
@@ -19,3 +20,4 @@
 | `historical/sprint_005.md` | HISTORICAL | SPRINT-006 | 2026-09-30 |
 | `historical/sprint_006.md` | HISTORICAL | SPRINT-007 | 2026-09-30 |
 | `historical/sprint_007.md` | HISTORICAL | SPRINT-008 | 2026-09-30 |
+| `historical/sprint_008.md` | HISTORICAL | SPRINT-009 | 2026-10-28 |

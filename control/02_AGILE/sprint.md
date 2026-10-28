@@ -22,14 +22,14 @@ Contexto: el operador pide que ACM se pueda configurar en cualquier agente (Clau
 
 | ID | Tipo | Título | Historias | Estado |
 |----|------|--------|-----------|--------|
-| TASK-009-01 | DOCUMENTATION | Definición de producto v1.5 (`product_definition_v6.md`), refinamientos y ADR-023..025 | todas | IN_PROGRESS |
-| TASK-009-02 | TASK | Modo local: `~/.acm`, identidad por cliente y sesión, creación abierta, `uvx`, `acm stop` | US-14.12 | IN_PROGRESS |
-| TASK-009-03 | TASK | Unión con aprobación: esquema global v9, `AccessService`, MCP, REST y panel de solicitudes | US-14.14, US-14.15 | IN_PROGRESS |
-| TASK-009-04 | TASK | Reparto de trabajo: esquema de proyecto v6, `WorkService`, `acm_next_work`, guarda de historias, Kanban con agente | US-14.16, US-14.17 | IN_PROGRESS |
-| TASK-009-05 | TASK | Interfaz y supervisor en segundo plano (`acm serve --local`) y entrada sin token | US-14.12 | IN_PROGRESS |
-| TASK-009-06 | TASK | Skills por todas las vías, `instructions` breves, prompts MCP y skill `acm-workflow` | US-14.13 | IN_PROGRESS |
-| TASK-009-07 | TEST | 50 casos de test nuevos (procesos reales por stdio, interfaz en segundo plano y e2e), 12 mutaciones detectadas de 12 | todas | IN_PROGRESS |
-| TASK-009-08 | DOCUMENTATION | README con la configuración de cada agente y cierre de `control/` | — | IN_PROGRESS |
+| TASK-009-01 | DOCUMENTATION | Definición de producto v1.5 (`product_definition_v6.md`), refinamientos y ADR-023..025 | todas | VERIFIED |
+| TASK-009-02 | TASK | Modo local: `~/.acm`, identidad por cliente y sesión, creación abierta, `uvx`, `acm stop` | US-14.12 | VERIFIED |
+| TASK-009-03 | TASK | Unión con aprobación: esquema global v9, `AccessService`, MCP, REST y panel de solicitudes | US-14.14, US-14.15 | VERIFIED |
+| TASK-009-04 | TASK | Reparto de trabajo: esquema de proyecto v6, `WorkService`, `acm_next_work`, guarda de historias, Kanban con agente | US-14.16, US-14.17 | VERIFIED |
+| TASK-009-05 | TASK | Interfaz y supervisor en segundo plano (`acm serve --local`) y entrada sin token | US-14.12 | VERIFIED |
+| TASK-009-06 | TASK | Skills por todas las vías, `instructions` breves, prompts MCP y skill `acm-workflow` | US-14.13 | VERIFIED |
+| TASK-009-07 | TEST | 50 casos de test nuevos (procesos reales por stdio, interfaz en segundo plano y e2e), 12 mutaciones detectadas de 12 | todas | VERIFIED |
+| TASK-009-08 | DOCUMENTATION | README con la configuración de cada agente y cierre de `control/` | — | VERIFIED |
 
 SPRINT-008 cerrado y archivado en `99_ARCHIVO/historical/sprint_008.md` (CI runs #15 y #16 en verde).
 
@@ -37,6 +37,6 @@ SPRINT-008 cerrado y archivado en `99_ARCHIVO/historical/sprint_008.md` (CI runs
 
 | Historia | Estado | Evidencia |
 |----------|--------|-----------|
-| US-14.12, 14.13, 14.14, 14.15, 14.16, 14.17 | IN_PROGRESS | Tests nuevos en PASS en local; falta la suite completa, la evidencia y la CI (`12_TESTING/sprint_009_evidence.md` aún no existe) |
+| US-14.12, 14.13, 14.14, 14.15, 14.16, 14.17 | VERIFIED | `12_TESTING/sprint_009_evidence.md` (21 CA en PASS) |
 
-PAUSADO el 2026-10-14 a petición del operador. VERIFIED = todos los CA con test automático en PASS en la suite completa. DONE requiere además la revisión del operador (merge del PR). Lo que no se ha podido verificar: el comportamiento de cada agente concreto (Antigravity, Codex, Hermes, Cursor) al leer las `instructions` o los prompts, y la interfaz con equipos distintos.
+VERIFIED = todos los CA con test automático en PASS en la suite completa (431 casos, 2026-10-28). DONE requiere además la revisión del operador (merge del PR). Lo que no se ha podido verificar: el comportamiento de cada agente concreto (Antigravity, Codex, Hermes, Cursor) al leer las `instructions` o los prompts, y la interfaz con equipos distintos.

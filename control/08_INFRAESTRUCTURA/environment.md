@@ -17,8 +17,10 @@ Producción / despliegue: MISSING (sin definir; EPIC-18/CI-CD).
 ## Ejecución local del producto (2026-09-30)
 | Variable | Por defecto | Uso |
 |----------|-------------|-----|
-| `ACM_DATA_DIR` | `./.acm-data` | Directorio de las bases SQLite |
-| `ACM_PRINCIPAL` | `local-admin` | Admin local: identidad en stdio y en el CLI; se da de alta como admin. En HTTP la identidad sale del token (ADR-017) |
+| `ACM_DATA_DIR` | `~/.acm` | Directorio de las bases SQLite (un estado por usuario; antes `./.acm-data`, que dependía de la carpeta desde la que se abría el agente) |
+| `ACM_AGENT` | sin valor | Nombre del agente en modo local (por defecto, su cliente MCP y este equipo: `claude-code.portatil`) |
+| `ACM_UI` | `1` | `0`: en modo local no se arranca la interfaz ni el supervisor en segundo plano |
+| `ACM_PRINCIPAL` | `local-admin` | Admin local del CLI y de la interfaz local. Si se fija **explícitamente** en stdio: una única identidad admin, sin modo local (comportamiento anterior). En HTTP la identidad sale del token (ADR-017) |
 | `ACM_HOST` / `ACM_PORT` | `127.0.0.1` / `8765` | Escucha de `acm serve` |
 | `ACM_SQLITE_SYNCHRONOUS` | `FULL` | Durabilidad de la base global (ADR-013) |
 | `ACM_OLLAMA_URL` | sin valor | Servidor Ollama (EPIC-22). Sin URL no se registra ningún motor Ollama |
@@ -33,3 +35,8 @@ Producción / despliegue: MISSING (sin definir; EPIC-18/CI-CD).
 Comandos: `acm serve`, `acm mcp-stdio` (ver `/README.md`). Interfaz web en `/` del mismo puerto (ADR-019).
 
 Tests: `ACM_E2E_REQUIRED=1` convierte en fallo la ausencia de navegador para los e2e (CI).
+
+## Modo local (SPRINT-009, ADR-023)
+- Entrada MCP estándar de cualquier agente: `uvx --from git+https://github.com/NoaR-es/ACM acm mcp-stdio` (requiere `uv`).
+- El primer agente lanza `acm serve --local` en un proceso aparte (interfaz, Watchdog y supervisor) en `127.0.0.1:8765`; sobrevive a los agentes. `acm stop` lo para (pid en `<data_dir>/ui.pid`).
+- Si el puerto ya está ocupado se da por hecho que es ACM y no se lanza otro proceso.

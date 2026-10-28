@@ -98,6 +98,16 @@ Consumidores: mcp_server.build_mcp_server, web_api.build_api, app.create_app, __
 - **Efectos:** `sprints`, `sprint_stories` (nunca se borran filas: historial), eventos `sprint.*`.
 - **Invariantes:** una historia en un solo sprint abierto; un solo sprint ACTIVE; no se inicia sobrecargado sin `force`; el cierre guarda `summary` (US-05.06).
 
+## `AccessService` — `src/acm/domain/access.py` (ADR-024)
+- `directory(principal)`, `request_join(principal, project_id, access, message)`, `join_status(principal, project_id)`, `list_requests(actor, status)`, `decide(actor, request_id, approve, role?)`.
+- **Efectos:** `join_requests`, `project_members`; eventos `join.requested`, `join.decided`, `member.changed`.
+- **Invariantes:** una petición pendiente por agente y proyecto; solo una persona admin u owner decide; un agente nunca entra como owner; una aprobación antigua de quien fue retirado se informa como `REMOVED`.
+
+## `WorkService` — `src/acm/domain/work.py` (ADR-025)
+- `next_work(principal, project_id, claim)`, `release`, `claims`.
+- **Efectos:** `work_claims` (por sesión), eventos `work.claimed` y `work.released`.
+- **Invariantes:** un trabajo no se asigna a dos sesiones; las asignaciones caducan a los `work.claim_ttl_minutes`; `BacklogService._guard_claim` impide a otras sesiones cambiar una historia asignada (una persona sí puede).
+
 ## `ModelService` — `src/acm/domain/models.py` (ADR-021)
 - `catalog(principal)` (cualquier principal conocido) y `select(principal, …)` (admin).
 - **Invariantes:** solo modelos detectados por el runtime; todo se valida antes de guardar nada; evento `models.changed`.

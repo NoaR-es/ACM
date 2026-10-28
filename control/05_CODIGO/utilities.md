@@ -5,7 +5,7 @@ Actualizado: 2026-09-30 (SPRINT-007).
 ## Herramientas de control (`control/tools/`)
 
 ### `control/tools/derive_backlog.py`
-- **Entradas:** `01_PRODUCTO/backlog_completo_v1.md` (fuente A) y `01_PRODUCTO/product_definition_v5.md` (fuente B, v1.4); `refinements/`, `tools/dedupe.json`, `tools/item_status.json`.
+- **Entradas:** `01_PRODUCTO/backlog_completo_v1.md` (fuente A) y `01_PRODUCTO/product_definition_v6.md` (fuente B, v1.5); `refinements/`, `tools/dedupe.json`, `tools/item_status.json`.
 - **Unificación:** `FEATURE_MAP` (feature B → épica unificada), `NEW_EPICS` (49..53), solapamientos por Jaccard (`DUP_THRESHOLD`), fusiones (`dedupe.json`, con `cross_epic`), refinamientos (READY calculado), estados validados.
 - **Salida:** `epics.md`, `features.md`, `user_stories.md`, `backlog.md`, `technical_stories.md`, `id_mapping.md`.
 - **Modos:** sin argumentos regenera; `--check` compara sin escribir (en CI).

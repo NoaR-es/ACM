@@ -73,3 +73,19 @@
 - **Evidencia:** 380 tests Python en PASS (37 e2e en Chromium); 26 vitest; `12_TESTING/sprint_008_evidence.md` (85 CA en PASS, 1 PENDIENTE); 10 mutaciones (9 detectadas, 1 equivalente).
 - **Bug encontrado y corregido:** BUG-002 (al recargar `/system`, un administrador volvía al panel).
 - **No entregado:** dependencias entre historias; verificación con Ollama/Ollaya reales.
+
+## SPRINT-009 — Conexión universal de agentes (2026-10-28)
+- **Goal:** cumplido. Cualquier agente MCP se conecta con una única entrada stdio (`uvx --from git+https://github.com/NoaR-es/ACM acm mcp-stdio`), sin instalar, clonar ni crear tokens.
+- **Entregado:**
+  - Identidad separada en principal (`<cliente>.<equipo>`, o `ACM_AGENT`) y sesión (por conexión); estado por usuario en `~/.acm`.
+  - Unión con aprobación: el agente ve el directorio, crea un proyecto o pide unirse, y una persona aprueba (escritura o lectura), rechaza o retira desde la interfaz. Un agente nunca da acceso.
+  - Reparto de trabajo con `acm_next_work`: asignación con caducidad, guarda de historias ajenas y el agente asignado visible en el Kanban.
+  - Interfaz y supervisor en un proceso aparte (`acm serve --local`), con entrada sin token solo desde el propio equipo; `acm stop`.
+  - Skills por herramienta, recurso, prompt MCP y extensión; `instructions` breves; skill `acm-workflow`.
+  - README con la configuración de Claude Code, Cursor, Antigravity, Codex y Hermes. ADR-023..025. Esquema global v9 y de proyecto v6.
+  - US-14.12..14.17 VERIFIED.
+- **Evidencia:** 431 tests Python en PASS (50 casos nuevos, con agentes reales por stdio y la interfaz en segundo plano); 27 vitest; `12_TESTING/sprint_009_evidence.md` (21 CA en PASS); 12 mutaciones detectadas de 12.
+- **No entregado / no verificado:**
+  - El comportamiento de cada agente concreto (Antigravity, Codex, Hermes, Cursor) al leer las `instructions` y los prompts, y sus formatos de configuración: no se pudieron probar con esos agentes.
+  - Compartir proyectos entre equipos con la entrada `uvx` (cada equipo tiene su `~/.acm`; exige un servidor con tokens).
+  - IMP-004 sigue abierto.

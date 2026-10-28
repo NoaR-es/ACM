@@ -29,7 +29,7 @@ Actualizado: 2026-09-30 (SPRINT-007). Arquitectura: `frontend.md`. Hooks: `hooks
 | Página | Ruta | Contenido | Historias |
 |--------|------|-----------|-----------|
 | `Login` | (sin token) | Entrada con token (sessionStorage) | US-20.05 |
-| `Dashboard` | `#/` | Cifras globales, tarjetas de proyecto, cambios en tiempo real, «Nuevo proyecto» (admin) | US-45.02, US-45.03, US-31.08, US-31.09 |
+| `Dashboard` | `#/` | Cifras globales, tarjetas de proyecto, cambios en tiempo real, «Nuevo proyecto» (admin) y «Solicitudes de acceso» de agentes (`JoinRequestsPanel`) | US-45.02, US-45.03, US-31.08, US-31.09, US-14.15 |
 | `KanbanPage` | `#/kanban?projects=a,b` | Selección de proyectos (en la URL) + `KanbanBoard` | US-06.01, US-06.07 |
 | `ProjectPage` | `#/p/:id/...` | Pestañas: Resumen, Backlog (árbol + formularios), Requisitos, Historias, Sprints, Kanban, Gobernanza (auditar, supervisor, hallazgos, histórico), Asistente, Miembros (gestión para owner/admin), Configuración (editable para owner/admin) | US-31.06, US-31.09..31.11, US-01.02 CA-03, US-13.10 |
 | `StoryPage` | `#/p/:id/s/:story` | Enunciado, CA, trazabilidad, transiciones permitidas, historial, contexto compacto | US-06.06, US-06.02 |

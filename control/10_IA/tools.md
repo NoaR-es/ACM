@@ -3,7 +3,7 @@
 Actualizado: 2026-10-06 (SPRINT-008).
 
 ## Herramientas que ACM ofrece a agentes externos
-59 herramientas MCP. Lista generada en `../05_CODIGO/code_reference.md` (sección `mcp_server.py`); contrato en `../06_API/mcp_server.md` y en la skill `acm-schema`.
+65 herramientas MCP. Lista generada en `../05_CODIGO/code_reference.md` (sección `mcp_server.py`); contrato en `../06_API/mcp_server.md` y en la skill `acm-schema`.
 
 ## Herramientas del agente interno de Ollama (ADR-022)
 Definidas en `src/acm/domain/chat.py` (`TOOLS`). Todas son de solo lectura y se ejecutan con los permisos de quien conversa.

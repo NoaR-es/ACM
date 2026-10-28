@@ -12,6 +12,9 @@
 | `member.changed` | member | `IdentityService` | `role` (null si se retira) | miembros, admin |
 | `principal.changed` | principal | `IdentityService` | `kind`, `role` | admin |
 | `sprint.created` / `sprint.updated` / `sprint.started` / `sprint.closed` / `sprint.cancelled` | sprint | `SprintService` | `status`, `name`, `load` | miembros, admin |
+| `join.requested` | join_request | `AccessService.request_join` | `principal_id`, `access` | miembros del proyecto, admin |
+| `join.decided` | join_request | `AccessService.decide` | `principal_id`, `status`, `role` | miembros, admin |
+| `work.claimed` / `work.released` | work | `WorkService` | `action`, `expires_at` / `was` | miembros, admin |
 | `models.changed` | models | `ModelService.select` | `changed` (claves de `inference_settings`) | admin |
 | `watchdog.run` | project | `WatchdogService.run` | `run_id`, `semaphore`, `integrity`, `counts` | miembros, admin |
 | `activity` | operation | servidor MCP (cada invocación) | `status`, `error` | admin |

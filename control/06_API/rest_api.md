@@ -36,7 +36,7 @@
 Las mutaciones REST se auditan como `rest:*` en `mcp_audit`.
 
 ## Escritura y nuevas rutas (SPRINT-008)
-54 rutas HTTP (28 de escritura) más el WebSocket, medidas sobre `src/acm/web_api.py`. Cada escritura llama al mismo servicio de dominio que su herramienta MCP, con la misma autorización, validación y errores. Además emite su evento de actividad (`emit_activity`).
+54 rutas HTTP (28 de escritura; 59 y 31 tras SPRINT-009) más el WebSocket, medidas sobre `src/acm/web_api.py`. Cada escritura llama al mismo servicio de dominio que su herramienta MCP, con la misma autorización, validación y errores. Además emite su evento de actividad (`emit_activity`).
 
 | Método | Ruta | Cuerpo → respuesta | Quién | MCP equivalente |
 |--------|------|--------------------|-------|-----------------|
@@ -59,3 +59,18 @@ Las mutaciones REST se auditan como `rest:*` en `mcp_audit`.
 | GET | `/kanban?projects=a&sprint=SP-001` | tablero filtrado por sprint (un solo proyecto) | miembros | — |
 
 Los nombres exactos de las herramientas MCP están en `mcp_server.md`. Tests: `tests/test_rest_write.py`, `tests/test_sprints.py`, `tests/test_models_chat.py`, `tests/test_realtime.py` (toda ruta exige autenticación).
+
+## Agentes: unión con aprobación y trabajo (SPRINT-009)
+59 rutas HTTP (31 de escritura), medidas sobre `src/acm/web_api.py`.
+
+| Método | Ruta | Cuerpo → respuesta | Quién | MCP equivalente |
+|--------|------|--------------------|-------|-----------------|
+| GET | `/join-requests?status=PENDING` | peticiones que el actor puede decidir (+ `can_decide`) | admin: todas; owner: las suyas | — |
+| POST | `/join-requests/{id}/approve` | `{role?}` (member \| viewer) → petición | persona admin u owner | — (solo personas) |
+| POST | `/join-requests/{id}/reject` | — → petición | persona admin u owner | — (solo personas) |
+| GET | `/projects/{p}/work` | asignaciones vigentes (`agent` = principal#sesión) | miembros | `acm_work_list` |
+| DELETE | `/projects/{p}/work/{item}` | libera una asignación | quien la tiene; una persona, cualquiera | `acm_work_release` |
+| GET | `/kanban` | cada tarjeta incluye `assigned_to` | miembros | — |
+| GET | `/api/local-session` (fuera de `/api/v1`) | `{"token": ...}` o `{"token": null}` | solo este equipo, con `X-ACM-Local: 1` y `Host` local | — |
+
+Retirar a un agente: `DELETE /projects/{p}/members/{principal}` (ya existía). Eventos nuevos: `join.requested`, `join.decided`, `work.claimed`, `work.released` (`09_MENSAJERIA/events.md`). Tests: `tests/test_access.py`, `tests/test_work.py`, `tests/test_webui_agents.py`, `tests/test_realtime.py` (contrato y autenticación de toda ruta).

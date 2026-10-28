@@ -7,7 +7,7 @@
 | Documento | Estado |
 |-----------|--------|
 | `backlog_completo_v1.md` | ACTIVE — **fuente A** del backlog (columna vertebral, ADR-010) |
-| `product_definition_v5.md` | ACTIVE — **fuente B**: visión, actores, reglas, TECH, SPIKE y épicas integradas (v1.4: ACM operable desde la interfaz, sprints, supervisor autónomo, modelos y agente interno; v1.0..v1.3 en `99_ARCHIVO/superseded/`) |
+| `product_definition_v6.md` | ACTIVE — **fuente B**: visión, actores, reglas, TECH, SPIKE y épicas integradas (v1.5: conexión universal de agentes, unión con aprobación y colaboración; v1.0..v1.4 en `99_ARCHIVO/superseded/`) |
 | `id_mapping.md` | ACTIVE (generado) — IDs de B → IDs unificados |
 | `refinements/` | ACTIVE — refinamientos READY por historia (7 de SPRINT-001) |
 | `roadmap.md` | ACTIVE |

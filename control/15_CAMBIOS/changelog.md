@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.9.0.dev0] — 2026-10-28 — SPRINT-009 — conexión universal de agentes
+- **Cambio:**
+  - Entrada MCP estándar para cualquier agente: `uvx --from git+https://github.com/NoaR-es/ACM acm mcp-stdio`, sin instalar, clonar ni crear tokens. Estado por defecto en `~/.acm` (antes `./.acm-data`, que dependía de la carpeta desde la que se abría el agente).
+  - Identidad: principal `<cliente>.<equipo>` (o `ACM_AGENT`) y sesión por conexión (`sessions.py`); el agente es de tipo `agent`, rol `user`. Con `ACM_PRINCIPAL` explícito se conserva la identidad admin única de antes.
+  - Unión a proyectos con aprobación de una persona (ADR-024): `acm_project_directory`, `acm_project_join`, `acm_project_join_status`; panel «Solicitudes de acceso» en la interfaz; rol `viewer`; retirar a un agente. Un agente nunca da ni quita acceso.
+  - Reparto de trabajo (ADR-025): `acm_next_work`, `acm_work_release`, `acm_work_list`; asignación con caducidad (`work.claim_ttl_minutes`, 30); historias asignadas a otra sesión protegidas; el Kanban muestra el agente asignado.
+  - Interfaz y supervisor en un proceso aparte (`acm serve --local`, lanzado por el primer agente; `acm stop`); entrada sin token solo desde este equipo (`/api/local-session`).
+  - Skills por herramienta, recurso, prompt MCP (`acm-workflow`, `acm-skill`) y extensión; `instructions` breves; skill `acm-workflow` 1.0.0 y `acm-schema` 1.6.0.
+  - 65 herramientas MCP y 59 rutas HTTP. README con la configuración de Claude Code, Cursor, Antigravity, Codex y Hermes.
+  - `control/`: definición de producto v1.5 (`product_definition_v6.md`; v5 archivada), 6 refinamientos, ADR-023..025, VULN-005 y VULN-006, SPRINT-008 archivado con su CI (runs #15 y #16).
+- **Stories:** VERIFIED: US-14.12, 14.13, 14.14, 14.15, 14.16, 14.17 (fuente B: US-15.13..15.18).
+- **Archivos:**
+  - `src/acm/{sessions, local}.py`, `src/acm/domain/{access, work}.py`;
+  - modificados `__main__.py`, `app.py`, `config.py`, `mcp_server.py`, `web_api.py`, `db/schema.py`, `domain/{backlog, identity, projects, config_schema}.py`, skills `acm-schema` y `acm-workflow`, `webui/**`;
+  - `web/src/{auth.tsx, pages/JoinRequests.tsx, pages/Dashboard.tsx, KanbanBoard.tsx, types.ts, liveCore.ts}`;
+  - `tests/{test_access, test_work, test_local_mode, test_webui_agents}.py` y tests existentes;
+  - `README.md`, `control/**`.
+- **Tests:** 431/431 PASS (50 casos nuevos), 27/27 vitest; 12/12 mutaciones detectadas; 21 CA en PASS. CI: ver `12_TESTING/test_results.md`.
+- **Migración:** esquema global v9 (`project_members` con rol `viewer`, `join_requests`) y de proyecto v6 (`work_claims`); automáticas al abrir.
+- **Breaking change:** sí, en stdio. Sin `ACM_PRINCIPAL`, un agente por stdio ya no es el admin `local-admin` sino su propio principal sin permisos de admin, y los datos por defecto pasan de `./.acm-data` a `~/.acm`. Con `ACM_PRINCIPAL` o `ACM_DATA_DIR` fijados se conserva lo anterior.
+
 ## [0.8.0.dev0] — 2026-10-06 — SPRINT-008 — ACM operable desde la interfaz, sprints y supervisor autónomo
 - **Cambio:**
   - API REST de escritura completa (54 rutas HTTP, 28 de escritura). Cada ruta usa el mismo servicio de dominio que su herramienta MCP y emite su evento de actividad.

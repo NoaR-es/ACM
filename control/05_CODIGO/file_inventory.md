@@ -90,7 +90,7 @@ Actualizado: 2026-09-30 (SPRINT-007). **Regla:** todo archivo de código (`src/a
 
 ## Tests — `tests/` (pytest; detalle en `tests.md`)
 
-Recuentos medidos con `pytest --collect-only` el 2026-10-06 (casos = funciones × parametrizaciones): 337 funciones, 381 casos.
+Recuentos medidos con `pytest --collect-only` el 2026-10-28 (casos = funciones × parametrizaciones): 387 funciones, 431 casos.
 
 | Path | Qué prueba | Funciones / casos | Estado |
 |------|------------|-------------------|--------|
@@ -128,7 +128,7 @@ Recuentos medidos con `pytest --collect-only` el 2026-10-06 (casos = funciones �
 
 | Path | Propósito | Entradas | Salidas | En CI | Estado |
 |------|-----------|----------|---------|-------|--------|
-| `control/tools/derive_backlog.py` | Unifica fuentes A y B del backlog, aplica fusiones, refinamientos y estados; comprueba integridad y referencias a tests | `01_PRODUCTO/backlog_completo_v1.md`, `product_definition_v5.md`, `refinements/`, `dedupe.json`, `item_status.json` | `epics.md`, `features.md`, `user_stories.md`, `backlog.md`, `technical_stories.md`, `id_mapping.md` | `--check` | IMPLEMENTED |
+| `control/tools/derive_backlog.py` | Unifica fuentes A y B del backlog, aplica fusiones, refinamientos y estados; comprueba integridad y referencias a tests | `01_PRODUCTO/backlog_completo_v1.md`, `product_definition_v6.md`, `refinements/`, `dedupe.json`, `item_status.json` | `epics.md`, `features.md`, `user_stories.md`, `backlog.md`, `technical_stories.md`, `id_mapping.md` | `--check` | IMPLEMENTED |
 | `control/tools/evidence.py` | Matriz CA ↔ test de un sprint | refinamientos + JUnit | `12_TESTING/sprint_00N_evidence.md` | — (al cerrar sprint) | IMPLEMENTED |
 | `control/tools/code_inventory.py` | Referencia de código generada y control de que cada archivo está inventariado | código | `05_CODIGO/code_reference.md` | `--check` | IMPLEMENTED |
 | `control/tools/dedupe.json` | Fusiones de historias duplicadas (GAP-006) | — | — | vía derive | ACTIVE |
@@ -145,5 +145,5 @@ Recuentos medidos con `pytest --collect-only` el 2026-10-06 (casos = funciones �
 | `CLAUDE.md` | Constitución del agente | ACTIVE |
 | `spikes/**` | Experimentos de SPIKE-001/002 (no es producto) | SPIKE |
 | `control/01_PRODUCTO/backlog_completo_v1.md` | Fuente A del backlog | ACTIVE |
-| `control/01_PRODUCTO/product_definition_v5.md` | Fuente B: definición de producto v1.3 | ACTIVE |
+| `control/01_PRODUCTO/product_definition_v6.md` | Fuente B: definición de producto v1.3 | ACTIVE |
 | `control/99_ARCHIVO/superseded/product_definition_v{1,2,3}.md` | Definiciones v1.0, v1.1, v1.2 | SUPERSEDED |

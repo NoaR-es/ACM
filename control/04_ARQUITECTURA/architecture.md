@@ -25,9 +25,12 @@ Humanos ──(Web React / CLI / MCP)──► ACM Core (Governance + State)
 |-----------|--------|--------|
 | Núcleo de estado (SQLite por proyecto; fuente de verdad del producto, ADR-011) | EPIC-01, 18, 24, TECH-003..009 | VERIFIED en parte (US-01.01..03/06, 18.01..03, 24.01; US-24.03 IMPLEMENTED); resto PLANNED |
 | Memoria de proyecto (estructura "control/" persistida en SQLite; exportación a archivos no autoritativa, ADR-011) | EPIC-02 | PLANNED |
-| Servidor MCP propio multi-proyecto + distribución de skills | EPIC-14 (FEAT-14.02..04), EPIC-15 (FEAT-15.01..03), TECH-010/011, ADR-008 | VERIFIED (SPRINT-001/002; 59 herramientas en SPRINT-008) |
+| Servidor MCP propio multi-proyecto + distribución de skills | EPIC-14 (FEAT-14.02..04), EPIC-15 (FEAT-15.01..03), TECH-010/011, ADR-008 | VERIFIED (SPRINT-001/002; 65 herramientas en SPRINT-009) |
 | Cliente MCP para agentes internos | EPIC-14 (US-14.01..03) | PLANNED (POST-MVP) |
 | Orquestador interno, instancias e hilos, roles IA | EPIC-07, 08, 09, 41, 46 | PLANNED (POST-MVP, CONF-003). Existen ya dos agentes internos acotados: supervisor ágil (ADR-020) y agente interno de solo lectura con hilos (ADR-022) |
+| Conexión universal de agentes: entrada stdio estándar, identidad por agente y sesión, interfaz y supervisor en segundo plano | FEAT-15.05, ADR-023 | VERIFIED (SPRINT-009: US-14.12, US-14.13) |
+| Unión de agentes a proyectos con aprobación | FEAT-15.06, ADR-024 | VERIFIED (SPRINT-009: US-14.14, US-14.15) |
+| Reparto de trabajo entre agentes | FEAT-15.07, ADR-025 | VERIFIED (SPRINT-009: US-14.16, US-14.17) |
 | Sprints | EPIC-05 | VERIFIED (SPRINT-008: US-05.03..05.09); US-05.02 IMPLEMENTED (sin dependencias entre historias) |
 | Supervisor ágil autónomo (en el Watchdog) | FEAT-10.04, ADR-020 | VERIFIED con motores simulados (SPRINT-008) |
 | Agente interno de Ollama con hilos | FEAT-23.05, ADR-022 | IMPLEMENTED (sin Ollama real, IMP-004) |

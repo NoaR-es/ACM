@@ -1,6 +1,6 @@
 # control/ — Índice maestro
 
-Proyecto: **Agile Context Manager (ACM)** · Constitución: `/CLAUDE.md` · Actualizado: 2026-10-06
+Proyecto: **Agile Context Manager (ACM)** · Constitución: `/CLAUDE.md` · Actualizado: 2026-10-28
 
 ## Flujo de lectura
 `/CLAUDE.md` → este índice → `03_ESTADO/current_state.md` → `03_ESTADO/active_context.md` → índice del área → documento → `RELATIONSHIPS.md`
@@ -9,19 +9,19 @@ Proyecto: **Agile Context Manager (ACM)** · Constitución: `/CLAUDE.md` · Actu
 | Área | Responde a | Salud |
 |------|-----------|-------|
 | `00_GOBIERNO/` | Qué estamos construyendo y con qué reglas | OK |
-| `01_PRODUCTO/` | Qué debemos hacer | WARNING — definición v1.4; 98 historias con refinamiento completo (GAP-001 para el resto); solapamientos pendientes fuera de EPIC-01/04/14/24 (GAP-006) |
+| `01_PRODUCTO/` | Qué debemos hacer | WARNING — definición v1.5; 104 historias con refinamiento completo (GAP-001 para el resto); solapamientos pendientes fuera de EPIC-01/04/14/24 (GAP-006) |
 | `02_AGILE/` | Sprint, Kanban e impedimentos | WARNING — IMP-004 abierto |
 | `03_ESTADO/` | Dónde estamos | OK |
-| `04_ARQUITECTURA/` | Cómo está diseñado | OK — ADR-013..022 implementadas |
+| `04_ARQUITECTURA/` | Cómo está diseñado | OK — ADR-013..025 implementadas |
 | `05_CODIGO/` | Dónde está implementado | OK — backend, frontend, tests y tooling inventariados y con cabecera; `code_inventory.py --check` en CI |
-| `06_API/` | Cómo funcionan las APIs | OK — MCP (59 herramientas); API REST v1 con escritura completa (54 rutas, SPRINT-008); WebSocket; interfaz web en `/` |
-| `07_DATOS/` | Cómo se almacenan los datos | OK — SQLite global v8 + por proyecto v5 (SPRINT-008) |
+| `06_API/` | Cómo funcionan las APIs | OK — MCP (65 herramientas y 2 prompts); API REST v1 con escritura completa (59 rutas, SPRINT-009); WebSocket; interfaz web en `/` |
+| `07_DATOS/` | Cómo se almacenan los datos | OK — SQLite global v9 + por proyecto v6 (SPRINT-009); estado por defecto en `~/.acm` |
 | `08_INFRAESTRUCTURA/` | Cómo se ejecuta | OK — un proceso: interfaz, REST, WS y MCP (`acm serve`/`mcp-stdio`) |
 | `09_MENSAJERIA/` | Cómo se comunican los componentes | OK — eventos persistidos y WebSocket (ADR-018) |
 | `10_IA/` | Qué IA utilizamos | WARNING — reglas, Ollama y JEV implementados; supervisor autónomo y agente interno (SPRINT-008); sin verificar con servidores reales (IMP-004) |
 | `11_SEGURIDAD/` | Cómo se protege | WARNING — tokens y RBAC implementados (VULN-001 resuelta); interfaz con CSP (VULN-004 mitigada); sin TLS propio (VULN-002) |
-| `12_TESTING/` | Cómo se prueba | OK — 381 tests Python (37 e2e en Chromium) + 26 vitest en PASS |
-| `13_BUGS/` | Qué problemas existen | WARNING — 4 gaps abiertos (GAP-002 resuelto), TD-001, TD-003, BUG-001 y BUG-002 corregidos; conflictos resueltos o aplazados (CONF-003) |
+| `12_TESTING/` | Cómo se prueba | OK — 431 tests Python (con e2e en Chromium) + 27 vitest en PASS |
+| `13_BUGS/` | Qué problemas existen | WARNING — 4 gaps abiertos (GAP-002 resuelto), TD-001, TD-003, BUG-001, BUG-002 y BUG-003 corregidos; conflictos resueltos o aplazados (CONF-003) |
 | `14_DECISIONES/` | Por qué se tomaron decisiones | OK |
 | `15_CAMBIOS/` | Qué ha cambiado | OK |
 | `16_DOCUMENTACION/` | Cómo está documentado | OK — usuario (interfaz), desarrollo, API, despliegue, operación |
@@ -30,7 +30,7 @@ Proyecto: **Agile Context Manager (ACM)** · Constitución: `/CLAUDE.md` · Actu
 | `19_OBSERVABILIDAD/` | Cómo se observa | WARNING — salud por componente y Watchdog; sin métricas ni alertas externas |
 | `20_PERFORMANCE/` | Cómo rinde | OK — SPIKE-001 medido |
 | `21_COMPLIANCE/` | Cumple normativa | OK — auditoría y privacidad documentadas; normativa N/A |
-| `99_ARCHIVO/` | Documentación histórica, deprecada y supersedida | OK — 4 documentos supersedidos, 8 sprints históricos |
+| `99_ARCHIVO/` | Documentación histórica, deprecada y supersedida | OK — 5 documentos supersedidos, 9 sprints históricos |
 
 ## Transversales
 - `RELATIONSHIPS.md` — grafo de relaciones entre elementos.

@@ -142,3 +142,19 @@
 **Acciones**
 - Al añadir rutas o herramientas, añadirlas en la misma iteración a `test_realtime.ENDPOINTS`, a `test_mcp` y a la skill acm-schema (práctica ya cubierta por tests).
 - Ejecutar SPIKE-005 con Ollama y Ollaya reales en cuanto el operador disponga de una máquina con ellos (IMP-004).
+
+## SPRINT-009 (2026-10-28)
+**Bien**
+- Escribir los tests con procesos reales (agentes por stdio, interfaz en segundo plano) destapó un fallo de diseño antes de publicarlo: una aprobación antigua de un agente retirado se mostraba como vigente (ahora `REMOVED`).
+- La corrección del operador sobre la identidad (varias sesiones del mismo cliente, equipos distintos) cambió el diseño a tiempo: principal para permisos y sesión para el trabajo.
+- Las 12 mutaciones de la lógica nueva se detectaron, y se comprobó que `uvx --from <ruta> acm mcp-stdio` arranca ACM y un cliente MCP real conecta.
+
+**Mal**
+- Marqué historias como VERIFIED antes de ejecutar la suite completa con la versión nueva (se corrigió antes de subirlo) y subí trabajo a medias que dejó la CI en rojo.
+- La CI falló por un test que ya existía (`test_ui_sin_errores_de_consola…`): no ejecuté la suite completa tras el último cambio de la interfaz. Causa: `/api/local-session` respondía 404 y la consola del navegador mostraba un error. Reproducido 3 de 3 en local y corregido (200 con token nulo).
+- Una primera versión de la skill `acm-schema` no documentaba las herramientas nuevas y lo detectó el test de documentación.
+
+**Acciones**
+- No marcar VERIFIED ni subir sin la suite completa en verde con la versión final (las ejecuciones parciales no cuentan).
+- Cualquier cambio en la interfaz exige repetir `test_webui.py` completo.
+- Probar los formatos de configuración de Antigravity, Codex y Hermes con esos agentes en cuanto el operador los tenga a mano.

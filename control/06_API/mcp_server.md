@@ -1,6 +1,6 @@
 # Servidor MCP de ACM
 
-Estado: **IMPLEMENTED (SPRINT-001..008)**. Por HTTP exige token Bearer de ACM (ADR-017). `src/acm/mcp_server.py`: herramientas de proyecto (SPRINT-001), backlog, auditoría y extensión Skills con 3 skills oficiales (SPRINT-002). Pendientes: skills US-15.11/15.12 y autenticación (EPIC-20). Topología: ADR-014. Decisiones: ADR-005 (Python) y ADR-008 (servidor propio + skills). Historias (numeración unificada, ADR-010): servidor propio FEAT-14.02..14.04 (US-14.04..US-14.11); registro y versionado de skills FEAT-15.01 (US-15.01, US-15.03); distribución FEAT-15.02 (US-15.04..US-15.07); catálogo FEAT-15.03 (US-15.08..US-15.12). ACM como *cliente* MCP (US-14.01..14.03) es POST-MVP.
+Estado: **IMPLEMENTED (SPRINT-001..009)**. Por HTTP exige token Bearer de ACM (ADR-017). `src/acm/mcp_server.py`: herramientas de proyecto (SPRINT-001), backlog, auditoría y extensión Skills con 3 skills oficiales (SPRINT-002). Pendientes: skills US-15.11/15.12 y autenticación (EPIC-20). Topología: ADR-014. Decisiones: ADR-005 (Python) y ADR-008 (servidor propio + skills). Historias (numeración unificada, ADR-010): servidor propio FEAT-14.02..14.04 (US-14.04..US-14.11); registro y versionado de skills FEAT-15.01 (US-15.01, US-15.03); distribución FEAT-15.02 (US-15.04..US-15.07); catálogo FEAT-15.03 (US-15.08..US-15.12). ACM como *cliente* MCP (US-14.01..14.03) es POST-MVP.
 
 ## Principio
 El servidor MCP **es ACM**: los agentes IA se conectan a él para operar sobre los proyectos. Al conectarse, reciben las instrucciones y las skills necesarias para usar ACM correctamente.
@@ -139,6 +139,21 @@ Error nuevo: `DATA_INTEGRITY` en escrituras sobre un proyecto en cuarentena (US-
 
 `acm_decide` acepta además `model` (un modelo JEV concreto). Errores nuevos: ninguno (los motores no disponibles siguen dando ENGINE_UNAVAILABLE).
 
-Total: 59 herramientas. Cada invocación emite un evento `activity` (solo admin, ADR-018).
+## Herramientas y prompts añadidos en SPRINT-009 (2026-10-28)
+
+| Herramienta | Argumentos | Quién | Historia |
+|-------------|------------|-------|----------|
+| `acm_project_directory` | — | cualquiera | US-14.14 (empieza aquí: proyectos con tu rol y tus peticiones) |
+| `acm_project_join` | `project_id`, `access_level?` (write \| read), `message?` | cualquiera | US-14.14 (petición PENDING hasta que una persona la apruebe) |
+| `acm_project_join_status` | `project_id` | cualquiera | US-14.14 (NONE, PENDING, REJECTED, REMOVED o MEMBER) |
+| `acm_next_work` | `project_id`, `claim?` | miembros con escritura | US-14.16 |
+| `acm_work_release` | `project_id`, `item` | quien lo tiene; una persona, cualquiera | US-14.17 |
+| `acm_work_list` | `project_id` | miembros | US-14.17 |
+
+Prompts MCP: `acm-workflow` (la skill del proceso) y `acm-skill` (`name`: cualquier skill). Mismo contenido que `acm_skill_get` y que el recurso `skill://acm/<skill>/SKILL.md`; cada lectura queda auditada como `prompts/get`.
+
+Las `instructions` de inicialización son breves (< 1500 caracteres): qué es ACM, leer `acm-workflow`, empezar con `acm_project_directory` y repetir `acm_next_work`. `acm_member_set` y `acm_member_remove` pasan a exigir una persona (ADR-024). Por stdio, cada conexión es una sesión distinta (`sessions.py`).
+
+Total: 65 herramientas y 2 prompts. Cada invocación emite un evento `activity` (solo admin, ADR-018).
 
 Extensión Skills: `skills/list` y `skills/get` (`-32602` si la skill no existe); archivos en `skill://acm/{skill}/{filename}` (una skill retirada deja de ser legible). Capacidad declarada: `extensions["io.modelcontextprotocol/skills"] = {"directoryRead": false}`.

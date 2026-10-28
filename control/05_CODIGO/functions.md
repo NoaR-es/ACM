@@ -20,7 +20,7 @@ Actualizado: 2026-09-30 (SPRINT-007). Métodos de servicios: `services.md`. Herr
 | `semaphore(findings)` | `domain/watchdog.py` | hallazgos → GREEN/AMBER/RED | puro |
 | `noul`, `choice`, `score`, `story_checks` | `inference/rules.py` | → `Answer` exacta / comprobaciones de una historia | INVALID_ARGUMENT si el estado no es una historia |
 | `require_calibrated(result, consumer)` | `inference/router.py` | resultado → — | FAILED_PRECONDITION si alguna respuesta no es calibrada |
-| `build_mcp_server(service, principal, catalog?, engines?, token_id?)` | `mcp_server.py` | → `MCPServer` con 59 herramientas | cada invocación: auditoría + evento `activity` |
+| `build_mcp_server(service, principal, catalog?, engines?, token_id?)` | `mcp_server.py` | → `MCPServer` con 65 herramientas | cada invocación: auditoría + evento `activity` |
 | `build_api(service, engines, catalog)` | `web_api.py` | → (sub-app REST, router WS) | — |
 | `error_response(exc)` | `web_api.py` | `AcmError` → JSON + código HTTP | puro |
 | `parse_frontmatter(text)` | `skills_catalog.py` | SKILL.md → frontmatter | SkillError si es inválido |

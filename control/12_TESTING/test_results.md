@@ -54,3 +54,10 @@
 | 2026-10-06 | `code_inventory.py --check` | PASS | 95 archivos inventariados; `code_reference.md` regenerado |
 | 2026-10-06 | Evidencia SPRINT-008 | 85 PASS, 1 PENDIENTE | `sprint_008_evidence.md` (US-05.02 CA-03: el producto no modela dependencias entre historias) |
 | 2026-10-06 | CI GitHub Actions runs #15 y #16 | PASS | [run #15](https://github.com/NoaR-es/ACM/actions/runs/37469122183) y [run #16](https://github.com/NoaR-es/ACM/actions/runs/37469126949), commit `872d137` (SPRINT-008): jobs `test` (e2e obligatorios) y `web` en verde |
+| 2026-10-28 | TEST-PROD-S09 | PASS 431/431 | `ACM_E2E_REQUIRED=1 pytest -q` en 175 s: 50 casos nuevos (`test_access.py`, `test_work.py`, `test_local_mode.py` con agentes reales por stdio y la interfaz en segundo plano, `test_webui_agents.py` e2e, y `test_skills.py`); `ruff check`/`format --check` limpios |
+| 2026-10-28 | CI GitHub Actions, commits `234947c` y `c066e8a` (SPRINT-009 parcial) | **FAIL** | Job `test` en rojo en los dos. Causa (reproducida en local 3/3): `test_ui_sin_errores_de_consola_y_cabeceras_de_seguridad` fallaba porque `/api/local-session` respondía 404 (error en la consola del navegador y red sin reposo). Corregido en `b93b1fb`: 200 con `{"token": null}` |
+| 2026-10-28 | vitest (web) | PASS 27/27 | `liveCore` cubre `join.*` y `work.*` |
+| 2026-10-28 | Mutación manual SPRINT-009 (12 mutantes) | 12/12 detectadas | agente que aprueba accesos; sin protección de historias asignadas; sesión ignorada en la guarda y en el reparto; mismo trabajo a todos; asignaciones que no caducan; cabecera de la interfaz y `Host` no exigidos; directorio completo fuera del modo local; aprobación antigua tras retirar; agente que da acceso a otro; crear proyectos siempre permitido |
+| 2026-10-28 | Entrada estándar real | PASS | `uvx --from <ruta> acm mcp-stdio` con un cliente MCP real por stdio: `instructions`, identidad `codex.<equipo>` y 65 herramientas |
+| 2026-10-28 | TEST-CTRL-001 (SPRINT-009) | PASS | `stories=489 criteria=732 test_refs=397`; `OK (check)` |
+| 2026-10-28 | Evidencia SPRINT-009 | 21 PASS, 0 pendientes | `sprint_009_evidence.md` |

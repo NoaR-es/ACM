@@ -18,8 +18,10 @@ Actualizado: 2026-09-30 (SPRINT-007). Cada archivo de código tiene su fila en `
 │   ├── web_api.py                   # REST v1 + WebSocket de eventos
 │   ├── webui_app.py                 # SecureStatic: sirve la interfaz con CSP (ADR-019)
 │   ├── webui/                       # BUILD GENERADO de web/ (no editar a mano; la CI verifica que está al día)
-│   ├── mcp_server.py                # Servidor MCP: 59 herramientas, extensión Skills, auditoría
+│   ├── mcp_server.py                # Servidor MCP: 65 herramientas, 2 prompts, extensión Skills, auditoría
 │   ├── skills_catalog.py            # Catálogo de skills validado
+│   ├── sessions.py                  # Identidad de los agentes locales: principal y sesión (ADR-023)
+│   ├── local.py                     # Modo local: interfaz en segundo plano, sesión local, `acm stop` (ADR-023)
 │   ├── skills/                      # Skills oficiales (acm-schema, acm-invest, acm-discovery)
 │   ├── inference/                   # ports, rules, router, ollama, jev (Ollaya), selection, ollaya_models (ADR-015/016/021)
 │   ├── db/                          # connection (ADR-013), migrations, schema (global v8, proyecto v5)
